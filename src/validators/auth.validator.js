@@ -1,13 +1,12 @@
 const NotFound = require('../errors/notfound.error');
 const authService = require('../services/auth.service')
+const userService = require('../services/user.service')
 
-const isUserAuthenticated = async (req, res, next) =>{
+const isUserAuthenticated = async (req, res, next) => {
     const token = req.headers['x-access-token'];
  
     if(!token){
-        res.status(401).send({
-            message: "jwt token is not provided"
-        })
+        throw new NotFound('token', token);
     }
 
     const isVerifiedToken = authService.verfiyJwtToken(token);
@@ -16,15 +15,15 @@ const isUserAuthenticated = async (req, res, next) =>{
         throw new NotFound('Token', token);
     }
 
-     try{
-        const userInfo = await userService.getUserByEmail({email:isVerifiedToken.email});
+    try {
+        const userInfo = await userService.getUserByEmail({ email : isVerifiedToken.email });
         if(!userInfo){
             throw new NotFound('Email', req.email);
         }
         req.user = userInfo;
         next();
-    }
-     catch(err){
+    } catch(err) {
+        console.log(err);
         throw err;
      } 
 }

@@ -1,10 +1,11 @@
 const { StatusCodes } = require('http-status-codes');
-const { createUser, verifyUser } = require('../services/user.service');
+const { createUser, verifyUser, updateUser } = require('../services/user.service');
 require('dotenv').config();
 const jwt = require('jsonwebtoken')
 
 exports.signup = async (req, res, next) => {
     try {
+        console.log(req.body);
         const response = await createUser(req.body);
         return res.status(StatusCodes.CREATED).json({
             success: true,
