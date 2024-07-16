@@ -15,7 +15,16 @@ const userSchema = new mongoose.Schema({
         minLength: 5,
         required: true,
         match: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{5,}$/,
-    }
+    },
+    createdAt:{
+        type: Date,
+        immutable: true,
+        default: Date.now,
+    },
+    updatedAt:{
+        type: Date,
+        default:Date.now,
+    },
 });
 
 userSchema.pre('save', function(next) {
