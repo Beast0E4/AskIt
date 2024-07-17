@@ -31,6 +31,15 @@ const updateSolution = async (user, req) => {
     }
 }
 
+const deleteSolution = async(user) => {
+    try {
+        const sol = await Solutions.findByIdAndDelete(user.id);
+        return sol;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createSolution, updateSolution
+    createSolution, updateSolution, deleteSolution
 }

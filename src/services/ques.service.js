@@ -29,6 +29,15 @@ const updateQuestion = async (user, req) => {
     }
 }
 
+const deleteQuestion = async(user) => {
+    try {
+        const ques = await Questions.findByIdAndDelete(user.id);
+        return ques;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createQuestion, updateQuestion
+    createQuestion, updateQuestion, deleteQuestion
 }

@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { createSolution, updateSolution } = require("../services/solution.service");
+const { createSolution, updateSolution, deleteSolution } = require("../services/solution.service");
 
 exports.createSolution = async (req, res, next) => {
     try {
@@ -22,6 +22,20 @@ exports.updateSolution = async (req, res, next) => {
         return res.status(StatusCodes.OK).json({
             success: true,
             message: "Successfully updated the question",
+            error: {},
+            data: response
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.deleteSolution = async (req, res, next) => {
+    try {
+        const response = await deleteSolution(req.params);
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Successfully deleted the question",
             error: {},
             data: response
         });
