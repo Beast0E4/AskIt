@@ -47,8 +47,18 @@ const getUserByEmail = async (data) => {
 
 const getUser = async (data) => { 
     try{
-        console.log(data);
-        let userInfo = await User.findById(data.id);
+        const userInfo = await User.findById(data.id);
+        return userInfo;
+    }
+    catch(err){
+        console.log(err);
+        return err.message;
+    }
+}
+
+const getUsers = async () => { 
+    try{
+        const userInfo = await User.find();
         return userInfo;
     }
     catch(err){
@@ -100,5 +110,5 @@ const deleteUser = async (data) => {
 }
 
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers
 }

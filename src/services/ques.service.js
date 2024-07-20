@@ -5,6 +5,7 @@ const createQuestion = async(data) => {
     try {
         const user = await User.findById(data.userId);
         if(!user){
+            console.log(data);
             console.log('No user'); return;
         }
         const quesObj = {
@@ -12,6 +13,15 @@ const createQuestion = async(data) => {
             question: data.question,
         }
         const response = Questions.create(quesObj);
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getAllQuestions = async(data) => {
+    try {
+        const response = Questions.find();
         return response;
     } catch (error) {
         throw error;
@@ -39,5 +49,5 @@ const deleteQuestion = async(user) => {
 }
 
 module.exports = {
-    createQuestion, updateQuestion, deleteQuestion
+    createQuestion, updateQuestion, deleteQuestion, getAllQuestions
 }

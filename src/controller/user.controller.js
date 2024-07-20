@@ -18,11 +18,19 @@ exports.updateUser = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
     try {
         const result = await userService.getUser(req.params);
-        return res.status(StatusCodes.OK).json({
-            success: true,
-            message: "Successfully fetched the user",
-            error: {},
-            data: result
+        console.log(result);
+        res.status(StatusCodes.OK).send(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.getUsers = async (req, res, next) => {
+    try {
+        const result = await userService.getUsers();
+        console.log(result);
+        res.status(StatusCodes.OK).send({
+            users: result
         });
     } catch (error) {
         next(error);

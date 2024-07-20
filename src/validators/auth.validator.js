@@ -6,6 +6,7 @@ const isUserAuthenticated = async (req, res, next) => {
     const token = req.headers['x-access-token'];
  
     if(!token){
+        console.log("token is", token);
         throw new NotFound('token', token);
     }
 
