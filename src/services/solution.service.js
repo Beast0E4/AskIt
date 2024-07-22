@@ -23,10 +23,19 @@ const createSolution = async(data) => {
 
 const updateSolution = async (user, req) => {
     try {
-        await Solutions.findOneAndUpdate({_id: user.id}, {
+        const res = await Solutions.findByIdAndUpdate(user.id, {
             solution: req.solution
         });
-        return Solutions.findById(user.id);
+        return res;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getSolution = async(sol) => {
+    try {
+        const soln = await Solutions.findById(sol.id);
+        return soln;
     } catch (error) {
         throw error;
     }
@@ -41,7 +50,7 @@ const deleteSolution = async(sol) => {
     }
 }
 
-const getSolution = async(quesId) => {
+const getSolutionByQuestion = async(quesId) => {
     try {
         const sol = await Solutions.find({questionId: quesId});
         return sol;
@@ -51,5 +60,5 @@ const getSolution = async(quesId) => {
 }
 
 module.exports = {
-    createSolution, updateSolution, deleteSolution, getSolution
+    createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion
 }

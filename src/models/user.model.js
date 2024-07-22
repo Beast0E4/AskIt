@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Email cannot be empty']
     },
+    profession: {
+        type: String,
+        required: [true, 'profession cannot be empty']
+    },
     password: {
         type: String,
         minLength: 5,

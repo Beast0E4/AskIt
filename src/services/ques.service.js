@@ -38,17 +38,6 @@ const getQuestion = async(data) => {
     }
 }
 
-const updateQuestion = async (user, req) => {
-    try {
-        await Questions.findOneAndUpdate({_id: user.id}, {
-            question: req.question
-        });
-        return Questions.findById(user.id);
-    } catch (error) {
-        throw error;
-    }
-}
-
 const deleteQuestion = async(ques) => {
     try {
         await Solutions.deleteMany({questionId: ques.id})
@@ -60,5 +49,5 @@ const deleteQuestion = async(ques) => {
 }
 
 module.exports = {
-    createQuestion, updateQuestion, deleteQuestion, getAllQuestions, getQuestion
+    createQuestion, deleteQuestion, getAllQuestions, getQuestion
 }

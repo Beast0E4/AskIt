@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { createSolution, updateSolution, deleteSolution, getSolution } = require("../services/solution.service");
+const { createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion } = require("../services/solution.service");
 
 exports.createSolution = async (req, res, next) => {
     try {
@@ -12,9 +12,20 @@ exports.createSolution = async (req, res, next) => {
     }
 }
 
+exports.getSolutionByQuestion = async (req, res, next) => {
+    try {
+        const response = await getSolutionByQuestion(req.params.id);
+        res.status(StatusCodes.CREATED).send({
+            data: response
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.getSolution = async (req, res, next) => {
     try {
-        const response = await getSolution(req.params.id);
+        const response = await getSolution(req.params);
         res.status(StatusCodes.CREATED).send({
             data: response
         });
@@ -26,7 +37,7 @@ exports.getSolution = async (req, res, next) => {
 exports.updateSolution = async (req, res, next) => {
     try {
         const response = await updateSolution(req.params, req.body);
-        return res.status(StatusCodes.OK).json({
+        return res.status(StatusCodes.OK).send({
             success: true,
             message: "Successfully updated the question",
             error: {},

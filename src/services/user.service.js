@@ -11,6 +11,7 @@ const createUser = async(data) => {
         const userObj = {
             name: data.name,
             email: data.email,
+            profession: data.profession,
             password: data.password,
         }
         const response = await User.create(userObj);
@@ -35,6 +36,7 @@ const verifyUser = async(data) => {
                     _id: userData._id,
                     email: userData.email,
                     name: userData.name,
+                    profession: userData.profession,
                     createdAt:userData.createdAt,
                     updatedAt:userData.updatedAt,
                 };
@@ -91,6 +93,7 @@ const updateUser =  async (data) =>{
             await User.findOneAndUpdate({email: data.email}, {
                 name: data.name,
                 email: data.email,
+                profession: data.profession
             });
             await user.then((response) =>{
                 result = {
