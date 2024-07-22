@@ -1,14 +1,21 @@
 const { StatusCodes } = require("http-status-codes");
-const { createSolution, updateSolution, deleteSolution } = require("../services/solution.service");
+const { createSolution, updateSolution, deleteSolution, getSolution } = require("../services/solution.service");
 
 exports.createSolution = async (req, res, next) => {
     try {
-        console.log(req.body);
         const response = await createSolution(req.body);
-        return res.status(StatusCodes.CREATED).json({
-            success: true,
-            message: "Successfully created the solution",
-            error: {},
+        res.status(StatusCodes.CREATED).send({
+            data: response
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.getSolution = async (req, res, next) => {
+    try {
+        const response = await getSolution(req.params.id);
+        res.status(StatusCodes.CREATED).send({
             data: response
         });
     } catch (error) {

@@ -3,8 +3,9 @@ const userService = require('../services/user.service')
 
 exports.updateUser = async (req, res, next) => {
     try {
+        console.log("Body is ", req.body);
         const result = await userService.updateUser(req.body);
-        return res.status(StatusCodes.OK).json({
+        res.status(StatusCodes.OK).send({
             success: true,
             message: "Successfully updated the user",
             error: {},
@@ -18,7 +19,6 @@ exports.updateUser = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
     try {
         const result = await userService.getUser(req.params);
-        console.log(result);
         res.status(StatusCodes.OK).send(result);
     } catch (error) {
         next(error);
@@ -28,7 +28,6 @@ exports.getUser = async (req, res, next) => {
 exports.getUsers = async (req, res, next) => {
     try {
         const result = await userService.getUsers();
-        console.log(result);
         res.status(StatusCodes.OK).send({
             users: result
         });
@@ -39,9 +38,8 @@ exports.getUsers = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
     try {
-        console.log(req.params);
         const result = await userService.deleteUser(req.params);
-        return res.status(StatusCodes.OK).json({
+        res.status(StatusCodes.OK).send({
             success: true,
             message: "Successfully deleted the user",
             error: {},

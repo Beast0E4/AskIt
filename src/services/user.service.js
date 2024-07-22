@@ -1,6 +1,6 @@
 const { compareSync } = require("bcrypt");
 const User = require("../models/user.model");
-const NotFound = require("../errors/notfound.error");
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
@@ -21,16 +21,32 @@ const createUser = async(data) => {
 }
 
 const verifyUser = async(data) => {
+    const response = {};
     try {
-        const details = await User.findOne({email: data.email});
-        if(details){
-            if(compareSync(data.password, details.password)){
-                console.log(details); return details;
+        console.log("Data is", data);
+        const userData = await User.findOne({email: data.email});
+        if(userData === null){
+            response.error = "Invalid Email";
+        } else {
+            const result = bcrypt.compareSync(data.password, userData.password);
+            if(result){
+                response.success = true;
+                response.userData = {
+                    _id: userData._id,
+                    email: userData.email,
+                    name: userData.name,
+                    createdAt:userData.createdAt,
+                    updatedAt:userData.updatedAt,
+                };
+            } else {
+                response.error = "Invalid Password";
             }
         }
-        throw new NotFound('User', data.email);
+        return response;
     } catch (error) {
-        throw error;
+        console.log("Error: ", err);
+        response.error = err.message;
+        return response;
     }
 }
 
@@ -69,8 +85,7 @@ const getUsers = async () => {
 
 const updateUser =  async (data) =>{
     try{
-        var result = {}; 
-        console.log(data);       
+        var result = {};       
         if(data.email){
             const user = User.findOne({email : data.email});
             await User.findOneAndUpdate({email: data.email}, {
@@ -99,10 +114,13 @@ const updateUser =  async (data) =>{
 
 const deleteUser = async (data) => {
     try {
+        console.log(data);
         const details = await User.findById(data.id);
         const response = await User.deleteOne({_id: data.id});
-        await Questions.deleteMany({email: details.email});
-        await Solutions.deleteMany({email: details.email});
+        const ques = await Questions.find({userId: data.id});
+        ques.forEach(async (quest) => await Solutions.deleteMany({questionId: quest._id}));
+        await Questions.deleteMany({userId: data.id});
+        await Solutions.deleteMany({userId: data.id});
         return response;
     } catch (error) {
         throw error;

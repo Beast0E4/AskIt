@@ -1,5 +1,6 @@
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
+const User = require("../models/user.model");
 
 const createSolution = async(data) => {
     try {
@@ -31,9 +32,18 @@ const updateSolution = async (user, req) => {
     }
 }
 
-const deleteSolution = async(user) => {
+const deleteSolution = async(sol) => {
     try {
-        const sol = await Solutions.findByIdAndDelete(user.id);
+        const soln = await Solutions.findByIdAndDelete(sol.id);
+        return soln;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getSolution = async(quesId) => {
+    try {
+        const sol = await Solutions.find({questionId: quesId});
         return sol;
     } catch (error) {
         throw error;
@@ -41,5 +51,5 @@ const deleteSolution = async(user) => {
 }
 
 module.exports = {
-    createSolution, updateSolution, deleteSolution
+    createSolution, updateSolution, deleteSolution, getSolution
 }

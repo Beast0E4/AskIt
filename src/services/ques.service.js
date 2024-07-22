@@ -1,4 +1,5 @@
 const Questions = require("../models/ques.model");
+const Solutions = require("../models/solution.model");
 const User = require("../models/user.model");
 
 const createQuestion = async(data) => {
@@ -28,6 +29,15 @@ const getAllQuestions = async(data) => {
     }
 }
 
+const getQuestion = async(data) => {
+    try {
+        const response = Questions.findById(data.id);
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateQuestion = async (user, req) => {
     try {
         await Questions.findOneAndUpdate({_id: user.id}, {
@@ -39,15 +49,16 @@ const updateQuestion = async (user, req) => {
     }
 }
 
-const deleteQuestion = async(user) => {
+const deleteQuestion = async(ques) => {
     try {
-        const ques = await Questions.findByIdAndDelete(user.id);
-        return ques;
+        await Solutions.deleteMany({questionId: ques.id})
+        const quest = await Questions.findByIdAndDelete(ques.id);
+        return quest;
     } catch (error) {
         throw error;
     }
 }
 
 module.exports = {
-    createQuestion, updateQuestion, deleteQuestion, getAllQuestions
+    createQuestion, updateQuestion, deleteQuestion, getAllQuestions, getQuestion
 }
