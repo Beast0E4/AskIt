@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     profession: {
         type: String,
-        required: [true, 'profession cannot be empty']
+        required: [true, 'Profession cannot be empty']
     },
     password: {
         type: String,

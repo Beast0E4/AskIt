@@ -7,15 +7,24 @@ const Solutions = require("../models/solution.model");
 require('dotenv').config();
 
 const createUser = async(data) => {
+    const response = {};
     try{
+
+        const check = await User.find({email: data.email});
+
+        if(check){
+            response.error = "User present"
+            return response;
+        }
+
         const userObj = {
             name: data.name,
             email: data.email,
             profession: data.profession,
             password: data.password,
         }
-        const response = await User.create(userObj);
-        return response;
+        response.user = await User.create(userObj);
+        return response.user;
     } catch(err){
         throw err;
     }

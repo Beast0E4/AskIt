@@ -5,12 +5,15 @@ const jwt = require('jsonwebtoken')
 
 exports.signup = async (req, res) => {
     try {
-        console.log(req.body);
         const response = await createUser(req.body);
+        console.log(response.error);
+        if(response.error) return res.status(StatusCodes.FORBIDDEN).json({
+            error: "User present"
+        })
         return res.status(StatusCodes.CREATED).send(response);
     } catch (error) {
-        console.log(err);
-        res.status(500).send(err)
+        console.log(error);
+        res.status(500).send(error)
     }
 }
 
