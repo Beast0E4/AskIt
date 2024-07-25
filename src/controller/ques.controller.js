@@ -4,7 +4,6 @@ const { createQuestion, deleteQuestion, getAllQuestions, getQuestion } = require
 exports.createQuestion = async (req, res, next) => {
     try {
         const response = await createQuestion(req.body);
-        console.log(req.body);
         res.status(StatusCodes.CREATED).send({
             question: response
         });

@@ -3,8 +3,10 @@ const userService = require('../services/user.service')
 
 exports.updateUser = async (req, res, next) => {
     try {
-        console.log("Body is ", req.body);
         const result = await userService.updateUser(req.body);
+        if(result.error) return res.status(StatusCodes.FORBIDDEN).json({
+            error: "User present"
+        })
         res.status(StatusCodes.OK).send({
             success: true,
             message: "Successfully updated the user",

@@ -5,7 +5,6 @@ const isUserAuthenticated = async (req, res, next) => {
     const token = req.headers['x-access-token'];
  
     if(!token){
-        console.log('error');
         res.status(401).send({
             message: "Jwt token is not provided"
         })
@@ -14,7 +13,6 @@ const isUserAuthenticated = async (req, res, next) => {
     const isVerifiedToken = authService.verfiyJwtToken(token);
 
     if(!isVerifiedToken || isVerifiedToken === "invalid signature"){
-        console.log('error');
         return res.status(401).send({
             message: "Jwt token is invalid"
         })
@@ -23,7 +21,6 @@ const isUserAuthenticated = async (req, res, next) => {
      try{
         const userInfo = await userService.getUserByEmail({email: isVerifiedToken.email});
         if(!userInfo){
-            console.log('error');
             return res.status(401).send({
                 message: "Email is invalid"
             })

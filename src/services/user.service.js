@@ -11,8 +11,8 @@ const createUser = async(data) => {
     try{
 
         const check = await User.find({email: data.email});
-
-        if(check){
+        console.log(check);
+        if(check?.email){
             response.error = "User present"
             return response;
         }
@@ -33,7 +33,6 @@ const createUser = async(data) => {
 const verifyUser = async(data) => {
     const response = {};
     try {
-        console.log("Data is", data);
         const userData = await User.findOne({email: data.email});
         if(userData === null){
             response.error = "Invalid Email";
@@ -96,13 +95,21 @@ const getUsers = async () => {
 
 const updateUser =  async (data) =>{
     try{
-        var result = {};       
+        var result = {};      
         if(data.email){
-            const user = User.findOne({email : data.email});
+            const user = await User.findOne({email : data.email});
+            const res = bcrypt.compareSync(data.password, user.password);
+            if(!res){
+                result = {
+                    error: "Incorrect password",
+                }
+                return result;
+            }
             await User.findOneAndUpdate({email: data.email}, {
                 name: data.name,
                 email: data.email,
-                profession: data.profession
+                profession: data.profession,
+                updatedAt: Date.now()
             });
             await user.then((response) =>{
                 result = {
@@ -126,7 +133,6 @@ const updateUser =  async (data) =>{
 
 const deleteUser = async (data) => {
     try {
-        console.log(data);
         const details = await User.findById(data.id);
         const response = await User.deleteOne({_id: data.id});
         const ques = await Questions.find({userId: data.id});

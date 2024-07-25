@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken')
 exports.signup = async (req, res) => {
     try {
         const response = await createUser(req.body);
-        console.log(response.error);
         if(response.error) return res.status(StatusCodes.FORBIDDEN).json({
             error: "User present"
         })
