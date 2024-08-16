@@ -41,7 +41,13 @@ const getQuestion = async(data) => {
 
 const deleteQuestion = async(ques) => {
     try {
-        await Solutions.deleteMany({questionId: ques.id})
+        const res = await Solutions.find({questionId: ques.id});
+        console.log('Check: ', res);
+        res.forEach(async (sol) => {
+            await Likes.deleteMany({solutionId: sol.id});
+        })
+        await Solutions.deleteMany({questionId: ques.id});
+        await Likes.deleteMany({questionId: ques.id})
         const quest = await Questions.findByIdAndDelete(ques.id);
         return quest;
     } catch (error) {

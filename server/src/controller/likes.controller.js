@@ -1,9 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
-const { like, unLike } = require("../services/likes.service");
+const { like, unLike, getLikes } = require("../services/likes.service");
 
 exports.like = async (req, res, next) => {
     try {
-        console.log('Incoming: ', req.body);
         const response = await like(req.body);
         res.status(StatusCodes.OK).send({
             likes: response
@@ -21,5 +20,16 @@ exports.unLike = async (req, res, next) => {
         });
     } catch (error) {
         throw error;
+    }
+}
+
+exports.getLikes = async(req, res, next) => {
+    try {
+        const response = await getLikes();
+        res.status(StatusCodes.ACCEPTED).send({
+            likes: response
+        })
+    } catch (error) {
+        
     }
 }

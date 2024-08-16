@@ -8,6 +8,8 @@ const questionsRoutes = require('./src/routes/questions.routes');
 const solutionsRoutes = require('./src/routes/solutions.routes');
 const cors = require('cors');
 const likesRoutes = require('./src/routes/likes.routes');
+const configCloudinary = require('./src/config/cloudinary.config');
+const path = require('path');
 
 const app = express();
 
@@ -25,7 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text());
 
-app.use('/uploads', express.static('uploads'));
+app.use('uploads', express.static(path.join(__dirname, "public/assets")));
 
 authRoutes(app);
 userRoutes(app);

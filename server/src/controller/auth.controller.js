@@ -3,13 +3,14 @@ const { createUser, verifyUser } = require('../services/user.service');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-
 exports.signup = async (req, res) => {
     try {
-        const response = await createUser(req);
+        console.log('incoming: ', req.file);
+        const response = await createUser(req.body, req.file);
         if(response.error) return res.status(StatusCodes.FORBIDDEN).json({
             error: "User present"
         })
+        console.log('response', response);
         return res.status(StatusCodes.CREATED).send(response);
     } catch (error) {
         console.log(error);
@@ -20,7 +21,7 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
     try {
         const result = await verifyUser(req.body);
-        console.log("Result is", result);
+        console.log("Result is from login", result);
         let statusCode;
         let response;
         if(result.error){

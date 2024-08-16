@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
+    image:{
+        type: String,
+        required: [true, 'Image cannot be empty'],
+        default: "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png"
+    },
     name: {
         type: String,
         required: [true, 'Name cannot be empty']

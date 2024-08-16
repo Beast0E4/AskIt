@@ -3,7 +3,8 @@ const userService = require('../services/user.service')
 
 exports.updateUser = async (req, res, next) => {
     try {
-        const result = await userService.updateUser(req.body);
+        console.log(req.body);
+        const result = await userService.updateUser(req.body, req.file);
         if(result.error) return res.status(StatusCodes.FORBIDDEN).json({
             error: "User present"
         })
@@ -41,7 +42,7 @@ exports.getUsers = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
     try {
         const result = await userService.deleteUser(req.params);
-        res.status(StatusCodes.OK).send({
+        if(result) res.status(StatusCodes.OK).send({
             success: true,
             message: "Successfully deleted the user",
             error: {},

@@ -4,22 +4,26 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
+const cloudinary = require("../config/cloudinary.config");
 require('dotenv').config();
 
-const createUser = async(data) => {
+const createUser = async(data, file) => {
     const response = {};
     try{
-        const check = await User.find({email: data.body.email});
+        const check = await User.find({email: data.email});
         if(check?.email){
             response.error = "User present"
             return response;
         }
-
+        const result = await cloudinary.uploader.upload(file.path, {
+            folder: 'profile_images',
+        });
         const userObj = {
-            name: data.body.name,
-            email: data.body.email,
-            profession: data.body.profession,
-            password: data.body.password,
+            image: result.secure_url,
+            name: data.name,
+            email: data.email,
+            profession: data.profession,
+            password: data.password,
         }
         response.user = await User.create(userObj);
         return response.user;
@@ -31,6 +35,7 @@ const createUser = async(data) => {
 const verifyUser = async(data) => {
     const response = {};
     try {
+        console.log(data);
         const userData = await User.findOne({email: data.email});
         if(userData === null){
             response.error = "Invalid Email";
@@ -43,6 +48,7 @@ const verifyUser = async(data) => {
                     email: userData.email,
                     name: userData.name,
                     profession: userData.profession,
+                    image: userData.image,
                     createdAt:userData.createdAt,
                     updatedAt:userData.updatedAt,
                 };
@@ -91,7 +97,7 @@ const getUsers = async () => {
     }
 }
 
-const updateUser =  async (data) =>{
+const updateUser =  async (data, file) =>{
     try{
         var result = {};      
         if(data.email){
@@ -103,13 +109,19 @@ const updateUser =  async (data) =>{
                 }
                 return result;
             }
+            const publicId = user.image.split('/').slice(-2).join('/').split('.')[0];
+            const result = await cloudinary.uploader.destroy(publicId);
+            const url = await cloudinary.uploader.upload(file.path, {
+                folder: 'profile_images',
+            });
             await User.findOneAndUpdate({email: data.email}, {
+                image: url.secure_url,
                 name: data.name,
                 email: data.email,
                 profession: data.profession,
                 updatedAt: Date.now()
             });
-            await user.then((response) =>{
+            await User.findOne({email : data.email}).then((response) => {
                 result = {
                     token : jwt.sign({email: response.email}, process.env.JWT_SECRET_KEY),
                     email : response.email,
@@ -132,6 +144,8 @@ const updateUser =  async (data) =>{
 const deleteUser = async (data) => {
     try {
         const details = await User.findById(data.id);
+        const publicId = details.image.split('/').slice(-2).join('/').split('.')[0];
+        const result = await cloudinary.uploader.destroy(publicId);
         const response = await User.deleteOne({_id: data.id});
         const ques = await Questions.find({userId: data.id});
         ques.forEach(async (quest) => await Solutions.deleteMany({questionId: quest._id}));
