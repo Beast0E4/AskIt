@@ -98,7 +98,7 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async(id) => {
         })
         toast.promise(response, {
             loading: 'Deleting account',
-            success: 'Successfully delete',
+            success: 'Successfully deleted',
             error: 'Something went wrong, try again'
         });
         return await response;

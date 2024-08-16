@@ -52,8 +52,8 @@ function AnswerPage() {
     }, [quesState.currentQuestion, authState.userList.length]);
 
     return (
-        <div className="w-full p-4">
-            <article className="mb-4 break-inside p-6 bg-gray-800 border-2 flex flex-col bg-clip-border">
+        <div className="w-full p-4 bg-gray-900 min-h-screen">
+            <article className="mb-4 break-inside p-6 bg-gray-950 flex flex-col bg-clip-border">
                 <div className="flex pb-6 items-center justify-between">
                 <div className="flex">
                     <a className="inline-block mr-4" href="#">

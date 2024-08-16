@@ -1,12 +1,14 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+
+
 function Navbar(){
 
     const authState = useSelector((state) => state.auth);
 
     return (
-        <div className="navbar bg-base-100 shadow-lg fixed top-0">
+        <div className="navbar bg-gray-900 shadow-lg fixed top-0">
             <div className="navbar-start">
                 <div className="dropdown">
                 <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -25,7 +27,7 @@ function Navbar(){
                 </div>
                 <ul
                     tabIndex={0}
-                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3">
+                    className="menu menu-sm bg-gray-900 dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
                     <li><Link to={'/'} id="Home">Home</Link></li>
                     <li><Link to={`/?userid=${authState?.data?._id}`}>My Questions</Link></li>
                     <li><Link to={'/users'}>Users</Link></li>

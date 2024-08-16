@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createAnswer } from "../../redux/Slices/ans.slice";
 import useQuestions from "../../hooks/useQuestions";
+import toast from "react-hot-toast";
 
 function Answer() {
 
@@ -10,10 +11,14 @@ function Answer() {
     const [quesState] = useQuestions();
 
     const navigate = useNavigate();
-    const dispatch = useDispatch(); 
+    const dispatch = useDispatch();
+    const [searchParams] = useSearchParams();
 
+    const [loading, setLoading] = useState(false);
     const [ans, setAns] = useState({
-        answer: ""
+        userId: authState.data?._id,
+        solution: "",
+        questionId: searchParams.get('question')
     })
 
     function handleChange(e){
@@ -25,14 +30,15 @@ function Answer() {
     }
 
     async function onSubmit(){
-        if(!ans.answer.toString().trim()) return;
-        const response = await dispatch(createAnswer({
-            userId: authState.data._id,
-            solution: ans.answer.toString().trim(),
-            questionId: quesState.currentQuestion.ques._id
-        }));
-        console.log(response);
-        if(response) navigate('/');
+        setLoading(true);
+        try {
+            if(!ans.solution.toString().trim()) return;
+            await dispatch(createAnswer(ans));
+        } catch (error) {
+            toast.error('Something went wrong'); setLoading(false);
+        } finally {
+            navigate('/'); setLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -40,16 +46,16 @@ function Answer() {
     }, []);
 
     return(
-        <section className="h-full flex flex-col items-center pt-6 justify-center">
-            <div className="w-[90vw] h-full bg-gray-800 rounded-lg shadow dark:border md:mt-0 xl:p-0">
+        <section className="h-full bg-gray-950 flex flex-col items-center pt-6 justify-center min-h-screen">
+            <div className="w-[90vw] h-full bg-gray-900 rounded-lg  md:mt-0 xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your answer</h1>
-                    <p className="my-2 bg-gray-600 py-3 px-2">
+                    <p className="my-2 py-3 px-2">
                         {quesState?.questionList[0]?.question}
                     </p>
                     <h3 className="mt-10">Add answer here</h3>
-                    <textarea onChange={handleChange} name="answer" value={ans.answer} className="textarea textarea-bordered w-full resize-none" rows={10}></textarea>
-                    <button onClick={onSubmit} className="btn btn-primary bg-gray-300 hover:bg-gray-400 hover:border-transparent border-transparent w-full font-bold text-black">CREATE</button>
+                    <textarea onChange={handleChange} name="solution" value={ans.solution} className="textarea textarea-bordered w-full resize-none" rows={10}></textarea>
+                    <button onClick={onSubmit} className="btn btn-primary bg-gray-700 hover:bg-gray-800 hover:border-transparent border-transparent w-full font-bold text-white">{loading ? 'Uploading answer ...' : 'CREATE'}</button>
                 </div>
             </div>
         </section>

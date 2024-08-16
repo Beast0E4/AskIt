@@ -3,7 +3,7 @@ import MainRoutes from "./routing/mainRoutes"
 function App() {
   return (
     <>
-    <MainRoutes />
+    <MainRoutes/>
     </>
   )
 }
