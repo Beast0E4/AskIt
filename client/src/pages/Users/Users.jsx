@@ -19,11 +19,11 @@ function Users() {
 
     return (
         <div className="flex flex-col items-center text-white w-full mt-20">
-            <nav className="flex md:w-[50rem] sm:w-[25rem] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700 my-3">
+            <div className="flex w-[80vw] md:w-[50rem] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700 my-3">
                 {authState.userList?.map((user) => {
-                    return (<UserLayout key={user._id} userId={user._id} username={user.name} profession={user.profession}/>)
+                    return (<UserLayout key={user._id} userId={user._id} username={user.name} profession={user.profession} image={user.image || "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png"}/>)
                 })}
-            </nav>
+            </div>
         </div>
     )
 }

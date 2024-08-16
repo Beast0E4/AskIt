@@ -8,12 +8,9 @@ const initialState = {
     currentAnswer: {}
 };
 
-export const likeSolution = createAsyncThunk('solution/likeSolution', async(solutionId, id) => {
+export const likeSolution = createAsyncThunk('question/likeQuestion', async(solution) => {
     try {
-        const response = axiosInstance.post('like', {
-            solId : solutionId,
-            userId: id
-        }, {
+        const response = axiosInstance.post('like', solution, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
@@ -25,12 +22,9 @@ export const likeSolution = createAsyncThunk('solution/likeSolution', async(solu
     }
 })
 
-export const unLikeSolution = createAsyncThunk('solution/unLikeSolution', async(solutionId, id) => {
+export const unLikeSolution = createAsyncThunk('question/unLikeQuestion', async(solution) => {
     try {
-        const response = axiosInstance.post('unLike', {
-            solId : solutionId,
-            userId: id
-        }, {
+        const response = axiosInstance.post('unLike', solution, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }

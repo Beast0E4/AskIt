@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { currQues, deleteQues, likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
+import { deleteQues, likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
 import { useEffect, useState } from "react";
-import { getUser } from "../redux/Slices/auth.slice";
+import { getLiked, getUser } from "../redux/Slices/auth.slice";
 import UserDetailsModal from "./UserDetailsModal";
 import { MdDelete } from "react-icons/md";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
@@ -20,11 +20,13 @@ function Question({questionId,  question, createdAt, creator, likes}) {
     const [idx, setIdx] = useState();
     const [userIdx, setUserIdx] = useState();
     const [name, setName] = useState("");
+    const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png")
     const [totLikes, setTotLikes] = useState(likes)
+    const [isLiked, setIsLiked] = useState(false);
+    const [quest, setQuest] = useState(question)
 
     async function answer() {
-        const res =  await dispatch(currQues(questionId));
-        if(res) navigate(`/answer?id=${questionId}`);
+        navigate(`/answer?id=${questionId}`);
     }
 
     function filterquestion() {
@@ -38,10 +40,15 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         setIdx(index);
     }
 
-    function findName(){
+    async function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
         setUserIdx(nm);
         setName(authState.userList[nm].name);
+        setImage(authState.userList[nm].image);
+    }
+
+    async function countLikes() {
+        await dispatch(getLiked());
     }
 
     async function userView() {
@@ -59,43 +66,54 @@ function Question({questionId,  question, createdAt, creator, likes}) {
 
     async function onView() {
         if(!authState.isLoggedIn) navigate('/login');
-        const res =  await dispatch(currQues(questionId));
-        if(res) navigate('/answers');
+        navigate(`/answers?question=${questionId}`);
     }
 
     async function onLike() {
-        console.log(authState.data._id);
+        if(!authState.data){
+            navigate('/login'); return;
+        }
         const res = await dispatch(likeQuestion({
             quesId : questionId,
             userId: authState.data._id
         }));
         if(res){
-            document.getElementById('like').style.display ='none';
-            document.getElementById('liked').style.display = 'block';
+            setIsLiked(true);
             setTotLikes(totLikes + 1);
         }
     }
 
     async function onUnLike() {
-        const res = await dispatch(unLikeQuestion(questionId, authState.data._id));
+        const res = await dispatch(unLikeQuestion({
+            quesId : questionId,
+            userId: authState.data._id
+        }));
         if(res){
-            document.getElementById('like').style.display ='block';
-            document.getElementById('liked').style.display = 'none';
+            setIsLiked(false);
             setTotLikes(totLikes - 1);
         }
     }
 
     useEffect(() => {
-        filterquestion(); findName();
-        document.getElementById('liked').style.display = 'none';
-    }, [questionId, authState.userList.length])
+        filterquestion(); findName(); 
+        if(authState.data){
+            countLikes();
+            const ques = authState.selectedUser?.liked?.filter((like) => (like.questionId === questionId && like.userId === authState.data._id));
+            if(ques?.length) setIsLiked(true);
+            else setIsLiked(false);
+        }
+        if(quest.length > 1000){
+            const newQuest = quest.substring(0, 1000) + "...";
+            setQuest(newQuest);
+        }
+    }, [authState.selectedUser.liked?.length])
 
     return (
         <article className="mb-4 w-full break-inside p-6 bg-gray-700 flex flex-col bg-clip-border">
             <div className="flex pb-6 items-center justify-between">
             <div className="flex">
-                <a className="inline-block mr-4" href="#">
-                    <img src="https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png" alt="user-avatar-image" className="border-4 border-solid border-white rounded-full max-w-none w-14 h-14" />
+                <a className="inline-block mr-4" href={image}>
+                    <img src={image} alt={name} className="rounded-full max-w-none w-14 h-14 object-cover" />
                 </a>
                 <div className="flex flex-col">
                 <div className="flex items-center">
@@ -108,9 +126,9 @@ function Question({questionId,  question, createdAt, creator, likes}) {
             </div>
             </div>
             <hr className="bg-white"/>
-            <div className="py-2">
+            <div className="py-3">
             <p className="ml-2">
-                {question}
+                {quest}
             </p>
             </div>
             <div className="flex">
@@ -121,8 +139,7 @@ function Question({questionId,  question, createdAt, creator, likes}) {
                     <button onClick={onView} className="font-medium text-xs text-white hover:underline">View Answers</button>
                     <button className="flex gap-3 justify-center items-center text-sm">
                         <span className="ml-1">{totLikes}</span>
-                        <AiOutlineLike id="like" onClick={onLike}/>
-                        <AiFillLike id="liked" onClick={onUnLike}/>
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
                     </button>
                 </div>
                 {creator === authState?.data?._id && <div className="flex items-center justify-end w-16">
@@ -133,5 +150,5 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         </article>
     )
 }
-
+// questionId, authState.userList.length, authState.selectedUser.liked, 
 export default Question;

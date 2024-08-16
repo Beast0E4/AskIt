@@ -30,12 +30,12 @@ function Home() {
 
     useEffect(() => {
         loadSolutions(); loadUsers();
-    }, [quesState.downloadedQuestions])
+    }, [quesState.questionList])
 
     return (
         <>
             <div className="flex gap-3 justify-center mt-20 px-2">
-                <div className="md:w-[50rem] sm:w-[25rem] flex flex-col items-center my-3">
+                <div className="w-[80vw] md:w-[50rem] sm:w-[25rem] flex flex-col items-center my-3">
                     {authState.userList.length && quesState.questionList?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');
                         date = date[2] + "-" + date[1] + "-" + date[0];

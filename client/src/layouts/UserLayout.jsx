@@ -4,7 +4,7 @@ import UserDetailsModal from "./UserDetailsModal";
 import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
-function UserLayout({username, profession, userId}) {
+function UserLayout({username, profession, userId, image}) {
 
     const authState = useSelector((state) => state.auth);
 
@@ -20,15 +20,14 @@ function UserLayout({username, profession, userId}) {
     }
 
     return(
-        <div role="button"
-            className="flex my-1 p-3 bg-gray-700 ">
-            <div className="grid mr-4 place-items-center">
-                <img alt="profile" src="https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png"
+        <div className="flex my-1 p-3 bg-gray-700 ">
+            <a className="grid mr-4 place-items-center" href={image}>
+                <img alt={username} src={image}
                 className="h-12 w-12 !rounded-full  object-cover object-center" />
-            </div>
+            </a>
             <div>
                 <h6 onClick={userView}
-                className="block font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900 hover:underline">
+                className="block font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900 hover:underline hover:cursor-pointer">
                 {username}
                 </h6>
                 <p className="block font-sans text-sm antialiased font-normal leading-normal text-gray-300">

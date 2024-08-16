@@ -5,9 +5,7 @@ import axiosInstance from "../../config/axiosInstance";
 const initialState = {
     downloadedQuestions: [],
     questionList: [],
-    currentQuestion: {
-        ques: ""
-    }
+    currentQuestion: {}
 };
 
 export const likeQuestion = createAsyncThunk('question/likeQuestion', async(question) => {
@@ -24,12 +22,9 @@ export const likeQuestion = createAsyncThunk('question/likeQuestion', async(ques
     }
 })
 
-export const unLikeQuestion = createAsyncThunk('question/unLikeQuestion', async(questionId, id) => {
+export const unLikeQuestion = createAsyncThunk('question/unLikeQuestion', async(question) => {
     try {
-        const response = axiosInstance.post('unLike', {
-            quesId : questionId,
-            userId: id
-        }, {
+        const response = axiosInstance.post('unLike', question, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
@@ -44,20 +39,6 @@ export const unLikeQuestion = createAsyncThunk('question/unLikeQuestion', async(
 export const getAllQuestions = createAsyncThunk('questions/getAllQuestions', async () => {
     try {
         const response = axiosInstance.get('question', {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        });
-        if(!response) toast.error('Something went wrong');
-        return await response;
-    } catch (error) {
-        console.log(error);
-    }
-});
-
-export const currQues = createAsyncThunk('currQues', async (data) => {
-    try {
-        const response = axiosInstance.get(`question/${data}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
@@ -110,13 +91,14 @@ const QuestionSlice = createSlice({
     initialState,
     reducers: {
         filterQuestionById: (state, action) => {
-            console.log(action);
             const id = action?.payload?.id;
-            state.questionList = state.downloadedQuestions.filter((ques) => ques._id == id);
+            state.currentQuestion = state.downloadedQuestions.filter((ques) => ques._id === id);
+            state.currentQuestion = JSON.parse(JSON.stringify(state.currentQuestion));
         },
         filterQuestionByUser: (state, action) => {
             const id = action?.payload?.id;
-            state.questionList = state.downloadedQuestions.filter((ques) => ques.userId == id);
+            state.questionList = state.downloadedQuestions.filter((ques) => ques.userId === id);
+            state.questionList = JSON.parse(JSON.stringify(state.questionList));
         },
         resetQuestionList: (state) => {
             state.questionList = state.downloadedQuestions;
@@ -126,17 +108,13 @@ const QuestionSlice = createSlice({
         builder
         .addCase(getAllQuestions.fulfilled, (state, action) => {
             if(!action?.payload?.data) return;
-            state.questionList = action?.payload?.data?.question.reverse();
-            state.downloadedQuestions = action?.payload?.data?.question;
-        })
-        .addCase(currQues.fulfilled, (state, action) => {
-            if(!action?.payload?.data) return;
-            state.currentQuestion.ques = action.payload.data.question;
+            state.questionList = action?.payload?.data?.question;
+            state.downloadedQuestions = action?.payload?.data?.question.reverse();
         })
         .addCase(createQuestion.fulfilled, (state, action) => {
             if(action?.payload?.data === undefined) return;
             const question = action.payload.data.question;
-            state.downloadedQuestions.push(question); 
+            state.downloadedQuestions = [question, ...state.downloadedQuestions]
             state.questionList = state.downloadedQuestions;
         })
     }

@@ -14,14 +14,16 @@ function useQuestions () {
 
     async function loadQuestions(){
         if(quesState.downloadedQuestions.length === 0) await dispatch(getAllQuestions());
-        if(searchParams.get('id')) dispatch(filterQuestionById({id: searchParams.get('id')}));
-        else if(searchParams.get('userid')) dispatch(filterQuestionByUser({id: searchParams.get('userid')}));
+        console.log(searchParams.get('question'));
+        if(searchParams.get('userid')) dispatch(filterQuestionByUser({id: searchParams.get('userid')}));
+        else if(searchParams.get('question')) dispatch(filterQuestionById({id: searchParams.get('question')}));
         else dispatch(resetQuestionList());
     }
 
     useEffect(() => {
         loadQuestions();
-    }, [authState.token, searchParams.get("id"), searchParams.get('userid')]);
+    }, [authState.token, searchParams.get('userid'), searchParams.get('question')]);
+    
     return [quesState];
 }
 

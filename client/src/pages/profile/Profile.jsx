@@ -49,7 +49,7 @@ function Profile() {
             <div className="w-full absolute top-0 left-0 z-0 h-60 bg-gray-900"></div>
             <div className="w-full max-w-7xl mx-auto px-6 md:px-8">
                 <div className="flex items-center justify-center sm:justify-start relative z-10 mb-5">
-                    <img src="https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png" alt="user-avatar-image" className="border-4 border-solid border-white rounded-full w-32" />
+                    <img src={authState?.data?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" />
                 </div>
                 <div className="flex flex-col sm:flex-row max-sm:gap-5 items-center justify-between mb-5">
                     <div className="block">
@@ -80,22 +80,6 @@ function Profile() {
                     <div className="flex gap-4">
                         <button className="py-2 px-5 rounded-md bg-slate-600 text-white font-semibold text-base transition-all hover:bg-slate-700">{listLength} Questions</button>
                     </div>
-                    {/* <div className="flex flex-col md:flex-row items-center gap-6 ">
-                        <p className="flex items-center gap-2 font-medium text-lg leading-8 text-gray-400 ">Skills
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M8.78135 5.55191C9.4453 3.5173 9.77728 2.5 10.3928 2.5C11.0083 2.5 11.3403 3.5173 12.0043 5.55191L12.2949 6.44244C12.4784 7.00479 12.5701 7.28596 12.7928 7.44706C13.0155 7.60816 13.3125 7.60816 13.9063 7.60816H14.8683C17.0355 7.60816 18.119 7.60816 18.3081 8.19335C18.4972 8.77854 17.6169 9.40763 15.8563 10.6658L15.0921 11.2118C14.6069 11.5586 14.3643 11.732 14.278 11.9937C14.1918 12.2554 14.2841 12.5382 14.4687 13.1038L14.7569 13.9872C15.4209 16.0218 15.7529 17.0391 15.2549 17.3993C14.7569 17.7595 13.8878 17.1308 12.1496 15.8733L11.3887 15.323C10.9083 14.9754 10.6681 14.8016 10.3928 14.8016C10.1175 14.8016 9.87731 14.9754 9.39687 15.323L8.63605 15.8733C6.89779 17.1308 6.02866 17.7595 5.5307 17.3993C5.03273 17.0391 5.36471 16.0218 6.02866 13.9872L6.31927 13.0966C6.50278 12.5343 6.59454 12.2531 6.50948 11.9924C6.42441 11.7318 6.18419 11.558 5.70375 11.2104L4.94293 10.6601C3.20467 9.40261 2.33555 8.77389 2.52575 8.19102C2.71596 7.60816 3.79026 7.60816 5.93886 7.60816H6.87929C7.47315 7.60816 7.77008 7.60816 7.99277 7.44706C8.21547 7.28596 8.30723 7.00479 8.49074 6.44244L8.78135 5.55191Z"
-                                    stroke="#9CA3AF" />
-                            </svg>
-                        </p>
-                        <ul className="flex items-center max-sm:justify-center max-sm:flex-wrap gap-2.5">
-                            <li className="py-3.5 px-7 rounded-full bg-orange-50 font-semibold text-base leading-7 text-gray-700">HTML</li>
-                            <li className="py-3.5 px-7 rounded-full bg-orange-50 font-semibold text-base leading-7 text-gray-700">CSS</li>
-                            <li className="py-3.5 px-7 rounded-full bg-orange-50 font-semibold text-base leading-7 text-gray-700">Dart</li>
-                            <li className="py-3.5 px-7 rounded-full bg-orange-50 font-semibold text-base leading-7 text-gray-700">C++</li>
-                            <li className="py-3.5 px-7 rounded-full bg-orange-50 font-semibold text-base leading-7 text-gray-700">UI Design</li>
-                        </ul>
-                    </div> */}
                 </div>
             </div>
             <EditProfileModal />

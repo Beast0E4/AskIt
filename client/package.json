@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
     "@reduxjs/toolkit": "^2.2.6",
+    "@table-library/react-table-library": "^4.1.7",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",

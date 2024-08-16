@@ -9,7 +9,8 @@ const initialState = {
     selectedUser:{
         name: "",
         registered: [],
-        profession: ""
+        profession: "",
+        liked: []
     },
     userList: []
 };
@@ -106,6 +107,20 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async(id) => {
     }
 })
 
+export const getLiked = createAsyncThunk('user/liked', async() => {
+    try {
+        const response = axiosInstance.get(`getLikes`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        })
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -139,7 +154,11 @@ const authSlice = createSlice({
         .addCase(getUsers.fulfilled, (state, action) => {
             if(!action?.payload?.data) return;
             state.userList = action?.payload?.data?.users.reverse();
-        });
+        })
+        .addCase(getLiked.fulfilled, (state, action) => {
+            if(!action.payload) return;
+            state.selectedUser.liked = action.payload?.data?.likes;
+        })
     }
 });
 
