@@ -100,31 +100,31 @@ function Profile() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <Link to={`/?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
-                        <button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{solLength} Solutions</button>
+                        <Link to={`/questions?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
+                        <Link to={`/answers?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{solLength} Solutions</button></Link>
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-between">
                     <div className="mt-[2rem] py-2 sm:w-[40vw]">
                         <h2 className="p-2 font-semibold bg-gray-800 w-full">My summary</h2>
                         <div className="flex items-center justify-between">
-                            <h3 className="p-2 mt-2">Likes on my questions</h3>
+                            <h3 className="p-2 mt-2">Upvotes on my questions</h3>
                             <h3 className="p-2 mt-2 font-semibold">{quesLikes}</h3>
                         </div>
                         <div className="flex items-center justify-between">
-                            <h3 className="p-2 mt-2">Likes on my solutions</h3>
+                            <h3 className="p-2 mt-2">Upvotes on my solutions</h3>
                             <span className="p-2 mt-2 font-semibold">{solLikes}</span>
                         </div>
                         <hr/>
                         <div className="flex items-center justify-between">
-                            <h3 className="p-2 mt-2">Recieved likes</h3>
+                            <h3 className="p-2 mt-2">Total recieved upvotes</h3>
                             <span className="p-2 mt-2 font-semibold">{solLikes + quesLikes}</span>
                         </div>
                     </div>
                     <div className="flex flex-col sm:items-end items-center">
-                        <button className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">Registered {date}</button>
-                        <button className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length} like(s) by me on questions</button>
-                        <button className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedSolution?.length} like(s) by me on solutions</button>
+                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">Registered {date}</div>
+                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length} upvote(s) by me on questions</div>
+                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedSolution?.length} upvote(s) by me on solutions</div>
                     </div>
                 </div>
             </div>

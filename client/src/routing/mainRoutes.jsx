@@ -16,9 +16,11 @@ function MainRoutes() {
             <Route path="/signup" element={<SignUp/>} />
             <Route path="/question" element={<Question/>}/>
             <Route path="/profile" element={<Profile/>}/>
-            <Route path="/answer" element={<Answer/>}/>
+            <Route path="/create-answer" element={<Answer/>}/>
             <Route path="/" element={<><Navbar/><Home/></>} />
-            <Route path="/answers" element={<><Navbar/><AnswerPage/></>}/>
+            <Route path="/questions" element={<><Navbar/><Home/></>} />
+            <Route path="/answers" element={<><Navbar/><Home/></>} />
+            <Route path="/answer" element={<><Navbar/><AnswerPage/></>}/>
             <Route path="/users" element={<><Navbar/><Users/></>} />
         </Routes>
     )

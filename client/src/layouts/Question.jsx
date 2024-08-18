@@ -27,7 +27,7 @@ function Question({questionId,  question, createdAt, creator, likes}) {
     const [quest, setQuest] = useState(question)
 
     async function answer() {
-        navigate(`/answer?question=${questionId}`);
+        navigate(`/create-answer?question=${questionId}`);
     }
 
     function filterquestion() {
@@ -67,7 +67,7 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        navigate(`/answers?question=${questionId}`); 
+        navigate(`/answer?question=${questionId}`); 
     }
 
     async function onLike() {

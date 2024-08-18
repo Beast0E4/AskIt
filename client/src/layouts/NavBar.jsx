@@ -29,7 +29,8 @@ function Navbar(){
                     tabIndex={0}
                     className="menu menu-sm bg-gray-900 dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
                     <li><Link to={'/'} id="Home">Home</Link></li>
-                    <li><Link to={`/?userid=${authState?.data?._id}`}>My Questions</Link></li>
+                    <li><Link to={`/questions?userid=${authState?.data?._id}`}>My Questions</Link></li>
+                    <li><Link to={`/answers?userid=${authState?.data?._id}`}>My Solutions</Link></li>
                     <li><Link to={'/users'}>Users</Link></li>
                 </ul>
                 </div>
@@ -38,7 +39,8 @@ function Navbar(){
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
                     <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2' : ''}`}>Home</Link></li>
-                    <li><Link to={`/?userid=${authState?.data?._id}`} className={`${location.pathname === `/` && searchParams.get('userid') ? 'border-b-2' : ''}`}>My Questions</Link></li>
+                    <li><Link to={`/questions?userid=${authState?.data?._id}`} className={`${location.pathname === `/questions` && searchParams.get('userid') ? 'border-b-2' : ''}`}>My Questions</Link></li>
+                    <li><Link to={`/answers?userid=${authState?.data?._id}`} className={`${location.pathname === `/answers` && searchParams.get('userid') ? 'border-b-2' : ''}`}>My Solutions</Link></li>
                     <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2' : ''}`}>Users</Link></li>
                 </ul>
             </div>

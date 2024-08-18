@@ -12,7 +12,7 @@ function useAnswers() {
 
     async function loadSolutions(){
         let array = [];
-        let n = quesState.questionList.length;
+        let n = quesState.questionList?.length;
         for(let i = 0; i < n; i ++){
             const ans = await dispatch(getSolutionByQuestion(quesState.questionList[i]._id));
             array[i] = ans?.payload?.data?.data;
@@ -22,7 +22,7 @@ function useAnswers() {
 
     useEffect(() => {
         loadSolutions();
-    }, [quesState.questionList.length])
+    }, [quesState.questionList?.length])
 
     return [ansState];
 }

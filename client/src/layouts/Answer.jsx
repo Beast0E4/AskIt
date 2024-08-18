@@ -82,15 +82,15 @@ function Answer({solId, solution, createdAt, creator, likes}) {
             if(sol?.length) setIsLiked(true);
             else setIsLiked(false);
         }
-        if(ans.length > 1000){
+        if(ans?.length > 1000){
             const newAns = ans.substring(0, 1000) + "...";
             setAns(newAns);
         }
     }, [authState.selectedUser?.likedSolution?.length]);
 
     return (
-        <article className="mb-4 break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-l-[2rem] rounded-tr-[2rem]">
-            <div className="flex pb-6 items-center justify-between">
+        <article className="mb-4 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-l-[2rem] rounded-tr-[2rem]">
+            <div className="flex pb-3 items-center justify-between">
             <div className="w-full flex justify-between items-center">
                 <div className="flex">
                     <a className="inline-block mr-4" href={image}>
@@ -106,8 +106,8 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    {authState.data?._id === creator && <TbPencil onClick={onAnswerView} className="w-[1.5rem] h-[1.5rem] hover:cursor-pointer"/>}
-                    {authState.data?._id === creator && <MdDelete className="hover:cursor-pointer w-[1.5rem] h-[1.5rem]" onClick={onDelete}/>}
+                    {authState.data?._id === creator && <TbPencil onClick={onAnswerView} className="w-[1rem] h-[1rem] hover:cursor-pointer"/>}
+                    {authState.data?._id === creator && <MdDelete className="hover:cursor-pointer w-[1rem] h-[1rem]" onClick={onDelete}/>}
                 </div>
             </div>
             </div>
@@ -118,7 +118,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                 </p>
             </div>
             <div>
-                <button className="flex gap-3 justify-center items-center text-sm">
+                <button className="flex gap-3 justify-center items-center text-sm px-3">
                     <span className="ml-1">{totLikes}</span>
                     {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                 </button>

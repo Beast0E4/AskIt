@@ -3,8 +3,9 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../config/axiosInstance";
 
 const initialState = {
-    downloadedAnswers: [],
+    downloadedAnswers: [[]],
     solutionList: [[]],
+    userSolutions: [],
     currentAnswer: {}
 };
 
@@ -39,6 +40,20 @@ export const unLikeSolution = createAsyncThunk('question/unLikeQuestion', async(
 export const getAllSolutions = createAsyncThunk('solutions/getAllSolutions', async (data) => {
     try {
         const response = data;
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+export const getSolutionByUser = createAsyncThunk('solutions/getSolutionByUser', async (userId) => {
+    try {
+        const response = axiosInstance.get(`solutionByUser/${userId}`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
         if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
@@ -124,9 +139,18 @@ export const deleteSol = createAsyncThunk('/sol/delete', async(id) => {
     }
 })
 
-const answerSlice = createSlice({
-    name: 'answer',
+const AnswerSlice = createSlice({
+    name: 'Answers',
     initialState,
+    reducers: {
+        filterSolutionByUser: (state, action) => {
+            const id = action?.payload?.id;
+            let allSolutions = state.downloadedAnswers.flat();
+            allSolutions = JSON.parse(JSON.stringify(allSolutions));
+            console.log(allSolutions);
+            state.userSolutions = allSolutions.filter((ans) => ans.userId === id);
+        }
+    },
     extraReducers: (builder) => {
         builder
         .addCase(getSolutionByQuestion.fulfilled, (state, action) => {
@@ -136,6 +160,7 @@ const answerSlice = createSlice({
         .addCase(getAllSolutions.fulfilled, (state, action) => {
             if(!action?.payload) return;
             state.solutionList = action?.payload;
+            state.downloadedAnswers = state.solutionList;
         })
         .addCase(createAnswer.fulfilled, (state, action) => {
             if(action?.payload?.data === undefined) return;
@@ -144,7 +169,13 @@ const answerSlice = createSlice({
             if(!action?.payload?.data) return;
             state.currentAnswer = action?.payload?.data?.data;
         })
+        .addCase(getSolutionByUser.fulfilled, (state, action) => {
+            if(!action?.payload?.data) return;
+            state.userSolutions = action.payload?.data?.data;
+        })
     }
 });
 
-export default answerSlice.reducer;
+export const { filterSolutionByUser } = AnswerSlice.actions;
+
+export default AnswerSlice.reducer;
