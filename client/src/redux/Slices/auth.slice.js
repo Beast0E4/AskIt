@@ -10,7 +10,8 @@ const initialState = {
         name: "",
         registered: [],
         profession: "",
-        liked: []
+        likedQuestion: [],
+        likedSolution: []
     },
     userList: []
 };
@@ -78,11 +79,7 @@ export const updateUser = createAsyncThunk('user/updateUser', async(data) => {
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        toast.promise(response, {
-            loading: 'Updating the details',
-            success: 'Successfully updated',
-            error: 'Something went wrong, try again'
-        });
+        if(!response) toast.error('Something went wrong, try again');
         return await response;
     } catch (error) {
         console.log(error);
@@ -107,9 +104,23 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async(id) => {
     }
 })
 
-export const getLiked = createAsyncThunk('user/liked', async() => {
+export const getLikedQuestions = createAsyncThunk('user/quesLiked', async(id) => {
     try {
-        const response = axiosInstance.get(`getLikes`, {
+        const response = axiosInstance.get(`likedQuestions/${id}`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        })
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+export const getLikedSolutions = createAsyncThunk('user/solLiked', async(id) => {
+    try {
+        const response = axiosInstance.get(`likedSolutions/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
@@ -155,9 +166,13 @@ const authSlice = createSlice({
             if(!action?.payload?.data) return;
             state.userList = action?.payload?.data?.users.reverse();
         })
-        .addCase(getLiked.fulfilled, (state, action) => {
+        .addCase(getLikedQuestions.fulfilled, (state, action) => {
             if(!action.payload) return;
-            state.selectedUser.liked = action.payload?.data?.likes;
+            state.selectedUser.likedQuestion = action.payload?.data?.likedQuestion;
+        })
+        .addCase(getLikedSolutions.fulfilled, (state, action) => {
+            if(!action.payload) return;
+            state.selectedUser.likedSolution = action.payload?.data?.likedSolution;
         })
     }
 });

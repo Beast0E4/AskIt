@@ -2,15 +2,16 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteQues, likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
 import { useEffect, useState } from "react";
-import { getLiked, getUser } from "../redux/Slices/auth.slice";
+import { getLikedQuestions, getUser } from "../redux/Slices/auth.slice";
 import UserDetailsModal from "./UserDetailsModal";
 import { MdDelete } from "react-icons/md";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import useAnswers from "../hooks/useAnswers";
+import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
 function Question({questionId,  question, createdAt, creator, likes}) {
 
-    const ansState = useSelector((state) => state.ans);
+    const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
     const authState = useSelector((state) => state.auth);
 
@@ -47,12 +48,10 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         setImage(authState.userList[nm].image);
     }
 
-    async function countLikes() {
-        await dispatch(getLiked());
-    }
-
     async function userView() {
-        if(!authState.isLoggedIn) navigate('/login');
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
         const res = await dispatch(getUser(authState.userList[userIdx]._id));
         if(res){
             document.getElementById('userModal').showModal();
@@ -65,12 +64,14 @@ function Question({questionId,  question, createdAt, creator, likes}) {
     }
 
     async function onView() {
-        if(!authState.isLoggedIn) navigate('/login');
-        navigate(`/answers?question=${questionId}`);
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        navigate(`/answers?question=${questionId}`); 
     }
 
     async function onLike() {
-        if(!authState.data){
+        if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
         const res = await dispatch(likeQuestion({
@@ -80,10 +81,14 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         if(res){
             setIsLiked(true);
             setTotLikes(totLikes + 1);
+            await dispatch(getLikedQuestions(authState.data?._id));
         }
     }
 
     async function onUnLike() {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
         const res = await dispatch(unLikeQuestion({
             quesId : questionId,
             userId: authState.data._id
@@ -91,14 +96,14 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         if(res){
             setIsLiked(false);
             setTotLikes(totLikes - 1);
+            await dispatch(getLikedQuestions(authState.data?._id));
         }
     }
 
     useEffect(() => {
         filterquestion(); findName(); 
         if(authState.data){
-            countLikes();
-            const ques = authState.selectedUser?.liked?.filter((like) => (like.questionId === questionId && like.userId === authState.data._id));
+            const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === questionId));
             if(ques?.length) setIsLiked(true);
             else setIsLiked(false);
         }
@@ -106,40 +111,40 @@ function Question({questionId,  question, createdAt, creator, likes}) {
             const newQuest = quest.substring(0, 1000) + "...";
             setQuest(newQuest);
         }
-    }, [authState.selectedUser.liked?.length])
+    }, [authState.selectedUser.likedQuestion?.length])
 
     return (
-        <article className="mb-4 w-full break-inside p-6 bg-gray-900 flex flex-col bg-clip-border">
+        <article className="mb-4 w-full break-inside p-6 bg-gray-900 flex flex-col bg-clip-border hover:cursor-pointer">
             <div className="flex pb-6 items-center justify-between">
-            <div className="flex">
-                <a className="inline-block mr-4" href={image}>
-                    <img src={image} alt={name} className="rounded-full max-w-none w-14 h-14 object-cover" />
-                </a>
-                <div className="flex flex-col">
-                <div className="flex items-center">
-                    <a onClick={userView} className="inline-block text-lg font-bold mr-2 text-md hover:cursor-pointer hover:underline">{name}</a>
+                <div className="flex">
+                    <a className="inline-block mr-4" href={image}>
+                        <img src={image} alt={name} className="rounded-full max-w-none w-14 h-14 object-cover" />
+                    </a>
+                    <div className="flex flex-col">
+                    <div className="flex items-center">
+                        <a onClick={userView} className="inline-block text-lg font-bold mr-2 text-md hover:cursor-pointer hover:underline">{name}</a>
+                    </div>
+                    <div className="text-slate-500 text-sm dark:text-slate-300">
+                        {createdAt}
+                    </div>
+                    </div>
                 </div>
-                <div className="text-slate-500 text-sm dark:text-slate-300">
-                    {createdAt}
-                </div>
-                </div>
-            </div>
             </div>
             <hr className="bg-white"/>
-            <div className="py-3">
-            <p className="ml-2">
-                {quest}
-            </p>
+            <div onClick={onView} className="py-3">
+                <p className="ml-2">
+                    {quest}
+                </p>
             </div>
             <div className="flex">
                 <div className="w-full flex gap-4">
-                    <button onClick={answer} className="text-xs hover:bg-gray-500 p-2 rounded-md">Add answer
+                    <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
                         <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
                     </button>
                     <button onClick={onView} className="font-medium text-xs text-white hover:underline">View Answers</button>
                     <button className="flex gap-3 justify-center items-center text-sm">
                         <span className="ml-1">{totLikes}</span>
-                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                        {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                     </button>
                 </div>
                 {creator === authState?.data?._id && <div className="flex items-center justify-end w-16">
@@ -150,5 +155,5 @@ function Question({questionId,  question, createdAt, creator, likes}) {
         </article>
     )
 }
-// questionId, authState.userList.length, authState.selectedUser.liked, 
+
 export default Question;

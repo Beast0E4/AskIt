@@ -32,26 +32,28 @@ function Answer() {
     async function onSubmit(){
         setLoading(true);
         try {
-            if(!ans.solution.toString().trim()) return;
+            if(!ans.solution.toString().trim()) throw 'Error';
             await dispatch(createAnswer(ans));
         } catch (error) {
-            toast.error('Something went wrong'); setLoading(false);
+            toast.error('Could not create your answer'); setLoading(false);
         } finally {
             navigate('/'); setLoading(false);
         }
     }
 
     useEffect(() => {
-        if(!authState.isLoggedIn) navigate('/login');
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
     }, []);
 
     return(
         <section className="h-full bg-gray-950 flex flex-col items-center pt-6 justify-center min-h-screen">
-            <div className="w-[90vw] h-full bg-gray-900 rounded-lg  md:mt-0 xl:p-0">
+            <div className="w-[20rem] sm:w-[30rem] h-full bg-gray-900 rounded-lg  md:mt-0 xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your answer</h1>
                     <p className="my-2 py-3 px-2">
-                        {quesState?.questionList[0]?.question}
+                        {quesState?.currentQuestion[0]?.question}
                     </p>
                     <h3 className="mt-10">Add answer here</h3>
                     <textarea onChange={handleChange} name="solution" value={ans.solution} className="textarea textarea-bordered w-full resize-none" rows={10}></textarea>

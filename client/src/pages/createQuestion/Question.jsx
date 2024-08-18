@@ -26,7 +26,7 @@ function Question() {
     async function handleSubmit() {
         setLoading(true);
         try {
-            if(!question.question.toString().trim()) return;
+            if(!question.question.toString().trim()) throw 'Error';
             await dispatch(createQuestion({
                 userId: authState.data._id,
                 question: question.question.toString().trim()
@@ -39,12 +39,14 @@ function Question() {
     }
 
     useEffect(() => {
-        if(!authState.isLoggedIn) navigate('/login');
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
     }, []);
 
     return (
         <section className="h-[90vh] bg-gray-950 flex flex-col items-center min-h-screen pt-6 justify-center">
-            <div className="w-full bg-gray-900 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+            <div className="w-[20rem] sm:w-[30rem] bg-gray-900 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your question</h1>
                     <div className="my-4 bg-gray-800 py-5 px-2">

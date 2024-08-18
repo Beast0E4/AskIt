@@ -14,7 +14,6 @@ function useQuestions () {
 
     async function loadQuestions(){
         if(quesState.downloadedQuestions.length === 0) await dispatch(getAllQuestions());
-        console.log(searchParams.get('question'));
         if(searchParams.get('userid')) dispatch(filterQuestionByUser({id: searchParams.get('userid')}));
         else if(searchParams.get('question')) dispatch(filterQuestionById({id: searchParams.get('question')}));
         else dispatch(resetQuestionList());

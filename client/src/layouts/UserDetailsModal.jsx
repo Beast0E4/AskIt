@@ -6,7 +6,7 @@ function UserDetailsModal() {
 
     return (
         <dialog id="userModal" className="modal">
-            <div className="modal-box">
+            <div className="modal-box bg-gray-950">
                 <h3 className="font-bold text-lg">{authState.selectedUser.name}</h3>
                 <div className="flex gap-4 mt-3">
                     <label>Registered:</label>

@@ -2,11 +2,11 @@ import { IoMdAdd } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Question from "../layouts/Question";
 import useQuestions from "../hooks/useQuestions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllSolutions, getSolutionByQuestion } from "../redux/Slices/ans.slice";
-import { getUsers } from "../redux/Slices/auth.slice";
+import { getLikedQuestions, getLikedSolutions, getUsers } from "../redux/Slices/auth.slice";
 import Loader from "../layouts/Loader";
+import toast from "react-hot-toast";
 
 function Home() {
 
@@ -15,33 +15,38 @@ function Home() {
 
     const dispatch = useDispatch();
 
-    async function loadSolutions(){
-        let array = [];
-        let n = quesState.questionList.length
-        for(let i = 0; i < n; i ++){
-            const ans = await dispatch(getSolutionByQuestion(quesState.questionList[i]._id));
-            array[i] = ans?.payload?.data?.data;
-        }
-        await dispatch(getAllSolutions(array));
-    }
+    const [loading, setLoading] = useState(false);
 
     async function loadUsers(){
-        await dispatch(getUsers());
+        setLoading(true);
+        try {
+            await dispatch(getUsers());
+            if(authState.data?._id){
+                await dispatch(getLikedQuestions(authState.data?._id));
+                await dispatch(getLikedSolutions(authState.data?._id));
+            }
+        } catch (error) {
+            toast.error('Something went wrong'); setLoading(false);
+        } finally{
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
-        loadSolutions(); loadUsers();
-    }, [quesState.questionList])
+        loadUsers();
+    }, [quesState.questionList.length])
 
     return (
         <>
             <div className="flex gap-3 bg-gray-950 justify-center pt-[4rem] min-h-screen px-2">
                 <div className="w-[80vw] md:w-[50rem] sm:w-[25rem] flex flex-col items-center my-3">
-                    {authState.userList.length ? quesState.questionList?.map((quest) => {
+                    {loading ? <Loader /> : (quesState.questionList?.length ? quesState.questionList?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');
                         date = date[2] + "-" + date[1] + "-" + date[0];
                         return (<Question key={quest._id} questionId={quest._id} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes}/>)
-                    }) : <Loader/>}
+                    }) : (
+                        <h2 className="text-white font-thin italic">No questions yet</h2>
+                    ))}
                 </div>
             </div>
             <Link to={'/question'}>

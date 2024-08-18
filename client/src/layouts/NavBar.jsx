@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-
-
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 function Navbar(){
 
     const authState = useSelector((state) => state.auth);
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
 
     return (
         <div className="navbar bg-gray-900 shadow-lg fixed top-0">
@@ -27,7 +27,7 @@ function Navbar(){
                 </div>
                 <ul
                     tabIndex={0}
-                    className="menu menu-sm bg-gray-900 dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
+                    className="menu menu-sm bg-gray-900 dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
                     <li><Link to={'/'} id="Home">Home</Link></li>
                     <li><Link to={`/?userid=${authState?.data?._id}`}>My Questions</Link></li>
                     <li><Link to={'/users'}>Users</Link></li>
@@ -37,13 +37,13 @@ function Navbar(){
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
-                    <li><Link to={'/'} id="Home">Home</Link></li>
-                    <li><Link to={`/?userid=${authState?.data?._id}`}>My Questions</Link></li>
-                    <li><Link to={'/users'}>Users</Link></li>
+                    <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2' : ''}`}>Home</Link></li>
+                    <li><Link to={`/?userid=${authState?.data?._id}`} className={`${location.pathname === `/` && searchParams.get('userid') ? 'border-b-2' : ''}`}>My Questions</Link></li>
+                    <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2' : ''}`}>Users</Link></li>
                 </ul>
             </div>
-            <div className="navbar-end">
-                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:underline" to={'/profile'}>{authState?.data ? authState.data.name : "Log In"}</Link>
+            <div className="navbar-end gap-5">
+                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 font-bold" to={'/profile'}>{authState?.data ? authState.data.name.substring(0, 10) : "Log In"}</Link>
             </div>
             </div>
     )

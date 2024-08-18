@@ -138,7 +138,6 @@ const answerSlice = createSlice({
             state.solutionList = action?.payload;
         })
         .addCase(createAnswer.fulfilled, (state, action) => {
-            console.log(action.payload.data);
             if(action?.payload?.data === undefined) return;
         })
         .addCase(getSolution.fulfilled, (state, action) => {

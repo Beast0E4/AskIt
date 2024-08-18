@@ -18,7 +18,7 @@ function MainRoutes() {
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/answer" element={<Answer/>}/>
             <Route path="/" element={<><Navbar/><Home/></>} />
-            <Route path="/answers" element={<AnswerPage/>}/>
+            <Route path="/answers" element={<><Navbar/><AnswerPage/></>}/>
             <Route path="/users" element={<><Navbar/><Users/></>} />
         </Routes>
     )

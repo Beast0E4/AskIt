@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteSol, likeSolution, unLikeSolution } from "../redux/Slices/ans.slice";
+import { deleteSol, getSolution, likeSolution, unLikeSolution } from "../redux/Slices/ans.slice";
 import { useNavigate } from "react-router-dom";
 import { TbPencil } from "react-icons/tb";
 import EditAnswerModal from "./EditAnswerModal";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai";
-import { getLiked } from "../redux/Slices/auth.slice";
+import { getLikedSolutions, getUser } from "../redux/Slices/auth.slice";
+import UserDetailsModal from "./UserDetailsModal";
+import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
 function Answer({solId, solution, createdAt, creator, likes}) {
@@ -17,6 +18,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
     const authState = useSelector((state) => state.auth);
 
     const [name, setName] = useState("");
+    const [userIdx, setUserIdx] = useState();
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png")
     const [totLikes, setTotLikes] = useState(likes)
     const [isLiked, setIsLiked] = useState(false);
@@ -24,8 +26,13 @@ function Answer({solId, solution, createdAt, creator, likes}) {
 
     function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
-        setName(authState.userList[nm]?.name);
+        setName(authState.userList[nm]?.name); setUserIdx(nm);
         if(authState.userList[nm]?.image) setImage(authState.userList[nm].image);
+    }
+
+    async function onAnswerView(){
+        const res = await dispatch(getSolution(solId));
+        if(res) document.getElementById('answerModal').showModal();
     }
 
     async function onDelete(){
@@ -33,16 +40,10 @@ function Answer({solId, solution, createdAt, creator, likes}) {
         if(res.payload) navigate('/');
     }
 
-    async function editAnswer(){
-        document.getElementById('answerModal').showModal()
-    }
-
-    async function countLikes() {
-        await dispatch(getLiked());
-    }
-
     async function onLike() {
-        if(!authState.data) navigate('/login')
+        if(!authState.data){
+            navigate('/login'); return;
+        }
         const res = await dispatch(likeSolution({
             solId : solId,
             userId: authState.data._id
@@ -50,6 +51,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
         if(res){
             setIsLiked(true);
             setTotLikes(totLikes + 1);
+            await dispatch(getLikedSolutions(authState.data?._id));
         }
     }
 
@@ -61,25 +63,33 @@ function Answer({solId, solution, createdAt, creator, likes}) {
         if(res){
             setIsLiked(false);
             setTotLikes(totLikes - 1);
+            await dispatch(getLikedSolutions(authState.data?._id));
         }
+    }
+
+    async function userView(){
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        const res = await dispatch(getUser(authState.userList[userIdx]._id));
+        if(res) document.getElementById('userModal').showModal();
     }
 
     useEffect(() => {
         findName(); 
         if(authState.data){
-            countLikes();
-            const sol = authState.selectedUser?.liked?.filter((like) => (like.solutionId === solId && like.userId === authState.data._id));
-            if(sol.length) setIsLiked(true);
+            const sol = authState.selectedUser?.likedSolution?.filter((like) => (like.solutionId === solId && like.userId === authState.data._id));
+            if(sol?.length) setIsLiked(true);
             else setIsLiked(false);
         }
         if(ans.length > 1000){
             const newAns = ans.substring(0, 1000) + "...";
             setAns(newAns);
         }
-    }, []);
+    }, [authState.selectedUser?.likedSolution?.length]);
 
     return (
-        <article className="mb-4 w-[90vw] break-inside p-6 bg-gray-700 flex flex-col bg-clip-border">
+        <article className="mb-4 break-inside p-6 bg-gray-900 flex flex-col bg-clip-border rounded-l-[2rem] rounded-tr-[2rem]">
             <div className="flex pb-6 items-center justify-between">
             <div className="w-full flex justify-between items-center">
                 <div className="flex">
@@ -88,7 +98,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                     </a>
                     <div className="flex flex-col">
                         <div className="flex items-center">
-                            <a className="inline-block text-lg font-bold mr-2 text-md" href="#">{name}</a>
+                            <a onClick={userView} className="inline-block text-lg font-bold mr-2 text-md hover:underline hover:cursor-pointer">{name}</a>
                         </div>
                         <div className="text-slate-500 text-sm dark:text-slate-300">
                             {createdAt}
@@ -96,8 +106,8 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    {authState.data.name === name && <TbPencil onClick={editAnswer} className="w-[1.5rem] h-[1.5rem] hover:cursor-pointer"/>}
-                    {authState.data.name === name && <MdDelete className="hover:cursor-pointer w-[1.5rem] h-[1.5rem]" onClick={onDelete}/>}
+                    {authState.data?._id === creator && <TbPencil onClick={onAnswerView} className="w-[1.5rem] h-[1.5rem] hover:cursor-pointer"/>}
+                    {authState.data?._id === creator && <MdDelete className="hover:cursor-pointer w-[1.5rem] h-[1.5rem]" onClick={onDelete}/>}
                 </div>
             </div>
             </div>
@@ -110,10 +120,11 @@ function Answer({solId, solution, createdAt, creator, likes}) {
             <div>
                 <button className="flex gap-3 justify-center items-center text-sm">
                     <span className="ml-1">{totLikes}</span>
-                    {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                    {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                 </button>
             </div>
-            <EditAnswerModal solution={solution} solutionId={solId}/>
+            <UserDetailsModal />
+            <EditAnswerModal />
         </article>
     )
 }
