@@ -142,15 +142,6 @@ export const deleteSol = createAsyncThunk('/sol/delete', async(id) => {
 const AnswerSlice = createSlice({
     name: 'Answers',
     initialState,
-    reducers: {
-        filterSolutionByUser: (state, action) => {
-            const id = action?.payload?.id;
-            let allSolutions = state.downloadedAnswers.flat();
-            allSolutions = JSON.parse(JSON.stringify(allSolutions));
-            console.log(allSolutions);
-            state.userSolutions = allSolutions.filter((ans) => ans.userId === id);
-        }
-    },
     extraReducers: (builder) => {
         builder
         .addCase(getSolutionByQuestion.fulfilled, (state, action) => {
@@ -175,7 +166,5 @@ const AnswerSlice = createSlice({
         })
     }
 });
-
-export const { filterSolutionByUser } = AnswerSlice.actions;
 
 export default AnswerSlice.reducer;

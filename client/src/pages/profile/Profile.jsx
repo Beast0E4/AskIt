@@ -8,6 +8,7 @@ import { MdDelete, MdLogout, MdOutlineModeEdit } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import { logout } from "../../redux/Slices/auth.slice";
 import useLikes from '../../hooks/useLikes'
+import LogoutModal from "../../layouts/LogoutModal";
  
 function Profile() {
 
@@ -49,8 +50,7 @@ function Profile() {
     }
 
     async function onLogout(){
-        await dispatch(logout());
-        navigate('/');
+        document.getElementById('logoutModal').showModal();
     }
 
     useEffect(() => {
@@ -130,6 +130,7 @@ function Profile() {
             </div>
             <EditProfileModal />
             <DeleteModal />
+            <LogoutModal />
         </section>   
     )
 }

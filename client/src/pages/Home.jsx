@@ -1,5 +1,5 @@
 import { IoMdAdd } from "react-icons/io";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Question from "../layouts/Question";
 import useQuestions from "../hooks/useQuestions";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import Loader from "../layouts/Loader";
 import toast from "react-hot-toast";
 import useAnswers from "../hooks/useAnswers";
 import Answer from "../layouts/Answer";
-import { filterSolutionByUser, getSolutionByUser } from "../redux/Slices/ans.slice";
+import { getSolutionByUser } from "../redux/Slices/ans.slice";
 
 function Home() {
 
@@ -19,7 +19,6 @@ function Home() {
 
     const dispatch = useDispatch();
     const location = useLocation();
-    const [searchParams] = useSearchParams();
 
     const [loading, setLoading] = useState(false);
 
@@ -39,12 +38,12 @@ function Home() {
     }
 
     async function loadSolutions(){
-        if(location.pathname === '/answers') await dispatch(getSolutionByUser(authState.data?._id));
+        await dispatch(getSolutionByUser(authState.data?._id));
     }
 
     useEffect(() => {
         loadSolutions();
-    }, [ansState.userSolutions])
+    }, [ansState.solutionList?.length])
 
     useEffect(() => {
         loadUsers();
