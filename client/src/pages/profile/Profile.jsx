@@ -2,12 +2,13 @@ import { useDispatch, useSelector } from "react-redux";
 import EditProfileModal from "../../layouts/EditProfileModal";
 import DeleteModal from "../../layouts/DeleteModal";
 import { Link, useNavigate } from "react-router-dom";
-import { logout } from "../../redux/Slices/auth.slice";
 import { useEffect, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
 import { MdDelete, MdLogout, MdOutlineModeEdit } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
-
+import { logout } from "../../redux/Slices/auth.slice";
+import useLikes from '../../hooks/useLikes'
+ 
 function Profile() {
 
     const dispatch = useDispatch();
@@ -15,11 +16,15 @@ function Profile() {
 
     const [quesState] = useQuestions();
     const [ansState] = useAnswers();
+    const [likesState] = useLikes();
 
     const authState = useSelector((state) => state.auth); 
 
     const [quesLength, setQuesLength] = useState(0)
+    const [quesLikes, setQuesLikes] = useState(0);
+    const [solLikes, setSolLikes] = useState(0);
     const [solLength, setSolLength] = useState(0);
+    const [date, setDate] = useState();
 
     function showModal() {
         document.getElementById('profileModal').showModal();
@@ -30,9 +35,15 @@ function Profile() {
     }
 
     function calculateLength(){
-        const len = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
-        if(len.length) setQuesLength(len.length);
+        const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
+        let quesLikes = 0;
+        ques.map((ques) => quesLikes += ques.likes);
+        setQuesLikes(quesLikes);
+        if(ques.length) setQuesLength(ques.length);
         const newArr = ansState.solutionList.flat();
+        const arr = newArr.filter((ans) => ans.userId === authState.data?._id);
+        let ansLikes = 0;
+        arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
         const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
         setSolLength(lt);
     }
@@ -47,14 +58,17 @@ function Profile() {
             navigate('/login'); return;
         }
         calculateLength();
+        let date = authState.data?.createdAt.split('T')[0].split('-');
+        date = date[2] + "-" + date[1] + "-" + date[0];
+        setDate(date);
     }, [quesState.questionList.length, ansState.solutionList?.length]);
 
     return (
-        <section className="h-[100vh] relative pt-32 pb-24 bg-gray-950">
+        <section className="min-h-screen relative pt-32 pb-24 bg-gray-950">
             <div className="w-full max-w-7xl mx-auto px-6 md:px-8">
-                <a className="flex items-center justify-center sm:justify-start relative z-10 mb-5" href={authState.data?.image}>
-                    <img src={authState?.data?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" />
-                </a>
+                <div className="flex items-center justify-center sm:justify-start relative z-10 mb-5">
+                    <a href={authState.data?.image} className="w-max"><img src={authState?.data?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" /></a>
+                </div>
                 <div className="flex flex-col sm:flex-row max-sm:gap-5 items-center justify-between mb-5">
                     <div className="block">
                         <h3 className="font-manrope font-bold text-4xl text-white mb-1">{authState?.data?.name}</h3>
@@ -72,8 +86,8 @@ function Profile() {
                     </div>
                 </div>
                 <div className="flex flex-col lg:flex-row max-lg:gap-5 items-center justify-between py-0.5">
-                    <div className="flex bg-gray-800 px-1.25 py-1.25 rounded-md">
-                        <div className="flex flex-col sm:flex-row rounded-2xl w-full px-1.5 py-1.5 md:px-3 md:py-3">
+                    <div className="flex flex-col px-1.25 py-1.25">
+                        <div className="flex flex-col bg-gray-800 sm:flex-row rounded-md w-full px-1.5 py-1.5 md:px-3 md:py-3">
                             <a onClick={showModal} className="hover:cursor-pointer text-light-blue-light hover:text-white inline-flex items-center mr-4 p-2.5 text-gray-400 gap-4" title="Edit profile">
                                 <MdOutlineModeEdit className="h-5 w-5"/> Edit account
                             </a>
@@ -86,15 +100,37 @@ function Profile() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700"><Link to={`/?userid=${authState?.data?._id}`}>{quesLength} Questions</Link></button>
-                        <button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{solLength} Solutions</button>
+                        <Link to={`/?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
+                        <button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{solLength} Solutions</button>
+                    </div>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-between">
+                    <div className="mt-[2rem] py-2 sm:w-[40vw]">
+                        <h2 className="p-2 font-semibold bg-gray-800 w-full">My summary</h2>
+                        <div className="flex items-center justify-between">
+                            <h3 className="p-2 mt-2">Likes on my questions</h3>
+                            <h3 className="p-2 mt-2 font-semibold">{quesLikes}</h3>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <h3 className="p-2 mt-2">Likes on my solutions</h3>
+                            <span className="p-2 mt-2 font-semibold">{solLikes}</span>
+                        </div>
+                        <hr/>
+                        <div className="flex items-center justify-between">
+                            <h3 className="p-2 mt-2">Recieved likes</h3>
+                            <span className="p-2 mt-2 font-semibold">{solLikes + quesLikes}</span>
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:items-end items-center">
+                        <button className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">Registered {date}</button>
+                        <button className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length} like(s) by me on questions</button>
+                        <button className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedSolution?.length} like(s) by me on solutions</button>
                     </div>
                 </div>
             </div>
             <EditProfileModal />
             <DeleteModal />
-        </section>
-                                            
+        </section>   
     )
 }
 

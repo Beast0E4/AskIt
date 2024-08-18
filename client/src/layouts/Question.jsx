@@ -114,25 +114,25 @@ function Question({questionId,  question, createdAt, creator, likes}) {
     }, [authState.selectedUser.likedQuestion?.length])
 
     return (
-        <article className="mb-4 w-full break-inside p-6 bg-gray-900 flex flex-col bg-clip-border hover:cursor-pointer">
-            <div className="flex pb-6 items-center justify-between">
+        <article className="mb-4 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border hover:cursor-pointer">
+            <div className="flex pb-3 items-center justify-between">
                 <div className="flex">
                     <a className="inline-block mr-4" href={image}>
-                        <img src={image} alt={name} className="rounded-full max-w-none w-14 h-14 object-cover" />
+                        <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
                     </a>
-                    <div className="flex flex-col">
-                    <div className="flex items-center">
-                        <a onClick={userView} className="inline-block text-lg font-bold mr-2 text-md hover:cursor-pointer hover:underline">{name}</a>
-                    </div>
-                    <div className="text-slate-500 text-sm dark:text-slate-300">
-                        {createdAt}
-                    </div>
+                    <div className="flex flex-col justify-center">
+                        <div className="flex items-center">
+                            <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                        </div>
+                        <div className="text-slate-500 text-xs dark:text-slate-300">
+                            {createdAt}
+                        </div>
                     </div>
                 </div>
             </div>
             <hr className="bg-white"/>
             <div onClick={onView} className="py-3">
-                <p className="ml-2">
+                <p className="ml-2 text-md">
                     {quest}
                 </p>
             </div>

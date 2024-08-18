@@ -56,19 +56,19 @@ function AnswerPage() {
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
-            <article className="w-[80vw] md:w-[50rem] sm:w-[25rem] mb-4 p-6 bg-gray-900 flex flex-col rounded-r-[2rem] rounded-bl-[2rem]">
+            <article className="w-[80vw] md:w-[50rem] sm:w-[25rem] mb-4 p-3 bg-gray-900 flex flex-col rounded-r-[2rem] rounded-bl-[2rem]">
                 <div className="flex pb-6 items-center justify-between">
                     <div className="flex">
                         <a className="inline-block mr-4" href={image}>
-                            <img src={image} alt={name} className="rounded-full max-w-none w-14 h-14" />
+                            <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10" />
                         </a>
-                        <div className="flex flex-col">
-                        <div className="flex items-center">
-                            <a onClick={userView} className="inline-block text-lg font-bold mr-2 text-md hover:underline hover:cursor-pointer">{name}</a>
-                        </div>
-                        <div className="text-slate-500 text-sm dark:text-slate-300">
-                            {date}
-                        </div>
+                        <div className="flex flex-col justify-center">
+                            <div className="flex items-center">
+                                <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
+                            </div>
+                            <div className="text-slate-500 text-xs dark:text-slate-300">
+                                {date}
+                            </div>
                         </div>
                     </div>
                 </div>

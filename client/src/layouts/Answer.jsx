@@ -89,18 +89,18 @@ function Answer({solId, solution, createdAt, creator, likes}) {
     }, [authState.selectedUser?.likedSolution?.length]);
 
     return (
-        <article className="mb-4 break-inside p-6 bg-gray-900 flex flex-col bg-clip-border rounded-l-[2rem] rounded-tr-[2rem]">
+        <article className="mb-4 break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-l-[2rem] rounded-tr-[2rem]">
             <div className="flex pb-6 items-center justify-between">
             <div className="w-full flex justify-between items-center">
                 <div className="flex">
                     <a className="inline-block mr-4" href={image}>
-                        <img src={image} alt="user-avatar-image" className="rounded-full max-w-none w-14 h-14 object-cover" />
+                        <img src={image} alt="user-avatar-image" className="rounded-full max-w-none w-10 h-10 object-cover" />
                     </a>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col justify-center">
                         <div className="flex items-center">
-                            <a onClick={userView} className="inline-block text-lg font-bold mr-2 text-md hover:underline hover:cursor-pointer">{name}</a>
+                            <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
                         </div>
-                        <div className="text-slate-500 text-sm dark:text-slate-300">
+                        <div className="text-slate-500 text-xs dark:text-slate-300">
                             {createdAt}
                         </div>
                     </div>
