@@ -111,12 +111,13 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                 </div>
             </div>
             </div>
-            <hr className="bg-white"/>
+            <div className="bg-gray-700 h-[0.1px]"/>
             <div className="py-4">
                 <p>
                     {ans}
                 </p>
             </div>
+            <div className="bg-gray-700 h-[0.1px]"/>
             <div>
                 <button className="flex gap-3 justify-center items-center text-sm">
                     <span className="ml-1">{totLikes}</span>

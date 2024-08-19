@@ -134,12 +134,13 @@ function Question({questionId,  question, createdAt, creator, likes, topic}) {
                     <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:bg-gray-800 hover:cursor-pointer">{topic}</p>
                 </div>}
             </div>
-            <hr className="bg-white"/>
+            <div className="bg-gray-700 h-[0.1px]"/>
             <div onClick={onView} className="py-3 hover:cursor-pointer">
                 <p className="ml-2 text-md">
                     {quest}
                 </p>
             </div>
+            <div className="bg-gray-700 h-[0.1px]"/>
             <div className="flex">
                 <div className="w-full flex gap-4">
                     <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer

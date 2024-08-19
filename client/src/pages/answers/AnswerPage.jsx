@@ -72,7 +72,7 @@ function AnswerPage() {
                         </div>
                     </div>
                 </div>
-                <hr className="bg-white"/>
+                <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="py-4">
                 <p>
                     {question}

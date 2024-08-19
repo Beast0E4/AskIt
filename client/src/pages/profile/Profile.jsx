@@ -58,7 +58,6 @@ function Profile() {
         ques.map((ques) => quesLikes += ques.likes);
         ques.map((quest) => {
             const idx = topics.findIndex((topic) => topic === quest.topic);
-            console.log(idx);
             incrementValueAtIndex(idx);
         })
         setQuesLikes(quesLikes);
@@ -100,19 +99,19 @@ function Profile() {
                         <h3 className="font-manrope font-bold text-4xl text-white mb-1">{authState?.data?.name}</h3>
                         <p className="font-normal text-base leading-7 text-gray-500">{authState?.data?.email}</p>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="py-2 px-5 rounded-md text-sm bg-gray-800 text-white items-center">Registered {date}</div>
-                        <div className="rounded-md px-5 bg-gray-800 flex items-center">
+                    <div className="flex flex-col sm:flex-row ">
+                        <div className="py-2 px-5 text-sm text-gray-300 items-center border-r-[1px] border-gray-300">Registered {date}</div>
+                        <div className="rounded-md px-5 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18"  fill="none">
-                                <path className="stroke-white transition-all duration-500"
+                                <path className="stroke-gray-300 transition-all duration-500"
                                     d="M14.1667 11.6666V13.3333C14.1667 14.9046 14.1667 15.6903 13.6785 16.1785C13.1904 16.6666 12.4047 16.6666 10.8333 16.6666H7.50001C5.92866 16.6666 5.14299 16.6666 4.65483 16.1785C4.16668 15.6903 4.16668 14.9047 4.16668 13.3333V11.6666M16.6667 9.16663V13.3333M11.0157 10.434L12.5064 9.44014C14.388 8.18578 15.3287 7.55861 15.3287 6.66663C15.3287 5.77466 14.388 5.14749 12.5064 3.89313L11.0157 2.8993C10.1194 2.3018 9.67131 2.00305 9.16668 2.00305C8.66205 2.00305 8.21393 2.3018 7.31768 2.8993L5.82693 3.89313C3.9454 5.14749 3.00464 5.77466 3.00464 6.66663C3.00464 7.55861 3.9454 8.18578 5.82693 9.44014L7.31768 10.434C8.21393 11.0315 8.66205 11.3302 9.16668 11.3302C9.67131 11.3302 10.1194 11.0315 11.0157 10.434Z"
                                     stroke="#374151" />
                             </svg>
-                            <p className="px-2 py-2 text-sm font-medium items-center text-white">{authState?.data?.profession}</p>
+                            <p className="px-2 py-2 text-sm font-medium items-center text-gray-300">{authState?.data?.profession}</p>
                         </div>
                     </div>
                 </div>
-                <div className="w-full bg-gray-600 h-[1px] mb-2"></div>
+                <div className="w-full bg-gray-800 h-[1px] mb-2"></div>
                 <div className="flex flex-col lg:flex-row max-lg:gap-5 items-center justify-between py-0.5">
                     <div className="flex flex-col px-1.25 py-1.25">
                         <div className="flex flex-col bg-gray-800 sm:flex-row rounded-md w-full px-1.5 py-1.5 md:px-3 md:py-3">
@@ -128,14 +127,14 @@ function Profile() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <Link to={`/questions?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
+                        <Link to={`/questions?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
                         <Link to={`/answers?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{solLength} Solutions</button></Link>
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-between">
                     <div className="flex-wrap w-[90vw] sm:w-[60vw] h-max mt-8 flex gap-4">
                         {topicsCount.map((count, index) => {
-                            if(count > 0) return (<p key={index} className="flex-grow-0 text-[0.8rem] rounded-2xl border-[0.1px] w-max px-2 py-1">{topics[index]} x {count}</p>)
+                            if(count > 0) return (<p key={index} className="flex-grow-0 text-[0.8rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:bg-gray-800 hover:cursor-pointer">{topics[index]} x {count}</p>)
                         })}
                     </div>
                     <div className="flex flex-col sm:items-end items-center">

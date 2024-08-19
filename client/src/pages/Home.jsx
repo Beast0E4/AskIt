@@ -55,7 +55,7 @@ function Home() {
     return (
         <>
             <div className="flex gap-3 bg-gray-950 pt-[4rem] overflow-hidden min-h-screen px-2 justify-center">
-                <TopicsBar />
+                {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {(location.pathname === '/questions' || location.pathname === '/') && (loading ? <Loader /> : (quesState.questionList?.length ? quesState.questionList?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');

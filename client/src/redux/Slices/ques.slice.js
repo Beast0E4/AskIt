@@ -76,8 +76,8 @@ export const createQuestion = createAsyncThunk('question/createQuestion', async 
             }
         });
         toast.promise(response, {
-            success: 'Successfully created the Question',
-            loading: 'Creating the Question...',
+            success: 'Successfully created the question',
+            loading: 'Creating the question...',
             error: 'Something went wrong'
         });
         return await response;
