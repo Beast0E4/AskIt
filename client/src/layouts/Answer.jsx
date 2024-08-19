@@ -89,7 +89,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
     }, [authState.selectedUser?.likedSolution?.length]);
 
     return (
-        <article className="mb-4 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-l-[2rem] rounded-tr-[2rem]">
+        <article className="mb-4 w-full break-inside p-4 bg-gray-800 flex flex-col bg-clip-border">
             <div className="flex pb-3 items-center justify-between">
             <div className="w-full flex justify-between items-center">
                 <div className="flex">
@@ -118,7 +118,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                 </p>
             </div>
             <div>
-                <button className="flex gap-3 justify-center items-center text-sm px-3">
+                <button className="flex gap-3 justify-center items-center text-sm">
                     <span className="ml-1">{totLikes}</span>
                     {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                 </button>

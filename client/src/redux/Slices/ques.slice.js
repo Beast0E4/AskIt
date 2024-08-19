@@ -100,6 +100,17 @@ const QuestionSlice = createSlice({
             state.questionList = state.downloadedQuestions.filter((ques) => ques.userId === id);
             state.questionList = JSON.parse(JSON.stringify(state.questionList));
         },
+        filterQuestionByTopic: (state, action) => {
+            const topic = action?.payload?.topic;
+            state.questionList = state.downloadedQuestions.filter((ques) => ques.topic === topic);
+            state.questionList = JSON.parse(JSON.stringify(state.questionList));
+        },
+        filterQuestionByUserandTopic: (state, action) => {
+            const id = action?.payload?.id;
+            const topic = action?.payload?.topic;
+            state.questionList = state.downloadedQuestions.filter((ques) => ques.topic === topic && ques.userId === id);
+            state.questionList = JSON.parse(JSON.stringify(state.questionList));
+        },
         resetQuestionList: (state) => {
             state.questionList = state.downloadedQuestions;
         }
@@ -120,6 +131,6 @@ const QuestionSlice = createSlice({
     }
 });
 
-export const { filterQuestionById, resetQuestionList, filterQuestionByUser } = QuestionSlice.actions;
+export const { filterQuestionById, resetQuestionList, filterQuestionByUser, filterQuestionByTopic, filterQuestionByUserandTopic } = QuestionSlice.actions;
 
 export default QuestionSlice.reducer;

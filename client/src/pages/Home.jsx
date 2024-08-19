@@ -1,5 +1,5 @@
 import { IoMdAdd } from "react-icons/io";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import Question from "../layouts/Question";
 import useQuestions from "../hooks/useQuestions";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import useAnswers from "../hooks/useAnswers";
 import Answer from "../layouts/Answer";
 import { getSolutionByUser } from "../redux/Slices/ans.slice";
+import TopicsBar from "../layouts/TopicsBar";
 
 function Home() {
 
@@ -19,6 +20,8 @@ function Home() {
 
     const dispatch = useDispatch();
     const location = useLocation();
+
+    const [searchParams] = useSearchParams();
 
     const [loading, setLoading] = useState(false);
 
@@ -43,20 +46,21 @@ function Home() {
 
     useEffect(() => {
         loadSolutions();
-    }, [ansState.solutionList?.length])
+    }, [ansState.solutionList?.length, searchParams.get('topic')])
 
     useEffect(() => {
         loadUsers();
-    }, [quesState.questionList?.length])
+    }, [quesState.questionList?.length, location.pathname, searchParams.get('topic'), searchParams.get('id')])
 
     return (
         <>
-            <div className="flex gap-3 bg-gray-950 justify-center pt-[4rem] min-h-screen px-2">
-                <div className="w-[80vw] md:w-[50rem] sm:w-[25rem] flex flex-col items-center my-3">
+            <div className="flex gap-3 bg-gray-950 pt-[4rem] overflow-hidden min-h-screen px-2 justify-center">
+                <TopicsBar />
+                <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {(location.pathname === '/questions' || location.pathname === '/') && (loading ? <Loader /> : (quesState.questionList?.length ? quesState.questionList?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');
                         date = date[2] + "-" + date[1] + "-" + date[0];
-                        return (<Question key={quest._id} questionId={quest._id} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes}/>)
+                        return (<Question key={quest._id} questionId={quest._id} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No questions yet</h2>
                     )))}

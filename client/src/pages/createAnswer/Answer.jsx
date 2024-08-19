@@ -48,8 +48,8 @@ function Answer() {
     }, []);
 
     return(
-        <section className="h-full bg-gray-950 flex flex-col items-center pt-6 justify-center min-h-screen">
-            <div className="w-[20rem] sm:w-[30rem] h-full bg-gray-900 rounded-lg  md:mt-0 xl:p-0">
+        <section className="h-full bg-gray-950 flex flex-col items-center py-6 justify-center min-h-screen">
+            <div className="w-[20rem] sm:w-[50rem] h-full bg-gray-900 rounded-lg  md:mt-0 xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your answer</h1>
                     <p className="my-2 py-3 px-2">

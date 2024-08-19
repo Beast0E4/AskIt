@@ -9,7 +9,7 @@ import useAnswers from "../hooks/useAnswers";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
-function Question({questionId,  question, createdAt, creator, likes}) {
+function Question({questionId,  question, createdAt, creator, likes, topic}) {
 
     const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
@@ -114,8 +114,8 @@ function Question({questionId,  question, createdAt, creator, likes}) {
     }, [authState.selectedUser.likedQuestion?.length])
 
     return (
-        <article className="mb-4 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border hover:cursor-pointer">
-            <div className="flex pb-3 items-center justify-between">
+        <article className="mb-4 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border">
+            <div className="flex flex-col pb-3">
                 <div className="flex">
                     <a className="inline-block mr-4" href={image}>
                         <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
@@ -129,9 +129,13 @@ function Question({questionId,  question, createdAt, creator, likes}) {
                         </div>
                     </div>
                 </div>
+                {topic && 
+                <div className="mt-4">
+                    <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:bg-gray-800 hover:cursor-pointer">{topic}</p>
+                </div>}
             </div>
             <hr className="bg-white"/>
-            <div onClick={onView} className="py-3">
+            <div onClick={onView} className="py-3 hover:cursor-pointer">
                 <p className="ml-2 text-md">
                     {quest}
                 </p>

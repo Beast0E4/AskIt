@@ -159,6 +159,7 @@ const authSlice = createSlice({
             state.selectedUser = {
                 name: action.payload.data.name,
                 registered: action.payload.data.createdAt.split('T')[0].split('-'),
+                image: action.payload.data.image,
                 profession: action.payload.data.profession
             }
         })

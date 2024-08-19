@@ -6,8 +6,9 @@ function UserDetailsModal() {
 
     return (
         <dialog id="userModal" className="modal">
-            <div className="modal-box bg-gray-950">
-                <h3 className="font-bold text-lg">{authState.selectedUser.name}</h3>
+            <div className="modal-box bg-gray-950 border-[1px] border-gray-600">
+                <img className="h-[30rem]" src={authState.selectedUser.image} alt={authState.selectedUser.name} />
+                <h3 className="font-bold text-lg mt-2">{authState.selectedUser.name}</h3>
                 <div className="flex gap-4 mt-3">
                     <label>Registered:</label>
                     <p>{authState.selectedUser.registered[2] + "-" + authState.selectedUser.registered[1] + "-" + authState.selectedUser.registered[0]}</p>
