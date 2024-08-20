@@ -24,6 +24,10 @@ function Home() {
     const [searchParams] = useSearchParams();
 
     const [loading, setLoading] = useState(false);
+    const [quesLength, setQuesLength] = useState(0)
+    const [quesLikes, setQuesLikes] = useState(0);
+    const [solLikes, setSolLikes] = useState(0);
+    const [solLength, setSolLength] = useState(0);
 
     async function loadUsers(){
         setLoading(true);
@@ -40,9 +44,27 @@ function Home() {
         }
     }
 
+    function calculateLength(){
+        const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
+        let quesLikes = 0;
+        ques.map((ques) => quesLikes += ques.likes);
+        setQuesLikes(quesLikes);
+        if(ques.length) setQuesLength(ques.length);
+        const newArr = ansState.solutionList.flat();
+        const arr = newArr.filter((ans) => ans.userId === authState.data?._id);
+        let ansLikes = 0;
+        arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
+        const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
+        setSolLength(lt);
+    }
+
     async function loadSolutions(){
         await dispatch(getSolutionByUser(authState.data?._id));
     }
+
+    useEffect(() => {
+        calculateLength();
+    }, [quesState.questionList?.length, ansState.solutionList?.length])
 
     useEffect(() => {
         loadSolutions();
@@ -73,6 +95,13 @@ function Home() {
                     }) : (
                         <h2 className="text-white font-thin italic">No solutions yet</h2>
                     ))}
+                </div>
+                <div className="fixed h-max w-[14.5rem] rounded-md sm:right-5 mt-3 hidden lg:flex flex-col border-[2px] border-gray-800">
+                    <h1 className=" p-2 font-bold bg-gray-900 font-sans border-b-[1px] border-gray-800">User details</h1>
+                    <h2 className="p-2 border-b-[1px] border-gray-800 text-sm">Total questions asked - {quesLength}</h2>
+                    <h2 className="p-2 border-b-[1px] border-gray-800 text-sm">Total solutions provided - {solLength}</h2>
+                    <h3 className="p-2 border-b-[1px] border-gray-800 text-sm">Upvotes recieved on questions - {quesLikes}</h3>
+                    <h2 className="p-2 border-b-[1px] border-gray-800 text-sm">Upvotes recieved on answers - {solLikes}</h2>
                 </div>
             </div>
             <Link to={'/question'}>

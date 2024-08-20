@@ -44,7 +44,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic}) {
     async function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
         setUserIdx(nm);
-        setName(authState.userList[nm].name);
+        setName(authState.userList[nm].name.substring(0, 10));
         setImage(authState.userList[nm].image);
     }
 

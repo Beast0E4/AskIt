@@ -7,6 +7,8 @@ const initialState = {
     token: localStorage.getItem("token") || "",
     isLoggedIn: localStorage.getItem("isLoggedIn") || false,
     selectedUser:{
+        email: "",
+        image: "",
         name: "",
         registered: [],
         profession: "",
@@ -138,7 +140,7 @@ const authSlice = createSlice({
     reducers: {
         logout: (state) => {
             localStorage.clear();
-            state.data = undefined;
+            state.data = "";
             state.isLoggedIn = false;
             state.token = "";
         }
@@ -156,12 +158,11 @@ const authSlice = createSlice({
         })
         .addCase(getUser.fulfilled, (state, action) => {
             if(!action?.payload?.data) return;
-            state.selectedUser = {
-                name: action.payload.data.name,
-                registered: action.payload.data.createdAt.split('T')[0].split('-'),
-                image: action.payload.data.image,
-                profession: action.payload.data.profession
-            }
+            state.selectedUser.name = action.payload.data.name;
+            state.selectedUser.email = action.payload.data.email;
+            state.selectedUser.registered = action.payload.data.createdAt.split('T')[0].split('-');
+            state.selectedUser.image = action.payload.data.image;
+            state.selectedUser.profession = action.payload.data.profession;
         })
         .addCase(getUsers.fulfilled, (state, action) => {
             if(!action?.payload?.data) return;

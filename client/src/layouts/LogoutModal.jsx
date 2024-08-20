@@ -18,7 +18,7 @@ function LogoutModal() {
         } catch (error) {
             setLoading(false);
         } finally {
-            setLoading(false); navigate('/login'); 
+            setLoading(false); navigate('/');
         }
     }
 

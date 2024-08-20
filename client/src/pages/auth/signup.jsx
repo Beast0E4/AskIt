@@ -86,7 +86,7 @@ function SignUp() {
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Create an account</h1>
                     <div className="space-y-4 md:space-y-6">
                         <div>
-                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data"></input>
+                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data" required></input>
                         </div>
                         <div>
                             <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>

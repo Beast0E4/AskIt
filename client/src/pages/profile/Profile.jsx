@@ -1,13 +1,15 @@
-import { useSelector } from "react-redux";
-import EditProfileModal from "../../layouts/EditProfileModal";
+import { useDispatch, useSelector } from "react-redux";
 import DeleteModal from "../../layouts/DeleteModal";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
-import { MdDelete, MdLogout, MdOutlineModeEdit } from "react-icons/md";
+import { MdDelete, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import useLikes from '../../hooks/useLikes'
 import LogoutModal from "../../layouts/LogoutModal";
+import { login, updateUser } from "../../redux/Slices/auth.slice";
+import toast from "react-hot-toast";
+import Loader from "../../layouts/Loader";
  
 function Profile() {
 
@@ -19,18 +21,20 @@ function Profile() {
 
     const authState = useSelector((state) => state.auth); 
 
+    const dispatch = useDispatch();
+
+    const [loading, setLoading] = useState(false);
     const [quesLength, setQuesLength] = useState(0)
     const [quesLikes, setQuesLikes] = useState(0);
     const [solLikes, setSolLikes] = useState(0);
     const [solLength, setSolLength] = useState(0);
     const [topicsCount, setTopicsCount] = useState([]);
     const [date, setDate] = useState();
+    const [file, setFile] = useState();
+    const [name, setName] = useState(authState.data?.name);
+    const [profession, setProfession] = useState(authState.data?.profession);
 
-    const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory"];
-
-    function showModal() {
-        document.getElementById('profileModal').showModal();
-    }
+    const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory", "Sports"];
 
     function showDeleteModal() {
         document.getElementById('deleteModal').showModal();
@@ -74,6 +78,50 @@ function Profile() {
         document.getElementById('logoutModal').showModal();
     }
 
+    function handleChange(e) {
+        if(e.target.name === 'image'){
+            setFile(e.target.files[0])
+            return;
+        }
+        if(e.target.name === 'name'){
+            setName(e.target.value); return;
+        }
+        if(e.target.name === 'profession'){
+            setProfession(e.target.value); return;
+        }
+    }
+
+    async function onSubmit(e){
+        setLoading(true);
+        try {
+            if(e.target.id === 'image'){
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('email', authState.data?.email);
+                await dispatch(updateUser(formData));
+            }
+            if(e.target.id === 'name'){
+                await dispatch(updateUser({
+                    name: name,
+                    email: authState.data?.email
+                }))
+            }
+            if(e.target.id === 'profession'){
+                await dispatch(updateUser({
+                    profession: profession,
+                    email: authState.data?.email
+                }))
+            }
+        } catch (error) {
+            toast.error('Something went wrong'); setLoading(false);
+        } finally {
+            await dispatch(login({
+                email: authState.data?.email
+            })); 
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
@@ -89,7 +137,7 @@ function Profile() {
     }, [quesState.questionList.length, ansState.solutionList?.length]);
 
     return (
-        <section className="min-h-screen relative pt-32 pb-24 bg-gray-950">
+        <section className="min-h-screen relative pt-6 pb-16 bg-gray-950">
             <div className="w-full max-w-7xl mx-auto px-6 md:px-8">
                 <div className="flex items-center justify-center sm:justify-start relative z-10 mb-5">
                     <a href={authState.data?.image} className="w-max"><img src={authState?.data?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" /></a>
@@ -99,7 +147,7 @@ function Profile() {
                         <h3 className="font-manrope font-bold text-4xl text-white mb-1">{authState?.data?.name}</h3>
                         <p className="font-normal text-base leading-7 text-gray-500">{authState?.data?.email}</p>
                     </div>
-                    <div className="flex flex-col sm:flex-row ">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <div className="py-2 px-5 text-sm text-gray-300 items-center border-r-[1px] border-gray-300">Registered {date}</div>
                         <div className="rounded-md px-5 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18"  fill="none">
@@ -115,9 +163,6 @@ function Profile() {
                 <div className="flex flex-col lg:flex-row max-lg:gap-5 items-center justify-between py-0.5">
                     <div className="flex flex-col px-1.25 py-1.25">
                         <div className="flex flex-col bg-gray-800 sm:flex-row rounded-md w-full px-1.5 py-1.5 md:px-3 md:py-3">
-                            <a onClick={showModal} className="hover:cursor-pointer text-light-blue-light hover:text-white inline-flex items-center mr-4 p-2.5 text-gray-400 gap-4" title="Edit profile">
-                                <MdOutlineModeEdit className="h-5 w-5"/> Edit account
-                            </a>
                             <a onClick={onLogout} className="hover:cursor-pointer text-light-blue-light hover:text-white inline-flex items-center mr-4 p-2.5 text-gray-400 gap-4" title="Logout">
                                 <MdLogout className="w-5 h-5"/> Logout
                             </a>
@@ -127,7 +172,7 @@ function Profile() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <Link to={`/questions?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
+                        <Link to={`/questions?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
                         <Link to={`/answers?userid=${authState?.data?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{solLength} Solutions</button></Link>
                     </div>
                 </div>
@@ -138,12 +183,36 @@ function Profile() {
                         })}
                     </div>
                     <div className="flex flex-col sm:items-end items-center">
-                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} upvote(s) on my contributions</div>
+                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} upvote(s) on my interactions</div>
                         <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length + likesState.selectedUser?.likedSolution?.length} upvote(s) by me</div>
                     </div>
                 </div>
+                <div className="w-full bg-gray-800 h-[1px] mb-2 mt-4"></div>
+                {loading && <Loader/>}
+                <div className="w-full">
+                    <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
+                        <h2 className="text-gray-400">Update image</h2>
+                        <div className="w-max flex flex-col sm:flex-row sm:items-center items-start gap-4">
+                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data" required></input>
+                            <button onClick={onSubmit} id="image" className="text-sm border-[1px] border-white p-2 rounded-md hover:bg-gray-700 font-semibold">Update</button>
+                        </div>
+                    </div>
+                    <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
+                        <h2 className="text-gray-400">Update name</h2>
+                        <div className="w-max flex flex-col sm:flex-row sm:items-center gap-4 items-start">
+                            <input onChange={handleChange} type="text" name="name" value={name} className="bg-gray-900 border text-white sm:text-sm rounded-lg block p-2.5" placeholder="John Doe" required/>
+                            <button onClick={onSubmit} id="name" className="text-sm border-[1px] border-white p-2 rounded-md hover:bg-gray-700 font-semibold">Update</button>
+                        </div>
+                    </div>
+                    <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
+                        <h2 className="text-gray-400">Update profession</h2>
+                        <div className="w-max flex flex-col sm:flex-row sm:items-center items-start gap-4">
+                            <input onChange={handleChange} type="text" name="profession" value={profession} className="bg-gray-900 border text-white sm:text-sm rounded-lg block p-2.5" placeholder="John Doe" required/>
+                            <button onClick={onSubmit} id="profession" className="text-sm border-[1px] border-white p-2 rounded-md hover:bg-gray-700 font-semibold">Update</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <EditProfileModal />
             <DeleteModal />
             <LogoutModal />
         </section>   

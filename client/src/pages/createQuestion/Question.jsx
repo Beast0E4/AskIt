@@ -10,7 +10,7 @@ function Question() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory"];
+    const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory", "Sports"];
     const [loading, setLoading] = useState(false);
     const [selectedTopic, setSelectedTopic] = useState(topics[0]);
     const [question, setQuestion] = useState({
