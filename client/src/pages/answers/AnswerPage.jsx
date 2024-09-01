@@ -74,9 +74,8 @@ function AnswerPage() {
                 </div>
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="py-4">
-                <p>
-                    {question}
-                </p>
+                    {quesState.currentQuestion[0]?.title && <h2 className="mb-2 text-lg font-bold">{quesState.currentQuestion[0].title}</h2>}
+                    <p>{question}</p>
                 </div>
             </article>
             <div className="ml-[2rem] w-[77vw] md:w-[47rem] sm:w-[22rem] flex flex-col">

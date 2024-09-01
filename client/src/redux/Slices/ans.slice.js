@@ -163,6 +163,7 @@ const AnswerSlice = createSlice({
         .addCase(getSolutionByUser.fulfilled, (state, action) => {
             if(!action?.payload?.data) return;
             state.userSolutions = action.payload?.data?.data.reverse();
+            console.log(state.userSolutions);
         })
     }
 });

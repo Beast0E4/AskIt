@@ -15,6 +15,7 @@ import TopicsBar from "../layouts/TopicsBar";
 function Home() {
 
     const [quesState] = useQuestions();
+    console.log('Home');
     const [ansState] = useAnswers();
     const authState = useSelector((state) => state.auth);
 
@@ -56,23 +57,40 @@ function Home() {
         arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
         const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
         setSolLength(lt);
-    }
+        // const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
+        // const quesLikes = ques.reduce((sum, ques) => sum + ques.likes, 0);
+        // if (quesLikes !== quesLikes) setQuesLikes(quesLikes);
+        // if (ques.length !== quesLength) setQuesLength(ques.length);
 
-    async function loadSolutions(){
-        await dispatch(getSolutionByUser(authState.data?._id));
+        // const newArr = ansState.solutionList.flat();
+        // const arr = newArr.filter((ans) => ans.userId === authState.data?._id);
+        // const ansLikes = arr.reduce((sum, ans) => sum + ans.likes, 0);
+        // if (ansLikes !== ansLikes) setSolLikes(ansLikes);
+
+        // const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
+        // if (lt !== solLength) setSolLength(lt);
     }
 
     useEffect(() => {
         calculateLength();
-    }, [quesState.questionList?.length, ansState.solutionList?.length])
+        console.log('hi');
+    }, [searchParams.get('userid')])
+
+    async function loadSolutions(){
+        await dispatch(getSolutionByUser(searchParams.get('userid')));
+    }
 
     useEffect(() => {
-        loadSolutions();
-    }, [ansState.solutionList?.length, searchParams.get('topic')])
+        if(location.pathname === '/answers'){
+            loadSolutions(); 
+        }
+        return;
+    }, [location.pathname])
 
     useEffect(() => {
         loadUsers();
-    }, [quesState.questionList?.length, location.pathname, searchParams.get('topic'), searchParams.get('id')])
+        console.log('hello');
+    }, [])
 
     return (
         <>
@@ -82,7 +100,7 @@ function Home() {
                     {(location.pathname === '/questions' || location.pathname === '/') && (loading ? <Loader /> : (quesState.questionList?.length ? quesState.questionList?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');
                         date = date[2] + "-" + date[1] + "-" + date[0];
-                        return (<Question key={quest._id} questionId={quest._id} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic}/>)
+                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No questions yet</h2>
                     )))}
@@ -104,8 +122,8 @@ function Home() {
                     <h2 className="p-2 border-b-[1px] border-gray-800 text-sm">Upvotes recieved on answers - {solLikes}</h2>
                 </div>
             </div>
-            <Link to={'/question'}>
-                <button className="btn bg-gray-300 text-black font-bold fixed bottom-10 right-10 hover:bg-gray-400">
+            <Link to={'/create-question'}>
+                <button className="btn bg-gray-800 text-white font-bold fixed bottom-10 right-10 hover:bg-gray-700">
                     <IoMdAdd/>
                     ADD QUESTION
                 </button>

@@ -30,10 +30,10 @@ function Navbar(){
     }, [topic, location.pathname])
 
     return (
-        <div className="navbar bg-gray-900 shadow-2xl fixed top-0">
+        <div className="navbar bg-gray-900 shadow-2xl border-b-[3px] border-black fixed top-0">
             <div className="navbar-start">
                 <div className="dropdown">
-                <div onClick={() => setOpen(true)} tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+                <div onClick={() => toggle()} tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
                     <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
@@ -52,6 +52,7 @@ function Navbar(){
                     className="min-h-screen menu menu-sm bg-gray-900 dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
                     <li onClick={toggle}><Link to={'/'} id="Home">Home</Link></li>
                     <li onClick={toggle}><Link to={`/questions?userid=${authState?.data?._id}`}>My Questions</Link></li>
+                    <li onClick={toggle}><Link to={`/liked}`}>Liked Questions</Link></li>
                     <li onClick={toggle}><Link to={`/answers?userid=${authState?.data?._id}`}>My Solutions</Link></li>
                     <li onClick={toggle}><Link to={'/users'}>Users</Link></li>
                     <li>
@@ -68,20 +69,24 @@ function Navbar(){
                     </li>
                 </ul>}
                 </div>
-                <Link to={'/'} className="ml-[2rem] text-xl bg-transparent hover:bg-transparent hover:cursor-pointer font-bold">AskIt</Link>
+                <Link to={'/'} className="ml-[2rem] flex items-end gap-4 text-2xl bg-transparent hover:bg-transparent hover:cursor-pointer font-bold text-[#F2BEA0] font-inconsolata">
+                                <img src="https://res.cloudinary.com/dnaznkzoy/image/upload/v1724169395/Untitled_design-removebg-preview_osnjam.png" className="h-10"></img>
+                                AskIt
+                </Link>
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
-                    <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2' : ''}`}>Home</Link></li>
-                    <li><Link to={`/questions?userid=${authState?.data?._id}`} className={`${location.pathname === `/questions` && searchParams.get('userid') ? 'border-b-2' : ''}`}>My Questions</Link></li>
-                    <li><Link to={`/answers?userid=${authState?.data?._id}`} className={`${location.pathname === `/answers` && searchParams.get('userid') ? 'border-b-2' : ''}`}>My Solutions</Link></li>
-                    <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2' : ''}`}>Users</Link></li>
+                    <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Home</Link></li>
+                    <li><Link to={`/questions?userid=${authState?.data?._id}`} className={`${location.pathname === `/questions` && searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>My Questions</Link></li>
+                    <li><Link to={`/liked`} className={`${location.pathname === `/liked`? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Liked Questions</Link></li>
+                    <li><Link to={`/answers?userid=${authState?.data?._id}`} className={`${location.pathname === `/answers` && searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>My Solutions</Link></li>
+                    <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Users</Link></li>
                 </ul>
             </div>
             <div className="navbar-end gap-5">
-                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 font-bold" to={'/profile'}>{authState.isLoggedIn ? authState.data.name.substring(0, 10) : "Log In"}</Link>
+                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 hover:border-[#F2BEA0] hover:text-[#F2BEA0] font-bold" to={`/profile?userid=${authState.data?._id}`}>{authState.isLoggedIn ? authState.data.name.substring(0, 10) : "Log In"}</Link>
             </div>
-            </div>
+        </div>
     )
 }
 

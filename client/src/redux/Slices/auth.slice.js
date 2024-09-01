@@ -21,11 +21,7 @@ const initialState = {
 export const login = createAsyncThunk('/auth/login', async (data) => {    
     try {
         const response = axiosInstance.post("auth/signin", data);
-        toast.promise(response, {
-            loading: 'Submitting the details',
-            success: 'Successfully logged in',
-            error: 'Something went wrong, try again'
-        });
+        if(!response) toast.error('Something went wrong, try again');
         return await response;
     } catch (error) {
         console.log(error);
@@ -35,11 +31,7 @@ export const login = createAsyncThunk('/auth/login', async (data) => {
 export const signup = createAsyncThunk('/auth/signup', async (data) => {     
     try {
         const response = axiosInstance.post("auth/signup", data);
-        toast.promise(response, {
-            loading: 'Submitting the details',
-            success: 'Successfully signed up',
-            error: 'Something went wrong, try again'
-        });
+        if(!response) toast.error('Something went wrong, try again');
         return await response;
     } catch (error) {
         console.log(error);
@@ -95,11 +87,7 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async(id) => {
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        toast.promise(response, {
-            loading: 'Deleting account',
-            success: 'Successfully deleted',
-            error: 'Something went wrong, try again'
-        });
+        if(!response) toast.error('Something went wrong, try again');
         return await response;
     } catch (error) {
         console.log(error);

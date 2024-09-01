@@ -8,13 +8,14 @@ import Answer from "../pages/createAnswer/Answer";
 import AnswerPage from "../pages/answers/AnswerPage";
 import Navbar from "../layouts/NavBar";
 import Users from "../pages/Users/Users";
+import LikedQuestions from "../pages/likedQuestions/LikedQuestions";
 
 function MainRoutes() {
     return (
         <Routes>
             <Route path="/login" element={<SignIn/>} />
             <Route path="/signup" element={<SignUp/>} />
-            <Route path="/question" element={<Question/>}/>
+            <Route path="/create-question" element={<Question/>}/>
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/create-answer" element={<Answer/>}/>
             <Route path="/" element={<><Navbar/><Home/></>} />
@@ -22,6 +23,7 @@ function MainRoutes() {
             <Route path="/answers" element={<><Navbar/><Home/></>} />
             <Route path="/answer" element={<><Navbar/><AnswerPage/></>}/>
             <Route path="/users" element={<><Navbar/><Users/></>} />
+            <Route path="/liked" element={<><Navbar/><LikedQuestions/></>}/>
         </Routes>
     )
 }

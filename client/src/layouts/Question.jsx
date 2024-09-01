@@ -2,14 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteQues, likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
 import { useEffect, useState } from "react";
-import { getLikedQuestions, getUser } from "../redux/Slices/auth.slice";
+import { getLikedQuestions } from "../redux/Slices/auth.slice";
 import UserDetailsModal from "./UserDetailsModal";
 import { MdDelete } from "react-icons/md";
 import useAnswers from "../hooks/useAnswers";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
-function Question({questionId,  question, createdAt, creator, likes, topic}) {
+function Question({questionId,  question, createdAt, creator, likes, topic, title}) {
 
     const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
@@ -44,18 +44,15 @@ function Question({questionId,  question, createdAt, creator, likes, topic}) {
     async function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
         setUserIdx(nm);
-        setName(authState.userList[nm].name.substring(0, 10));
-        setImage(authState.userList[nm].image);
+        setName(authState?.userList[nm]?.name.substring(0, 10));
+        setImage(authState.userList[nm]?.image);
     }
 
     async function userView() {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        const res = await dispatch(getUser(authState.userList[userIdx]._id));
-        if(res){
-            document.getElementById('userModal').showModal();
-        }
+        navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
     }
 
     async function onDelete(){
@@ -107,7 +104,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic}) {
             if(ques?.length) setIsLiked(true);
             else setIsLiked(false);
         }
-        if(quest.length > 1000){
+        if(quest?.length > 1000){
             const newQuest = quest.substring(0, 1000) + "...";
             setQuest(newQuest);
         }
@@ -131,28 +128,28 @@ function Question({questionId,  question, createdAt, creator, likes, topic}) {
                 </div>
                 {topic && 
                 <div className="mt-4">
-                    <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:bg-gray-800 hover:cursor-pointer">{topic}</p>
+                    <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:cursor-pointer border-[#F2BEA0] font-inconsolata">{topic}</p>
                 </div>}
             </div>
-            <div className="bg-gray-700 h-[0.1px]"/>
-            <div onClick={onView} className="py-3 hover:cursor-pointer">
+            <div onClick={onView} className="pb-2 hover:cursor-pointer">
+                {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
                 <p className="ml-2 text-md">
                     {quest}
                 </p>
             </div>
             <div className="bg-gray-700 h-[0.1px]"/>
             <div className="flex">
-                <div className="w-full flex gap-4">
+                <div className="w-full flex gap-4 items-center">
                     <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
                         <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
                     </button>
-                    <button onClick={onView} className="font-medium text-xs text-white hover:underline">View Answers</button>
+                    <button onClick={onView} className="h-max text-xs hover:underline">View Answers</button>
                     <button className="flex gap-3 justify-center items-center text-sm">
                         <span className="ml-1">{totLikes}</span>
                         {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                     </button>
                 </div>
-                {creator === authState?.data?._id && <div className="flex items-center justify-end w-16">
+                {creator === authState?.data?._id && <div className="flex items-center justify-end w-16" title="Delete question">
                     <MdDelete className="hover:cursor-pointer" onClick={onDelete}/>
                 </div>}
             </div>

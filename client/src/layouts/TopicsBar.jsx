@@ -28,7 +28,7 @@ function TopicsBar() {
             {topics.map((item) =>
             <button key={item} onClick={() => {
                 setTopic(item);
-            }} className="flex justify-start w-full my-[0.3rem] text-xs rounded-sm bg-gray-900 p-2 hover:bg-gray-800 hover:cursor-pointer">{item}</button>)}
+            }} className="flex justify-start w-full my-[0.3rem] text-xs rounded-sm bg-gray-900 p-2 hover:bg-gray-800 hover:cursor-pointer hover:text-[#F2BEA0]">{item}</button>)}
             <div className="mt-3 w-full h-[1px] bg-gray-600"></div>
             <h4 className="w-full flex justify-center text-xs mt-3 text-gray-500">Copyright 2024 © <span className="font-semibold text-gray-400">AskIt</span></h4>
         </div>

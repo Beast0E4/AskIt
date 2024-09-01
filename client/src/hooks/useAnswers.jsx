@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useQuestions from "./useQuestions";
 import { getAllSolutions, getSolutionByQuestion } from "../redux/Slices/ans.slice";
 import { useEffect } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 function useAnswers() {
 
@@ -9,6 +10,8 @@ function useAnswers() {
     const [quesState] = useQuestions();
 
     const dispatch = useDispatch();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
 
     async function loadSolutions(){
         let array = [];
@@ -22,7 +25,7 @@ function useAnswers() {
 
     useEffect(() => {
         loadSolutions();
-    }, [quesState.questionList?.length])
+    }, [quesState.questionList?.length, location.pathname, searchParams.toString()])
 
     return [ansState];
 }

@@ -5,7 +5,7 @@ import { deleteSol, getSolution, likeSolution, unLikeSolution } from "../redux/S
 import { useNavigate } from "react-router-dom";
 import { TbPencil } from "react-icons/tb";
 import EditAnswerModal from "./EditAnswerModal";
-import { getLikedSolutions, getUser } from "../redux/Slices/auth.slice";
+import { getLikedSolutions } from "../redux/Slices/auth.slice";
 import UserDetailsModal from "./UserDetailsModal";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
@@ -71,8 +71,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        const res = await dispatch(getUser(authState.userList[userIdx]._id));
-        if(res) document.getElementById('userModal').showModal();
+        navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
     }
 
     useEffect(() => {
@@ -106,8 +105,8 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    {authState.data?._id === creator && <TbPencil onClick={onAnswerView} className="w-[1rem] h-[1rem] hover:cursor-pointer"/>}
-                    {authState.data?._id === creator && <MdDelete className="hover:cursor-pointer w-[1rem] h-[1rem]" onClick={onDelete}/>}
+                    {authState.data?._id === creator && <TbPencil onClick={onAnswerView} className="w-[1rem] h-[1rem] hover:cursor-pointer" title="Edit answer"/>}
+                    {authState.data?._id === creator && <MdDelete className="hover:cursor-pointer w-[1rem] h-[1rem]" onClick={onDelete} title="Delete answer"/>}
                 </div>
             </div>
             </div>
