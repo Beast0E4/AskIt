@@ -14,9 +14,9 @@ function UserLayout({username, profession, userId, image}) {
     async function userView(){
         if(!authState.isLoggedIn) navigate('/login');
         const res = await dispatch(getUser(userId));
-        if(res){
-            document.getElementById('userModal').showModal();
-        }
+        console.log(res);
+        if(res.payload?.data?._id != authState.data?._id) navigate(`/profile?userid=${res.payload?.data?._id}`);
+        else navigate('/profile');
     }
 
     return(

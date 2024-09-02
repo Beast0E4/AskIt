@@ -52,7 +52,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
+        if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
+        else navigate('/profile');
     }
 
     async function onDelete(){

@@ -51,9 +51,6 @@ function Navbar(){
                     tabIndex={0}
                     className="min-h-screen menu menu-sm bg-gray-900 dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
                     <li onClick={toggle}><Link to={'/'} id="Home">Home</Link></li>
-                    <li onClick={toggle}><Link to={`/questions?userid=${authState?.data?._id}`}>My Questions</Link></li>
-                    <li onClick={toggle}><Link to={`/liked}`}>Liked Questions</Link></li>
-                    <li onClick={toggle}><Link to={`/answers?userid=${authState?.data?._id}`}>My Solutions</Link></li>
                     <li onClick={toggle}><Link to={'/users'}>Users</Link></li>
                     <li>
                         <details className="dropdown h-max">
@@ -77,9 +74,6 @@ function Navbar(){
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
                     <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Home</Link></li>
-                    <li><Link to={`/questions?userid=${authState?.data?._id}`} className={`${location.pathname === `/questions` && searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>My Questions</Link></li>
-                    <li><Link to={`/liked`} className={`${location.pathname === `/liked`? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Liked Questions</Link></li>
-                    <li><Link to={`/answers?userid=${authState?.data?._id}`} className={`${location.pathname === `/answers` && searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>My Solutions</Link></li>
                     <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Users</Link></li>
                 </ul>
             </div>

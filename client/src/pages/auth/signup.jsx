@@ -126,7 +126,6 @@ import { signup } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/cropUtils';
-import Loader from "../../layouts/Loader";
 
 function SignUp() {
     const dispatch = useDispatch();
@@ -195,10 +194,16 @@ function SignUp() {
             if (response.payload) navigate('/login');
             else resetDetails();
         } catch (error) {
-            toast.error(error); setLoading(false);
+            toast.error(error);
         } finally {
             setLoading(false);
         }
+    }
+
+    function handleCancelCrop() {
+        setFile(null); // Reset the file state
+        setCropping(false); // Close the cropping modal
+        document.getElementById('fileInput').value = ""; // Clear the file input value
     }
 
     useEffect(() => {
@@ -212,11 +217,10 @@ function SignUp() {
         <section className="h-[100vh] bg-gray-950 flex flex-col items-center pt-6 justify-center">
             <div className="w-[75vw] bg-gray-900 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    {loading && <Loader />}
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Create an account</h1>
                     <div className="space-y-4 md:space-y-6">
                         <div>
-                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data" required />
+                            <input id="fileInput" onChange={handleChange} type="file" name="image" encType="multipart/form-data" required />
                         </div>
                         {cropping && file && (
                             <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center z-50">
@@ -242,7 +246,7 @@ function SignUp() {
                                             Done
                                         </button>
                                         <button 
-                                            onClick={() => setCropping(false)} 
+                                            onClick={handleCancelCrop} 
                                             className="bg-red-500 text-white px-4 py-2 rounded"
                                         >
                                             Cancel
@@ -271,7 +275,7 @@ function SignUp() {
                             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
                             <input onChange={handleChange} type="password" value={password} name="confirmPassword" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                         </div>
-                        <button onClick={onSubmit} id="submitButton" className="w-full text-white bg-gray-700 hover:bg-gray-800 py-2 rounded-md hover:bg-gray-900 transition-all ease-in-out">{loading ? 'Submitting...' : 'Create an account'}</button>
+                        <button onClick={onSubmit} id="submitButton" className="w-full text-white bg-gray-700 hover:border-gray-600 hover:border-[1px] hover:bg-transparent py-2 rounded-md transition-all ease-in-out">{loading ? 'Submitting...' : 'Create an account'}</button>
                         <p className="text-sm font-light text-gray-500 dark:text-gray-400">Already have an account? <Link to={'/login'} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Sign in here</Link></p>
                     </div>
                 </div>

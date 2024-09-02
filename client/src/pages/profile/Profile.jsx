@@ -39,7 +39,9 @@ function Profile() {
     const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory", "Sports"];
 
     function loadUser(){
-        const currUser = authState.userList?.find((user) => user._id === searchParams.get('userid'));
+        let currUser;
+        if(!searchParams.get('userid')) currUser = authState.userList?.find((user) => user._id === authState.data?._id);
+        else currUser = authState.userList?.find((user) => user._id === searchParams.get('userid'));
         setUser(currUser); 
     }
 
@@ -102,10 +104,6 @@ function Profile() {
         setLoading(true);
         try {
             await dispatch(getUsers());
-            // if(authState.data?._id){
-            //     await dispatch(getLikedQuestions(authState.data?._id));
-            //     await dispatch(getLikedSolutions(authState.data?._id));
-            // }
         } catch (error) {
             toast.error('Something went wrong'); setLoading(false);
         } finally{
@@ -167,7 +165,7 @@ function Profile() {
     }, [quesState.questionList.length, ansState.solutionList?.length]);
 
     return (
-        <section className="min-h-screen relative pt-5 pb-10 bg-gray-950">
+        <section className="min-h-screen relative pt-5 bg-gray-950">
             <div className="w-full max-w-7xl mx-auto px-6 md:px-8">
                 <div className="flex items-center justify-center sm:justify-start relative z-10 mb-5">
                     <a href={user?.image} className="w-max"><img src={user?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" /></a>
@@ -213,8 +211,9 @@ function Profile() {
                         })}
                     </div>
                     <div className="flex flex-col sm:items-end items-center">
-                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} upvote(s) on interactions</div>
-                        <div className="py-2 px-5 mt-[2rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length + likesState.selectedUser?.likedSolution?.length} upvote(s) by user</div>
+                        {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer">{authState.selectedUser?.likedQuestion?.length} upvote(s) provided on questions</div></Link>}
+                        <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} upvote(s) on my interactions</div>
+                        <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length + likesState.selectedUser?.likedSolution?.length} upvote(s) by user</div>
                     </div>
                 </div>
                 <div className="w-full bg-gray-800 h-[1px] mb-2 mt-4"></div>
