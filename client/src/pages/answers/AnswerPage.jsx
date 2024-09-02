@@ -17,6 +17,7 @@ function AnswerPage() {
     const navigate = useNavigate();
  
     const [name, setName] = useState("m");
+    const [isMyQues, setIsMyQues] = useState(false);
     const [date, setDate] = useState("");
     const [question, setQuestion] = useState("");
     const [idx, setIdx] = useState();
@@ -29,6 +30,7 @@ function AnswerPage() {
 
     function loadUser() {
         const user = authState.userList?.find((user) => user._id == quesState.currentQuestion[0]?.userId)
+        if(quesState.currentQuestion[0]?.userId === authState.data?._id) setIsMyQues(true);
         const userIdx = authState.userList?.findIndex((user) => user._id == quesState.currentQuestion[0]?.userId);
         const index = quesState.questionList.findIndex((question) => question._id === quesState.currentQuestion[0]?._id);
         setIdx(index); setUserIdx(userIdx);
@@ -56,7 +58,7 @@ function AnswerPage() {
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
-            <article className="w-[80vw] md:w-[50rem] sm:w-[25rem] mb-4 p-3 bg-gray-900 flex flex-col rounded-r-[2rem] rounded-bl-[2rem]">
+            <article className="w-[80vw] md:w-[50rem] sm:w-[25rem] mb-4 p-3 bg-gray-900 flex flex-col rounded-r-[1rem] rounded-bl-[1rem]">
                 <div className="flex pb-6 items-center justify-between">
                     <div className="flex">
                         <a className="inline-block mr-4" href={image}>
@@ -84,7 +86,7 @@ function AnswerPage() {
                 ):ansState.solutionList[idx]?.map((sol) => {
                     let date = sol?.createdAt?.split('T')[0].split('-');
                     date = date[2] + "-" + date[1] + "-" + date[0];
-                    return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={date} likes={sol.likes}/>)
+                    return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={date} likes={sol.likes} isMyQues={isMyQues}/>)
                 })}
             </div>
             <UserDetailsModal />

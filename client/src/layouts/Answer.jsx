@@ -10,7 +10,7 @@ import UserDetailsModal from "./UserDetailsModal";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
-function Answer({solId, solution, createdAt, creator, likes}) {
+function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -106,7 +106,7 @@ function Answer({solId, solution, createdAt, creator, likes}) {
                 </div>
                 <div className="flex gap-3">
                     {authState.data?._id === creator && <TbPencil onClick={onAnswerView} className="w-[1rem] h-[1rem] hover:cursor-pointer" title="Edit answer"/>}
-                    {authState.data?._id === creator && <MdDelete className="hover:cursor-pointer w-[1rem] h-[1rem]" onClick={onDelete} title="Delete answer"/>}
+                    {(authState.data?._id === creator || isMyQues) && <MdDelete className="hover:cursor-pointer w-[1rem] h-[1rem]" onClick={onDelete} title="Delete answer"/>}
                 </div>
             </div>
             </div>

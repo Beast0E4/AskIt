@@ -55,7 +55,7 @@ function Question() {
 
     return (
         <section className="h-[90vh] bg-gray-950 flex flex-col items-center min-h-screen py-6 justify-center">
-            <div className="w-[25rem] sm:w-[50rem] bg-gray-900 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+            <div className="w-[25rem] sm:w-[50rem] bg-gray-900 rounded-lg shadow md:mt-0 xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your question</h1>
                     <div className="my-4 bg-gray-800 py-5 px-2">
@@ -73,7 +73,7 @@ function Question() {
                         ))}
                     </select>
                     <input name="title" onChange={handleONChange} value={question.title} className="textarea w-full" placeholder="Title for question"/>
-                    <textarea name="question" onChange={handleONChange} value={question.question} className="textarea textarea-bordered w-full resize-none" placeholder="Question" rows={5}></textarea>
+                    <textarea name="question" onChange={handleONChange} value={question.question} className="textarea textarea-bordered w-full resize-none" placeholder="Your question" rows={5}></textarea>
                     <button onClick={handleSubmit} className="btn btn-primary bg-gray-700 hover:bg-gray-800 hover:border-transparent border-transparent w-full font-bold text-white">{loading ? 'Uploading question ...' : 'CREATE'}</button>
                 </div>
             </div>

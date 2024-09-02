@@ -73,12 +73,12 @@ function Navbar(){
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
-                    <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Home</Link></li>
-                    <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`}>Users</Link></li>
+                    <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Home">Home</Link></li>
+                    <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Users">Users</Link></li>
                 </ul>
             </div>
             <div className="navbar-end gap-5">
-                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 hover:border-[#F2BEA0] hover:text-[#F2BEA0] font-bold" to={`/profile?userid=${authState.data?._id}`}>{authState.isLoggedIn ? authState.data.name.substring(0, 10) : "Log In"}</Link>
+                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 hover:border-[#F2BEA0] hover:text-[#F2BEA0] font-bold" to={`/profile`} title="Profile">{authState.isLoggedIn ? authState.data.name.substring(0, 10) : "Log In"}</Link>
             </div>
         </div>
     )

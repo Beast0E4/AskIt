@@ -138,7 +138,7 @@ function Profile() {
             await dispatch(login({
                 email: authState.data?.email
             })); 
-            setLoading(false);
+            setLoading(false); location.reload();
         }
     }
 
