@@ -15,7 +15,6 @@ import TopicsBar from "../layouts/TopicsBar";
 function Home() {
 
     const [quesState] = useQuestions();
-    console.log('Home');
     const [ansState] = useAnswers();
     const authState = useSelector((state) => state.auth);
 
@@ -57,23 +56,10 @@ function Home() {
         arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
         const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
         setSolLength(lt);
-        // const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
-        // const quesLikes = ques.reduce((sum, ques) => sum + ques.likes, 0);
-        // if (quesLikes !== quesLikes) setQuesLikes(quesLikes);
-        // if (ques.length !== quesLength) setQuesLength(ques.length);
-
-        // const newArr = ansState.solutionList.flat();
-        // const arr = newArr.filter((ans) => ans.userId === authState.data?._id);
-        // const ansLikes = arr.reduce((sum, ans) => sum + ans.likes, 0);
-        // if (ansLikes !== ansLikes) setSolLikes(ansLikes);
-
-        // const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
-        // if (lt !== solLength) setSolLength(lt);
     }
 
     useEffect(() => {
         calculateLength();
-        console.log('hi');
     }, [searchParams.get('userid')])
 
     async function loadSolutions(){
@@ -84,12 +70,10 @@ function Home() {
         if(location.pathname === '/answers'){
             loadSolutions(); 
         }
-        return;
     }, [location.pathname])
 
     useEffect(() => {
         loadUsers();
-        console.log('hello');
     }, [])
 
     return (
@@ -100,7 +84,7 @@ function Home() {
                     {(location.pathname === '/questions' || location.pathname === '/') && (loading ? <Loader /> : (quesState.questionList?.length ? quesState.questionList?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');
                         date = date[2] + "-" + date[1] + "-" + date[0];
-                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic}/>)
+                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No questions yet</h2>
                     )))}

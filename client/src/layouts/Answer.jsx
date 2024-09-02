@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { TbPencil } from "react-icons/tb";
 import EditAnswerModal from "./EditAnswerModal";
 import { getLikedSolutions } from "../redux/Slices/auth.slice";
-import UserDetailsModal from "./UserDetailsModal";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
@@ -71,7 +70,8 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
+        if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
+        else navigate('/profile');
     }
 
     useEffect(() => {
@@ -123,7 +123,6 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                     {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                 </button>
             </div>
-            <UserDetailsModal />
             <EditAnswerModal />
         </article>
     )

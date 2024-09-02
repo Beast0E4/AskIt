@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteQues, likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
 import { useEffect, useState } from "react";
 import { getLikedQuestions } from "../redux/Slices/auth.slice";
-import UserDetailsModal from "./UserDetailsModal";
 import { MdDelete } from "react-icons/md";
 import useAnswers from "../hooks/useAnswers";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 
 // eslint-disable-next-line react/prop-types
-function Question({questionId,  question, createdAt, creator, likes, topic, title}) {
+function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage}) {
 
     const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
@@ -137,6 +136,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 <p className="ml-2 text-md">
                     {quest}
                 </p>
+                {quesImage && <div className="w-full flex justify-center"><img src={quesImage} className="py-2"/></div>}
             </div>
             <div className="bg-gray-700 h-[0.1px]"/>
             <div className="flex">
@@ -154,7 +154,6 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     <MdDelete className="hover:cursor-pointer" onClick={onDelete}/>
                 </div>}
             </div>
-            <UserDetailsModal />
         </article>
     )
 }

@@ -148,7 +148,7 @@ function SignUp() {
     function handleChange(e) {
         if (e.target.name === 'image') {
             setFile(e.target.files[0]);
-            setCropping(true); // Trigger cropping interface
+            setCropping(true); 
             return;
         }
         const { name, value } = e.target;
@@ -241,13 +241,13 @@ function SignUp() {
                                     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
                                         <button 
                                             onClick={() => setCropping(false)} 
-                                            className="bg-green-500 text-white px-4 py-2 rounded"
+                                            className="bg-gray-700 text-green-600 px-4 py-2 rounded"
                                         >
                                             Done
                                         </button>
                                         <button 
                                             onClick={handleCancelCrop} 
-                                            className="bg-red-500 text-white px-4 py-2 rounded"
+                                            className="text-red-500 bg-gray-700 px-4 py-2 rounded"
                                         >
                                             Cancel
                                         </button>

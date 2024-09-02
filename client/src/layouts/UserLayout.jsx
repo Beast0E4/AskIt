@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../redux/Slices/auth.slice";
-import UserDetailsModal from "./UserDetailsModal";
 import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
@@ -12,9 +11,10 @@ function UserLayout({username, profession, userId, image}) {
     const navigate = useNavigate();
 
     async function userView(){
-        if(!authState.isLoggedIn) navigate('/login');
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
         const res = await dispatch(getUser(userId));
-        console.log(res);
         if(res.payload?.data?._id != authState.data?._id) navigate(`/profile?userid=${res.payload?.data?._id}`);
         else navigate('/profile');
     }
@@ -34,7 +34,6 @@ function UserLayout({username, profession, userId, image}) {
                 {profession}
                 </p>
             </div>
-            <UserDetailsModal />
         </div>
     )
 }

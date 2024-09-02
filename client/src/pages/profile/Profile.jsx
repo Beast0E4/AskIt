@@ -10,6 +10,8 @@ import LogoutModal from "../../layouts/LogoutModal";
 import { getUsers, login, updateUser } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '../../utils/cropUtils';
  
 function Profile() {
 
@@ -31,6 +33,10 @@ function Profile() {
     const [solLikes, setSolLikes] = useState(0);
     const [solLength, setSolLength] = useState(0);
     const [topicsCount, setTopicsCount] = useState([]);
+    const [croppedFile, setCroppedFile] = useState(null);
+    const [cropping, setCropping] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
     const [date, setDate] = useState();
     const [file, setFile] = useState();
     const [name, setName] = useState(authState.data?.name);
@@ -89,7 +95,8 @@ function Profile() {
 
     function handleChange(e) {
         if(e.target.name === 'image'){
-            setFile(e.target.files[0])
+            setFile(e.target.files[0]);
+            setCropping(true);
             return;
         }
         if(e.target.name === 'name'){
@@ -114,9 +121,9 @@ function Profile() {
     async function onSubmit(e){
         setLoading(true);
         try {
-            if(e.target.id === 'image'){
+            if(e.target.id === 'image'&& croppedFile){
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('image', croppedFile);
                 formData.append('email', authState.data?.email);
                 await dispatch(updateUser(formData));
             }
@@ -140,6 +147,12 @@ function Profile() {
             })); 
             setLoading(false); location.reload();
         }
+    }
+
+    function handleCancelCrop() {
+        setFile(null); // Reset the file state
+        setCropping(false); // Close the cropping modal
+        document.getElementById('fileInput').value = ""; // Clear the file input value
     }
 
     useEffect(() => {
@@ -200,18 +213,18 @@ function Profile() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <Link to={`/questions?userid=${user?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white font-semibold text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
+                        <Link to={`/questions?userid=${user?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{quesLength} Questions</button></Link>
                         <Link to={`/answers?userid=${user?._id}`}><button className="py-2 px-5 rounded-md bg-gray-800 text-white text-base transition-all hover:bg-slate-700">{solLength} Solutions</button></Link>
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-between">
                     <div className="flex-wrap w-[90vw] sm:w-[60vw] h-max mt-8 flex gap-4">
                         {topicsCount.map((count, index) => {
-                            if(count > 0) return (<p key={index} className="flex-grow-0 text-[0.8rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:bg-[#F2BEA0] hover:text-black hover:font-bold hover:cursor-pointer border-[#F2BEA0]">{topics[index]} x {count}</p>)
+                            if(count > 0) return (<p key={index} className="flex-grow-0 text-[0.8rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:cursor-pointer border-[#F2BEA0]">{topics[index]} x {count}</p>)
                         })}
                     </div>
                     <div className="flex flex-col sm:items-end items-center">
-                        {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer">{authState.selectedUser?.likedQuestion?.length} upvote(s) provided on questions</div></Link>}
+                        {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer hover:bg-slate-700">{authState.selectedUser?.likedQuestion?.length} upvote(s) provided on questions</div></Link>}
                         <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} upvote(s) on my interactions</div>
                         <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length + likesState.selectedUser?.likedSolution?.length} upvote(s) by user</div>
                     </div>
@@ -219,11 +232,44 @@ function Profile() {
                 <div className="w-full bg-gray-800 h-[1px] mb-2 mt-4"></div>
                 {loading && <Loader/>}
                 {authState.data?._id === user?._id && <div className="w-full">
+                    {cropping && file && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center z-50">
+                                <div className="relative w-full max-w-md h-[80vh] bg-white rounded-lg">
+                                    <Cropper
+                                        image={URL.createObjectURL(file)}
+                                        crop={crop}
+                                        zoom={zoom}
+                                        aspect={1}
+                                        onCropChange={setCrop}
+                                        onZoomChange={setZoom}
+                                        onCropComplete={(_, croppedAreaPixels) => {
+                                            getCroppedImg(URL.createObjectURL(file), croppedAreaPixels)
+                                                .then((croppedImage) => setCroppedFile(croppedImage))
+                                                .catch((error) => console.error(error));
+                                        }}
+                                    />
+                                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+                                        <button 
+                                            onClick={() => setCropping(false)} 
+                                            className="text-green-500 bg-gray-700 px-4 py-2 rounded"
+                                        >
+                                            Done
+                                        </button>
+                                        <button 
+                                            onClick={handleCancelCrop} 
+                                            className="text-red-500 bg-gray-700 px-4 py-2 rounded"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     <h1 className="px-4 text-lg font-inconsolata font-bold mt-4 ">Update Information :</h1>
                     <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
                         <h2 className="text-gray-400 font-inconsolata flex items-center">Update image</h2>
                         <div className="w-max flex flex-col sm:flex-row sm:items-center items-start gap-4">
-                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data" required></input>
+                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data" id="fileInput" required></input>
                             <button onClick={onSubmit} id="image" className="text-sm border-[1px] border-white p-2 rounded-md hover:bg-white hover:text-black transition-all ease-in-out font-semibold px-4">Update</button>
                         </div>
                     </div>

@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Answer from "../../layouts/Answer";
 import useQuestions from "../../hooks/useQuestions";
-import { getUser, getUsers } from "../../redux/Slices/auth.slice";
+import { getUsers } from "../../redux/Slices/auth.slice";
 import useAnswers from "../../hooks/useAnswers";
-import UserDetailsModal from "../../layouts/UserDetailsModal";
 import { useNavigate } from "react-router-dom";
 
 function AnswerPage() {
@@ -21,6 +20,7 @@ function AnswerPage() {
     const [date, setDate] = useState("");
     const [question, setQuestion] = useState("");
     const [idx, setIdx] = useState();
+    const [quesImage, setQuesImage] = useState();
     const [userIdx, setUserIdx] = useState();
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png");
 
@@ -39,6 +39,7 @@ function AnswerPage() {
             setDate(dt[2] + "-" + dt[1] + "-" + dt[0]);
             setName(user?.name); setImage(user?.image); 
             setQuestion(quesState.currentQuestion[0]?.question);
+            setQuesImage(quesState.currentQuestion[0]?.image);
         }
     }
 
@@ -46,8 +47,8 @@ function AnswerPage() {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        const res = await dispatch(getUser(authState.userList[userIdx]._id));
-        if(res) document.getElementById('userModal').showModal();
+        if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
+        else navigate('/profile');
     }
 
     useEffect(() => {
@@ -78,6 +79,7 @@ function AnswerPage() {
                 <div className="py-4">
                     {quesState.currentQuestion[0]?.title && <h2 className="mb-2 text-lg font-bold">{quesState.currentQuestion[0].title}</h2>}
                     <p>{question}</p>
+                    {quesImage && <div className="w-full flex justify-center"><a href={quesImage}><img src={quesImage} className="py-2"/></a></div>}
                 </div>
             </article>
             <div className="ml-[2rem] w-[77vw] md:w-[47rem] sm:w-[22rem] flex flex-col">
@@ -89,7 +91,6 @@ function AnswerPage() {
                     return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={date} likes={sol.likes} isMyQues={isMyQues}/>)
                 })}
             </div>
-            <UserDetailsModal />
         </div>
     )
 }
