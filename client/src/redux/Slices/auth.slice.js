@@ -52,6 +52,34 @@ export const getUser = createAsyncThunk('auth/getUser', async (id) => {
     }
 });
 
+export const followUser = createAsyncThunk('auth/followUser', async(data) => {
+    try {
+        const response = axiosInstance.post(`users/follow`, data, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+export const unFollowUser = createAsyncThunk('auth/unFollowUser', async(data) => {
+    try {
+        const response = axiosInstance.patch(`users/unFollow`, data, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 export const getUsers = createAsyncThunk('users/getUsers', async () => {     
     try {
         const response = axiosInstance.get(`users`, {

@@ -51,7 +51,7 @@ function Navbar(){
                     tabIndex={0}
                     className="min-h-screen menu menu-sm bg-gray-900 dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow gap-3 font-medium">
                     <li onClick={toggle}><Link to={'/'} id="Home">Home</Link></li>
-                    <li onClick={toggle}><Link to={'/users'}>Users</Link></li>
+                    <li onClick={toggle}><Link to={'/explore'}>Explore</Link></li>
                     <li>
                         <details className="dropdown h-max">
                             <summary className="dropdown bg-gray-800">Topics</summary>
@@ -74,7 +74,7 @@ function Navbar(){
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
                     <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Home">Home</Link></li>
-                    <li><Link to={'/users'} className={`${location.pathname === `/users` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Users">Users</Link></li>
+                    <li><Link to={'/explore'} className={`${location.pathname === `/explore` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Explore">Explore</Link></li>
                 </ul>
             </div>
             <div className="navbar-end gap-5">

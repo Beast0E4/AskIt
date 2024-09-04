@@ -3,11 +3,11 @@ import DeleteModal from "../../layouts/DeleteModal";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
-import { MdDelete, MdLogout } from "react-icons/md";
+import { MdDelete, MdDone, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import useLikes from '../../hooks/useLikes'
 import LogoutModal from "../../layouts/LogoutModal";
-import { getUsers, login, updateUser } from "../../redux/Slices/auth.slice";
+import { followUser, getUsers, login, unFollowUser, updateUser } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import Cropper from 'react-easy-crop';
@@ -26,6 +26,7 @@ function Profile() {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
 
+    const [check, setCheck] = useState(false);
     const [user, setUser] = useState();
     const [loading, setLoading] = useState(false);
     const [quesLength, setQuesLength] = useState(0)
@@ -149,10 +150,44 @@ function Profile() {
         }
     }
 
+    function isFollowing(){
+        authState.data?.following?.map((user) => {
+            if(user === searchParams.get('userid')){
+                setCheck(true); return;
+            }
+        })
+    }
+
     function handleCancelCrop() {
-        setFile(null); // Reset the file state
-        setCropping(false); // Close the cropping modal
-        document.getElementById('fileInput').value = ""; // Clear the file input value
+        setFile(null);
+        setCropping(false);
+        document.getElementById('fileInput').value = ""; 
+    }
+
+    async function follow() {
+        const res = await dispatch(followUser({
+            userId: searchParams.get('userid'),
+            myId: authState.data?._id
+        }));
+        if(res){
+            await dispatch(login({
+                email: authState.data?.email
+            }))
+            location.reload();
+        }
+    }
+
+    async function unFollow() {
+        const res = await dispatch(unFollowUser({
+            userId: searchParams.get('userid'),
+            myId: authState.data?._id
+        }));
+        if(res){
+            await dispatch(login({
+                email: authState.data?.email
+            }))
+            location.reload();
+        }
     }
 
     useEffect(() => {
@@ -167,6 +202,7 @@ function Profile() {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
+        if(searchParams.get('userid')) isFollowing();
         const len = topics.length;
         for(var i = 0; i < len; i ++){
             updateArrayAtIndex(i, 0);
@@ -204,12 +240,16 @@ function Profile() {
                 <div className="flex flex-col lg:flex-row max-lg:gap-5 items-center justify-between py-0.5">
                     <div className="flex flex-col">
                         <div className="flex flex-col sm:flex-row rounded-md w-full py-1.5 md:py-3">
-                            <div onClick={onLogout} className="hover:cursor-pointer text-light-blue-light rounded-md bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 py-2 text-gray-400 gap-4" title="Logout">
-                                <MdLogout className="w-5 h-5"/> Logout
-                            </div>
-                            <div onClick={showDeleteModal} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Delete account">
-                                <MdDelete className="w-5 h-5"/> Delete Account
-                            </div>
+                            {!searchParams.get('userid') && <>
+                                <div onClick={onLogout} className="hover:cursor-pointer text-light-blue-light rounded-md bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 py-2 text-gray-400 gap-4" title="Logout">
+                                    <MdLogout className="w-5 h-5"/> Logout
+                                </div>
+                                <div onClick={showDeleteModal} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Delete account">
+                                    <MdDelete className="w-5 h-5"/> Delete Account
+                                </div>
+                            </>}
+                            {!check && searchParams.get('userid') && <button className="border-gray-800 border-2 px-4 py-2 rounded-full font-bold font-inconsolata hover:bg-gray-800 transition-all ease-in-out" onClick={follow}>+ Follow</button>}
+                            {check && <button className="bg-gray-800 px-4 py-2 rounded-full font-bold font-inconsolata flex gap-2 items-center" onClick={unFollow}><MdDone/> Following</button>}
                         </div>
                     </div>
                     <div className="flex gap-4">

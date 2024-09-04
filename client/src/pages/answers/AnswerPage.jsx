@@ -32,7 +32,7 @@ function AnswerPage() {
         const user = authState.userList?.find((user) => user._id == quesState.currentQuestion[0]?.userId)
         if(quesState.currentQuestion[0]?.userId === authState.data?._id) setIsMyQues(true);
         const userIdx = authState.userList?.findIndex((user) => user._id == quesState.currentQuestion[0]?.userId);
-        const index = quesState.questionList.findIndex((question) => question._id === quesState.currentQuestion[0]?._id);
+        const index = quesState.downloadedQuestions.findIndex((question) => question._id === quesState.currentQuestion[0]?._id);
         setIdx(index); setUserIdx(userIdx);
         const dt = quesState?.currentQuestion[0]?.createdAt?.split('T')[0].split('-')
         if(dt){
@@ -41,6 +41,7 @@ function AnswerPage() {
             setQuestion(quesState.currentQuestion[0]?.question);
             setQuesImage(quesState.currentQuestion[0]?.image);
         }
+        console.log(quesState.questionList);
     }
 
     async function userView(){
@@ -55,7 +56,7 @@ function AnswerPage() {
         if(quesState.currentQuestion[0] && authState.userList) {
             loadUsers(); loadUser();
         }
-    }, [quesState.currentQuestion, authState.userList.length]);
+    }, [quesState.currentQuestion, authState.userList.length, ansState.solutionList]);
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
@@ -86,6 +87,7 @@ function AnswerPage() {
                 {!ansState.solutionList[idx]?.length ? (
                     <h2 className="text-white font-thin italic mb-5">No answers yet</h2>
                 ):ansState.solutionList[idx]?.map((sol) => {
+                    console.log(sol.solution);
                     let date = sol?.createdAt?.split('T')[0].split('-');
                     date = date[2] + "-" + date[1] + "-" + date[0];
                     return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={date} likes={sol.likes} isMyQues={isMyQues}/>)

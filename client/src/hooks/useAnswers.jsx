@@ -25,7 +25,7 @@ function useAnswers() {
 
     useEffect(() => {
         loadSolutions();
-    }, [quesState.questionList?.length,location.pathname, searchParams.get('userid')])
+    }, [quesState.questionList?.length, location.pathname, searchParams.get('userid'), searchParams.get('question')])
 
     return [ansState];
 }
