@@ -75,6 +75,7 @@ function Navbar(){
                 <ul className="flex text-base font-medium px-1 gap-5">
                     <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Home">Home</Link></li>
                     <li><Link to={'/explore'} className={`${location.pathname === `/explore` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Explore">Explore</Link></li>
+                    <li><h2 className={`${location.pathname === `/following` ? 'block border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : 'hidden'}`} title="Explore">Following</h2></li>
                 </ul>
             </div>
             <div className="navbar-end gap-5">

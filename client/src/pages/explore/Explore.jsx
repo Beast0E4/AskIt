@@ -9,14 +9,13 @@ import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import useQuestions from "../../hooks/useQuestions";
 import useAnswers from "../../hooks/useAnswers";
-import { getSolutionByUser } from "../../redux/Slices/ans.slice";
 
 function Explore() {
 
     const authState = useSelector(state => state.auth);
     const [quesState] = useQuestions();
     const [ansState] = useAnswers();
-
+    
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
 
@@ -57,21 +56,10 @@ function Explore() {
 
     useEffect(() => {
         calculateLength();
-    }, [searchParams.get('userid')])
-
-    async function loadSolutions(){
-        await dispatch(getSolutionByUser(searchParams.get('userid')));
-    }
-
-    useEffect(() => {
-        if(location.pathname === '/answers'){
-            loadSolutions(); 
-        }
-    }, [location.pathname])
+    }, [searchParams.get('topic')])
 
     useEffect(() => {
         loadUsers();
-        console.log('h');
     }, [])
 
     return (

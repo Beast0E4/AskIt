@@ -30,10 +30,10 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     }
 
     function filterquestion() {
-        const n = quesState.questionList.length;
+        const n = quesState.downloadedQuestions.length;
         let index = 0;
         for(var i = 0; i < n; i ++){
-            if(quesState.questionList[i]._id === questionId){
+            if(quesState.downloadedQuestions[i]._id === questionId){
                 index = i; break;
             }
         }
@@ -136,7 +136,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 <p className="ml-2 text-md">
                     {quest}
                 </p>
-                {quesImage && <div className="w-full flex justify-center"><img src={quesImage} className="py-2"/></div>}
+                {quesImage && <div className="flex justify-center"><img src={quesImage} className="py-2"/></div>}
             </div>
             <div className="bg-gray-700 h-[0.1px]"/>
             <div className="flex">

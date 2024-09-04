@@ -33,12 +33,12 @@ function useQuestions () {
     }
 
     useEffect(() => {
-        filterForYou();
+        if(users.length > 0) filterForYou();
     }, [users])
 
     useEffect(() => {
         loadQuestions();
-    }, [authState.token, searchParams.get('userid'), searchParams.get('question'), searchParams.get('topic'), location.pathname]);
+    }, [authState.token, searchParams.get('userid'), searchParams.get('question'), searchParams.get('topic')]);
     
     return [quesState];
 }

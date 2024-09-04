@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
 import { MdDelete, MdDone, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
-import useLikes from '../../hooks/useLikes'
 import LogoutModal from "../../layouts/LogoutModal";
 import { followUser, getUsers, login, unFollowUser, updateUser } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/cropUtils';
+import { RiUserFollowFill } from "react-icons/ri";
  
 function Profile() {
 
@@ -19,7 +19,6 @@ function Profile() {
 
     const [quesState] = useQuestions();
     const [ansState] = useAnswers();
-    const [likesState] = useLikes();
 
     const authState = useSelector((state) => state.auth); 
 
@@ -247,6 +246,9 @@ function Profile() {
                                 <div onClick={showDeleteModal} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Delete account">
                                     <MdDelete className="w-5 h-5"/> Delete Account
                                 </div>
+                                <Link to={'/following'} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Following">
+                                    <RiUserFollowFill className="w-5 h-5"/> Following
+                                </Link>
                             </>}
                             {!check && searchParams.get('userid') && <button className="border-gray-800 border-2 px-4 py-2 rounded-full font-bold font-inconsolata hover:bg-gray-800 transition-all ease-in-out" onClick={follow}>+ Follow</button>}
                             {check && <button className="bg-gray-800 px-4 py-2 rounded-full font-bold font-inconsolata flex gap-2 items-center" onClick={unFollow}><MdDone/> Following</button>}
@@ -264,9 +266,8 @@ function Profile() {
                         })}
                     </div>
                     <div className="flex flex-col sm:items-end items-center">
-                        {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer hover:bg-slate-700">{authState.selectedUser?.likedQuestion?.length} upvote(s) provided on questions</div></Link>}
+                        {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer hover:bg-slate-700" title="Upvoted questions">{authState.selectedUser?.likedQuestion?.length} upvote(s) provided on questions</div></Link>}
                         <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} upvote(s) on my interactions</div>
-                        <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{likesState.selectedUser?.likedQuestion?.length + likesState.selectedUser?.likedSolution?.length} upvote(s) by user</div>
                     </div>
                 </div>
                 <div className="w-full bg-gray-800 h-[1px] mb-2 mt-4"></div>

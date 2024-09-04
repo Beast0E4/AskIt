@@ -6,9 +6,9 @@ import Question from "../pages/createQuestion/Question";
 import Profile from "../pages/profile/Profile";
 import Answer from "../pages/createAnswer/Answer";
 import AnswerPage from "../pages/answers/AnswerPage";
-import Navbar from "../layouts/NavBar";
-import Users from "../pages/Users/Users";
+import Following from "../pages/Following/Following";
 import Explore from "../pages/explore/Explore";
+import Navbar from '../layouts/NavBar'
 import LikedQuestions from "../pages/likedQuestions/LikedQuestions";
 
 function MainRoutes() {
@@ -23,7 +23,7 @@ function MainRoutes() {
             <Route path="/questions" element={<><Navbar/><Home/></>} />
             <Route path="/answers" element={<><Navbar/><Home/></>} />
             <Route path="/answer" element={<><Navbar/><AnswerPage/></>}/>
-            <Route path="/users" element={<><Navbar/><Users/></>} />
+            <Route path="/following" element={<><Navbar/><Following/></>} />
             <Route path="/liked" element={<><Navbar/><LikedQuestions/></>}/>
             <Route path="/explore" element={<><Navbar/><Explore/></>} />
         </Routes>

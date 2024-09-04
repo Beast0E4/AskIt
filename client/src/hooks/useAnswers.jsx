@@ -15,9 +15,9 @@ function useAnswers() {
 
     async function loadSolutions(){
         let array = [];
-        let n = quesState.questionList?.length;
+        let n = quesState.downloadedQuestions?.length;
         for(let i = 0; i < n; i ++){
-            const ans = await dispatch(getSolutionByQuestion(quesState.questionList[i]._id));
+            const ans = await dispatch(getSolutionByQuestion(quesState.downloadedQuestions[i]._id));
             array[i] = ans?.payload?.data?.data;
         }
         await dispatch(getAllSolutions(array));
@@ -25,7 +25,7 @@ function useAnswers() {
 
     useEffect(() => {
         loadSolutions();
-    }, [quesState.questionList?.length, location.pathname, searchParams.get('userid'), searchParams.get('question')])
+    }, [quesState.downloadedQuestions?.length, location.pathname, searchParams.get('userid'), searchParams.get('question')])
 
     return [ansState];
 }

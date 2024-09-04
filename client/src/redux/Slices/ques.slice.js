@@ -103,7 +103,6 @@ const QuestionSlice = createSlice({
         filterQuestionByTopic: (state, action) => {
             const topic = action?.payload?.topic;
             state.questionList = state.questionList.filter((ques) => ques.topic === topic);
-            state.questionList = JSON.parse(JSON.stringify(state.questionList));
         },
         filterQuestionByUserandTopic: (state, action) => {
             const id = action?.payload?.id;
@@ -111,13 +110,14 @@ const QuestionSlice = createSlice({
             state.questionList = state.downloadedQuestions.filter((ques) => ques.topic === topic && ques.userId === id);
             state.questionList = JSON.parse(JSON.stringify(state.questionList));
         },
-        resetQuestionList: (state) => {
-            state.questionList = state.downloadedQuestions;
-        },
         filterQuestionForExplore: (state, action) => {
-            state.questionList = state.downloadedQuestions.filter(question => 
+            const list = state.downloadedQuestions.filter(question => 
                 action.payload.includes(question.userId)
             );
+            state.questionList = JSON.parse(JSON.stringify(list));
+        },
+        resetQuestionList: (state) => {
+            state.questionList = state.downloadedQuestions;
         }
     },
     extraReducers: (builder) => {
