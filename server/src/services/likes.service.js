@@ -46,15 +46,24 @@ const unLike = async(data) => {
     }
 }
 
-const getLikes = async() => {
+const getLikedQuestions = async(data) => {
     try {
-        const res = await Likes.find();
-        return res;
+        const likes = await Likes.find({solutionId: 'none', userId: data.id});
+        return likes
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getLikedSolutions = async(data) => {
+    try {
+        const likes = await Likes.find({questionId: 'none', userId: data.id});
+        return likes
     } catch (error) {
         throw error;
     }
 }
 
 module.exports = {
-    like, unLike, getLikes
+    like, unLike, getLikedQuestions, getLikedSolutions
 }

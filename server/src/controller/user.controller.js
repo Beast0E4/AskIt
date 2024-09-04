@@ -3,10 +3,9 @@ const userService = require('../services/user.service')
 
 exports.updateUser = async (req, res, next) => {
     try {
-        console.log(req.body);
         const result = await userService.updateUser(req.body, req.file);
         if(result.error) return res.status(StatusCodes.FORBIDDEN).json({
-            error: "User present"
+            error: result.error
         })
         res.status(StatusCodes.OK).send({
             success: true,
@@ -48,6 +47,29 @@ exports.deleteUser = async (req, res, next) => {
             error: {},
             data: result
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.followUser = async (req, res, next) => {
+    try {
+        console.log('Req:', req.body);
+        const result = await userService.followUser(req.body.userId, req.body.myId);
+        if(result) res.status(StatusCodes.CREATED).send({
+            following: result
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.unFollowUser = async (req, res, next) => {
+    try {
+        const result = await userService.unFollowUser(req.body.userId, req.body.myId);
+        if(result) res.status(StatusCodes.CREATED).send({
+            following: result
+        })
     } catch (error) {
         next(error);
     }

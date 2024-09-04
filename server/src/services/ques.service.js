@@ -1,18 +1,28 @@
+const cloudinary = require("../config/cloudinary.config");
 const Likes = require("../models/likes.model");
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
 const User = require("../models/user.model");
 
-const createQuestion = async(data) => {
+const createQuestion = async(data, file) => {
     try {
+        console.log('Ques image: ', file);
         const user = await User.findById(data.userId);
         if(!user){
-            console.log(data);
             console.log('No user'); return;
+        }
+        let result = null;
+        if(file){
+            result = await cloudinary.uploader.upload(file.path, {
+                folder: 'question_images',
+            });
         }
         const quesObj = {
             userId: data.userId,
+            title: data.title,
             question: data.question,
+            topic: data.topic,
+            image: result?.secure_url
         }
         const response = Questions.create(quesObj);
         return response;
@@ -42,14 +52,18 @@ const getQuestion = async(data) => {
 const deleteQuestion = async(ques) => {
     try {
         const res = await Solutions.find({questionId: ques.id});
-        console.log('Check: ', res);
         res.forEach(async (sol) => {
             await Likes.deleteMany({solutionId: sol.id});
         })
+        const quest = await Questions.findById(ques.id);
+        if(quest.image){
+            const publicId = quest.image.split('/').slice(-2).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
+        }
         await Solutions.deleteMany({questionId: ques.id});
         await Likes.deleteMany({questionId: ques.id})
-        const quest = await Questions.findByIdAndDelete(ques.id);
-        return quest;
+        const question = await Questions.findByIdAndDelete(ques.id);
+        return question;
     } catch (error) {
         throw error;
     }

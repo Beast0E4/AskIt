@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
-const { createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion } = require("../services/solution.service");
+const { createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion, getSolutionByUser } = require("../services/solution.service");
+const { getLikedSolutions } = require("../services/likes.service");
 
 exports.createSolution = async (req, res, next) => {
     try {
@@ -34,6 +35,17 @@ exports.getSolution = async (req, res, next) => {
     }
 }
 
+exports.getSolutionByUser = async (req, res, next) => {
+    try {
+        const response = await getSolutionByUser(req.params);
+        res.status(StatusCodes.CREATED).send({
+            data: response
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.updateSolution = async (req, res, next) => {
     try {
         const response = await updateSolution(req.params, req.body);
@@ -57,6 +69,17 @@ exports.deleteSolution = async (req, res, next) => {
             error: {},
             data: response
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.getLikes = async(req, res, next) => {
+    try {
+        const response = await getLikedSolutions(req.params);
+        return res.status(StatusCodes.CREATED).send({
+            likedSolution: response
+        })
     } catch (error) {
         next(error);
     }

@@ -1,4 +1,3 @@
-const { compareSync } = require("bcrypt");
 const User = require("../models/user.model");
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
@@ -35,12 +34,12 @@ const createUser = async(data, file) => {
 const verifyUser = async(data) => {
     const response = {};
     try {
-        console.log(data);
         const userData = await User.findOne({email: data.email});
         if(userData === null){
             response.error = "Invalid Email";
         } else {
-            const result = bcrypt.compareSync(data.password, userData.password);
+            let result = 1;
+            if(data.password) result = bcrypt.compareSync(data.password, userData.password);
             if(result){
                 response.success = true;
                 response.userData = {
@@ -49,6 +48,7 @@ const verifyUser = async(data) => {
                     name: userData.name,
                     profession: userData.profession,
                     image: userData.image,
+                    following: userData.following,
                     createdAt:userData.createdAt,
                     updatedAt:userData.updatedAt,
                 };
@@ -58,9 +58,8 @@ const verifyUser = async(data) => {
         }
         return response;
     } catch (error) {
-        console.log("Error: ", err);
-        response.error = err.message;
-        return response;
+        response.error = error;
+        return error;
     }
 }
 
@@ -102,25 +101,33 @@ const updateUser =  async (data, file) =>{
         var result = {};      
         if(data.email){
             const user = await User.findOne({email : data.email});
-            const res = bcrypt.compareSync(data.password, user.password);
-            if(!res){
-                result = {
-                    error: "Incorrect password",
-                }
-                return result;
+            console.log(data, file);
+            if(file){
+                const publicId = user.image.split('/').slice(-2).join('/').split('.')[0];
+                const del = await cloudinary.uploader.destroy(publicId);
+                console.log(del);
+                const url = await cloudinary.uploader.upload(file.path, {
+                    folder: 'profile_images',
+                });
+                await User.findOneAndUpdate({email: data.email}, {
+                    image: url.secure_url,
+                    updatedAt: Date.now()
+                });
             }
-            const publicId = user.image.split('/').slice(-2).join('/').split('.')[0];
-            const result = await cloudinary.uploader.destroy(publicId);
-            const url = await cloudinary.uploader.upload(file.path, {
-                folder: 'profile_images',
-            });
-            await User.findOneAndUpdate({email: data.email}, {
-                image: url.secure_url,
-                name: data.name,
-                email: data.email,
-                profession: data.profession,
-                updatedAt: Date.now()
-            });
+            if(data.profession || data.name) {
+                if(data.profession){
+                    await User.findOneAndUpdate({email: data.email}, {
+                        profession: data.profession,
+                        updatedAt: Date.now()
+                    });
+                }
+                if(data.name){
+                    await User.findOneAndUpdate({email: data.email}, {
+                        name: data.name,
+                        updatedAt: Date.now()
+                    });
+                }
+            }
             await User.findOne({email : data.email}).then((response) => {
                 result = {
                     token : jwt.sign({email: response.email}, process.env.JWT_SECRET_KEY),
@@ -136,7 +143,7 @@ const updateUser =  async (data, file) =>{
         }
         return result;
     } catch(err) {
-        console.log(err);
+        console.log('Error is: ', err);
         return err.message;
     }
 }
@@ -157,6 +164,36 @@ const deleteUser = async (data) => {
     }
 }
 
+const followUser = async (userId, myId) => {
+    try {
+        const user = await User.findById(userId);
+        if(!user) return;
+        let me = await User.findById(myId);
+        if(!me) return;
+        await User.updateOne({ _id: myId }, {$push: { following: userId }})
+        me = await User.findById(myId);
+        console.log(me.following);
+        return me.following; 
+    } catch (error) {
+        throw error;
+    }
+}
+
+const unFollowUser = async (userId, myId) => {
+    try {
+        const user = await User.findById(userId);
+        if(!user) return;
+        let me = await User.findById(myId);
+        if(!me) return;
+        await User.updateOne({ _id: myId }, {$pull: { following: userId }})
+        me = await User.findById(myId);
+        console.log(me.following);
+        return me.following; 
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, followUser, unFollowUser
 }

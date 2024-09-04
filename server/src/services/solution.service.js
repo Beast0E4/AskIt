@@ -42,6 +42,15 @@ const getSolution = async(sol) => {
     }
 }
 
+const getSolutionByUser = async(sol) => {
+    try {
+        const soln = await Solutions.find({userId : sol.id});
+        return soln;
+    } catch (error) {
+        throw error;
+    }
+}
+
 const deleteSolution = async(sol) => {
     try {
         await Likes.deleteMany({solutionId: sol.id});
@@ -62,5 +71,5 @@ const getSolutionByQuestion = async(quesId) => {
 }
 
 module.exports = {
-    createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion
+    createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion, getSolutionByUser
 }

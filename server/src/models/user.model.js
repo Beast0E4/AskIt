@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         match: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{5,}$/,
     },
+    following: {
+        type: [String]
+    },
     createdAt:{
         type: Date,
         immutable: true,
