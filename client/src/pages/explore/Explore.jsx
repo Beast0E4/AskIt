@@ -55,9 +55,9 @@ function Explore() {
         setSolLength(lt);
     }
 
-    const filteredQuestions = quesState.questionList?.filter((quest) =>
-        quest.title?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-        quest.question?.toLowerCase().includes(searchQuery?.toLowerCase())
+    let filteredQuestions = quesState.questionList;
+    if(searchQuery) filteredQuestions = quesState.questionList?.filter((quest) =>
+        quest.title?.toLowerCase().includes(searchQuery?.toLowerCase())
     );
 
     useEffect(() => {
@@ -82,15 +82,7 @@ function Explore() {
                     ))}
                 </div>
                 <div className="fixed sm:right-5">
-                    <div className="h-max w-[14.5rem] rounded-md mt-3 hidden lg:flex flex-col border-[2px] border-gray-800">
-                        <h1 className=" p-2 font-bold bg-gray-900 font-sans border-b-[1px] border-gray-800">User details</h1>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length}</span></h2>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total questions asked</span><span>{quesLength}</span></h2>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total solutions provided</span><span>{solLength}</span></h2>
-                        <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on questions</span><span>{quesLikes}</span></h3>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on answers</span><span>{solLikes}</span></h2>
-                    </div>
-                    <div className="mt-8 relative text-gray-600 w-[14.5rem]">
+                <div className="mt-5 relative text-gray-600 w-[14.5rem]">
                         <input
                             className="bg-gray-900 text-white border-[2px] border-gray-800 placeholder:text-gray-300 h-10 px-5 pr-8 rounded-lg text-sm w-[14.7rem] focus:outline-none"
                             name="search"
@@ -104,6 +96,14 @@ function Explore() {
                                 <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
                             </svg>
                         </div>
+                    </div>
+                    <div className="h-max w-[14.5rem] rounded-md mt-5 hidden lg:flex flex-col border-[2px] border-gray-800">
+                        <h1 className=" p-2 font-bold bg-gray-900 font-sans border-b-[1px] border-gray-800">User details</h1>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length}</span></h2>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total questions asked</span><span>{quesLength}</span></h2>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total solutions provided</span><span>{solLength}</span></h2>
+                        <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on questions</span><span>{quesLikes}</span></h3>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on answers</span><span>{solLikes}</span></h2>
                     </div>
                 </div>
             </div>
