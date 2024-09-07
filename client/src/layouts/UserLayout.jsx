@@ -20,7 +20,7 @@ function UserLayout({username, profession, userId, image}) {
     }
 
     return(
-        <div className="flex my-1 p-3 bg-gray-900 ">
+        <div className="flex w-full my-1 p-3 bg-gray-900 ">
             <a className="grid mr-4 place-items-center" href={image}>
                 <img alt={username} src={image}
                 className="h-12 w-12 !rounded-full  object-cover object-center" />

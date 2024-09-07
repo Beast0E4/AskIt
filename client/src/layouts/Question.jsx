@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteQues, likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
+import { likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
 import { useEffect, useState } from "react";
 import { getLikedQuestions } from "../redux/Slices/auth.slice";
 import { MdDelete } from "react-icons/md";
 import useAnswers from "../hooks/useAnswers";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
+import DeleteModal from "./DeleteModal";
 
 // eslint-disable-next-line react/prop-types
 function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage}) {
@@ -24,6 +25,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [totLikes, setTotLikes] = useState(likes)
     const [isLiked, setIsLiked] = useState(false);
     const [quest, setQuest] = useState(question)
+    const [selectedQues, setSelectedQues] = useState();
+    const [showModal, setShowModal] = useState(false);
 
     async function answer() {
         navigate(`/create-answer?question=${questionId}`);
@@ -56,8 +59,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     }
 
     async function onDelete(){
-        const res = await dispatch(deleteQues(questionId));
-        if(res.payload) location.reload();
+        setSelectedQues(questionId);
+        setShowModal(true);
     }
 
     async function onView() {
@@ -154,6 +157,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     <MdDelete className="hover:cursor-pointer" onClick={onDelete}/>
                 </div>}
             </div>
+            {showModal && <DeleteModal type='question' id={selectedQues}/>}
         </article>
     )
 }

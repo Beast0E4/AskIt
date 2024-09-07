@@ -69,9 +69,9 @@ function Question() {
     }
 
     function handleCancelCrop() {
-        setFile(null); // Reset the file state
-        setCropping(false); // Close the cropping modal
-        document.getElementById('fileInput').value = ""; // Clear the file input value
+        setFile(null); 
+        setCropping(false); 
+        setImageName(""); 
     }
 
     useEffect(() => {
@@ -138,7 +138,7 @@ function Question() {
                                 </div>
                             </div>
                         )}
-                    <input type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
+                    <input id="fileInput" type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
                     <input name="title" onChange={handleONChange} value={question.title} className="textarea w-full" placeholder="Title for question"/>
                     <textarea name="question" onChange={handleONChange} value={question.question} className="textarea textarea-bordered w-full resize-none" placeholder="Your question" rows={5}></textarea>
                     <button onClick={handleSubmit} className="btn btn-primary bg-gray-700 hover:bg-gray-800 hover:border-transparent border-transparent w-full font-bold text-white">{loading ? 'Uploading question ...' : 'CREATE'}</button>

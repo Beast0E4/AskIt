@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import DeleteModal from "../../layouts/DeleteModal";
+import DeleteAccModal from "../../layouts/DeleteAccModal";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
@@ -330,7 +330,7 @@ function Profile() {
                     </div>
                 </div>}
             </div>
-            <DeleteModal />
+            <DeleteAccModal />
             <LogoutModal />
         </section>   
     )

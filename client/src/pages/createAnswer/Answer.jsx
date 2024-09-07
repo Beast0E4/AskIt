@@ -52,9 +52,12 @@ function Answer() {
             <div className="w-[20rem] sm:w-[50rem] h-full bg-gray-900 rounded-lg  md:mt-0 xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your answer</h1>
-                    <p className="my-2 py-3 px-2">
-                        {quesState?.currentQuestion[0]?.question}
-                    </p>
+                    <div>
+                        <p className="my-2 py-3 px-2">
+                            {quesState?.currentQuestion[0]?.question}
+                        </p>
+                        {quesState?.currentQuestion[0]?.image && <a href={quesState?.currentQuestion[0]?.image} className="flex justify-center"><img src={quesState?.currentQuestion[0]?.image} /></a>}
+                    </div>
                     <h3 className="mt-10">Add answer here</h3>
                     <textarea onChange={handleChange} name="solution" value={ans.solution} className="textarea textarea-bordered w-full resize-none" rows={10}></textarea>
                     <button onClick={onSubmit} className="btn btn-primary bg-gray-700 hover:bg-gray-800 hover:border-transparent border-transparent w-full font-bold text-white">{loading ? 'Uploading answer ...' : 'CREATE'}</button>

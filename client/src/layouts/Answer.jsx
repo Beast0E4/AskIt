@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteSol, getSolution, likeSolution, unLikeSolution } from "../redux/Slices/ans.slice";
+import { getSolution, likeSolution, unLikeSolution } from "../redux/Slices/ans.slice";
 import { useNavigate } from "react-router-dom";
 import { TbPencil } from "react-icons/tb";
 import EditAnswerModal from "./EditAnswerModal";
 import { getLikedSolutions } from "../redux/Slices/auth.slice";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
+import DeleteModal from './DeleteModal'
 
 // eslint-disable-next-line react/prop-types
 function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
@@ -22,6 +23,8 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
     const [totLikes, setTotLikes] = useState(likes)
     const [isLiked, setIsLiked] = useState(false);
     const [ans, setAns] = useState(solution);
+    const [selectedSol, setSelectedSol] = useState();
+    const [showModal, setShowModal] = useState(false);
 
     function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
@@ -35,8 +38,8 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
     }
 
     async function onDelete(){
-        const res = await dispatch(deleteSol(solId));
-        if(res.payload) navigate('/');
+        setSelectedSol(solId);
+        setShowModal(true);
     }
 
     async function onLike() {
@@ -123,6 +126,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                     {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                 </button>
             </div>
+            {showModal && <DeleteModal type="solution" id={selectedSol}/>}
             <EditAnswerModal />
         </article>
     )
