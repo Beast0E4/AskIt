@@ -221,7 +221,7 @@ function Profile() {
                 <div className="flex flex-col sm:flex-row max-sm:gap-5 items-center sm:items-end justify-between mb-5">
                     <div className="block">
                         <h3 className="font-manrope font-bold text-4xl text-white mb-1">{user?.name}</h3>
-                        <p className="font-normal text-base leading-7 text-gray-500">{user?.email}</p>
+                        {!searchParams.get('userid') && <p className="font-normal text-base leading-7 text-gray-500">{user?.email}</p>}
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="py-2 px-5 text-sm text-gray-300 items-center border-r-[1px] border-gray-300">Registered {date}</div>

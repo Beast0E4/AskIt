@@ -102,7 +102,8 @@ const QuestionSlice = createSlice({
         },
         filterQuestionByTopic: (state, action) => {
             const topic = action?.payload?.topic;
-            state.questionList = state.questionList.filter((ques) => ques.topic === topic);
+            state.questionList = state.downloadedQuestions.filter((ques) => ques.topic === topic);
+            console.log('SLice', state.questionList);
         },
         filterQuestionByUserandTopic: (state, action) => {
             const id = action?.payload?.id;

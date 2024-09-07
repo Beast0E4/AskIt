@@ -18,7 +18,6 @@ function useQuestions () {
         if(location.pathname === '/explore'){
             const newUsers = [];
             authState.data?.following?.forEach(id => newUsers.push(id));
-            newUsers.push(authState.data?._id);
             setUsers(users => [...users, ...newUsers]);
         }
         if(searchParams.get('userid') && searchParams.get('topic')) dispatch(filterQuestionByUserandTopic({id: searchParams.get('userid'), topic: searchParams.get('topic')}))
