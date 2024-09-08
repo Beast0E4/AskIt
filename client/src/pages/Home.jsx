@@ -109,7 +109,7 @@ function Home() {
                     ))}
                 </div>
                 <div className="fixed sm:right-5">
-                    <div className="mt-5 relative text-gray-600 w-[14.5rem]">
+                    <div className="hidden lg:flex mt-5 relative text-gray-600 w-[14.5rem]">
                         <input
                             className="bg-gray-900 text-white border-[2px] border-gray-800 placeholder:text-gray-300 h-10 px-5 pr-8 rounded-lg text-sm w-[14.7rem] focus:outline-none"
                             name="search"
