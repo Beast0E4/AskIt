@@ -24,6 +24,7 @@ function MainRoutes() {
             <Route path="/answers" element={<><Navbar/><Home/></>} />
             <Route path="/answer" element={<><Navbar/><AnswerPage/></>}/>
             <Route path="/following" element={<><Navbar/><Following/></>} />
+            <Route path="/followers" element={<><Navbar/><Following/></>} />
             <Route path="/liked" element={<><Navbar/><LikedQuestions/></>}/>
             <Route path="/explore" element={<><Navbar/><Explore/></>} />
         </Routes>

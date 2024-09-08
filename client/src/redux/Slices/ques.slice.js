@@ -103,7 +103,6 @@ const QuestionSlice = createSlice({
         filterQuestionByTopic: (state, action) => {
             const topic = action?.payload?.topic;
             state.questionList = state.downloadedQuestions.filter((ques) => ques.topic === topic);
-            console.log('SLice', state.questionList);
         },
         filterQuestionByUserandTopic: (state, action) => {
             const id = action?.payload?.id;
@@ -112,7 +111,7 @@ const QuestionSlice = createSlice({
             state.questionList = JSON.parse(JSON.stringify(state.questionList));
         },
         filterQuestionForExplore: (state, action) => {
-            const list = state.downloadedQuestions.filter(question => 
+            const list = state.questionList.filter(question => 
                 action.payload.includes(question.userId)
             );
             state.questionList = JSON.parse(JSON.stringify(list));

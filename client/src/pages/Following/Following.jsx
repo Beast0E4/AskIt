@@ -19,7 +19,9 @@ function Following() {
         setLoading(true);
         try {
             await dispatch(getUsers());
-            const newUsers = authState.userList?.filter((user) => authState.data?.following?.includes(user._id));
+            let newUsers;
+            if(location.pathname === '/following') newUsers = authState.userList?.filter((user) => authState.data?.following?.includes(user._id));
+            else newUsers = authState.userList?.filter((user) => user.following?.includes(authState.data?._id));
             setUsers(users => [...users, ...newUsers]);
         } catch (error) {
             toast.error('Something went wrong'); setLoading(false);

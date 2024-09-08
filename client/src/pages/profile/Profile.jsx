@@ -12,6 +12,7 @@ import Loader from "../../layouts/Loader";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/cropUtils';
 import { RiUserFollowFill } from "react-icons/ri";
+import { IoPerson } from "react-icons/io5";
  
 function Profile() {
 
@@ -41,6 +42,7 @@ function Profile() {
     const [file, setFile] = useState();
     const [name, setName] = useState(authState.data?.name);
     const [profession, setProfession] = useState(authState.data?.profession);
+    const [followers, setFollowers] = useState(0);
 
     const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory", "Sports"];
 
@@ -82,7 +84,7 @@ function Profile() {
         setQuesLikes(quesLikes);
         if(ques.length) setQuesLength(ques.length);
         const newArr = ansState.solutionList.flat();
-        const arr = newArr.filter((ans) => ans.userId === user?._id);
+        const arr = newArr.filter((ans) => ans?.userId === user?._id);
         let ansLikes = 0;
         arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
         const lt = newArr.filter(sol => sol.userId === user?._id).length;
@@ -163,6 +165,18 @@ function Profile() {
         document.getElementById('fileInput').value = ""; 
     }
 
+    function followerCount(){
+        authState.userList?.map((user) => {
+            if(searchParams.get('userid')){
+                if(user.following?.includes(searchParams.get('userid')))
+                setFollowers(followers => followers + 1);
+            }
+            else if(user.following?.includes(authState.data?._id)){
+                setFollowers(followers => followers + 1);
+            }
+        })
+    }
+
     async function follow() {
         const res = await dispatch(followUser({
             userId: searchParams.get('userid'),
@@ -190,7 +204,7 @@ function Profile() {
     }
 
     useEffect(() => {
-        loadUser();
+        loadUser(); followerCount();
     }, [authState.userList?.length]);
 
     useEffect(() => {
@@ -218,10 +232,16 @@ function Profile() {
                 <div className="flex items-center justify-center sm:justify-start relative z-10 mb-5">
                     <a href={user?.image} className="w-max"><img src={user?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" /></a>
                 </div>
-                <div className="flex flex-col sm:flex-row max-sm:gap-5 items-center sm:items-end justify-between mb-5">
+                <div className="flex flex-col sm:flex-row max-sm:gap-5 items-center sm:items-end justify-between mb-3">
                     <div className="block">
                         <h3 className="font-manrope font-bold text-4xl text-white mb-1">{user?.name}</h3>
                         {!searchParams.get('userid') && <p className="font-normal text-base leading-7 text-gray-500">{user?.email}</p>}
+                        <div className="flex items-center gap-4">
+                            <p className="mt-2 font-normal text-base leading-7 text-gray-400">{followers} Followers</p>
+                            <span className="font-bold">.</span>
+                            <p className="mt-2 font-normal text-base leading-7 text-gray-400">{user?.following?.length} Following</p>
+                            
+                        </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="py-2 px-5 text-sm text-gray-300 items-center border-r-[1px] border-gray-300">Registered {date}</div>
@@ -246,8 +266,11 @@ function Profile() {
                                 <div onClick={showDeleteModal} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Delete account">
                                     <MdDelete className="w-5 h-5"/> Delete Account
                                 </div>
-                                <Link to={'/following'} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Following">
+                                <Link to={`/following`} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Following">
                                     <RiUserFollowFill className="w-5 h-5"/> Following
+                                </Link>
+                                <Link to={`/followers`} className="hover:cursor-pointer text-light-blue-light bg-gray-800 hover:text-white inline-flex items-center mr-4 px-4 rounded-md py-2 text-gray-400 gap-4" title="Followers">
+                                    <IoPerson className="w-5 h-5"/> Followers
                                 </Link>
                             </>}
                             {!check && searchParams.get('userid') && <button className="border-gray-800 border-2 px-4 py-2 rounded-full font-bold font-inconsolata hover:bg-gray-800 transition-all ease-in-out" onClick={follow}>+ Follow</button>}
@@ -317,14 +340,14 @@ function Profile() {
                     <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
                         <h2 className="text-gray-400 font-inconsolata flex items-center">Update name</h2>
                         <div className="w-max flex flex-col sm:flex-row sm:items-center gap-4 items-start">
-                            <input onChange={handleChange} type="text" name="name" value={name} className="bg-gray-900 border text-white sm:text-sm rounded-lg block p-2.5" placeholder="John Doe" required/>
+                            <input onChange={handleChange} type="text" name="name" value={name} className="bg-gray-900 text-white sm:text-sm rounded-lg block p-2.5 border-[2px] border-gray-800 focus:outline-none" placeholder="John Doe" required/>
                             <button onClick={onSubmit} id="name" className="text-sm border-[1px] border-white p-2 rounded-md font-semibold px-4 hover:bg-white hover:text-black transition-all ease-in-out">Update</button>
                         </div>
                     </div>
                     <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
                         <h2 className="text-gray-400 flex font-inconsolata items-center">Update profession</h2>
                         <div className="w-max flex flex-col sm:flex-row sm:items-center items-start gap-4">
-                            <input onChange={handleChange} type="text" name="profession" value={profession} className="bg-gray-900 border text-white sm:text-sm rounded-lg block p-2.5" placeholder="John Doe" required/>
+                            <input onChange={handleChange} type="text" name="profession" value={profession} className="bg-gray-900 border-[2px] border-gray-800 text-white sm:text-sm rounded-lg block p-2.5 focus:outline-none" placeholder="Profession" required/>
                             <button onClick={onSubmit} id="profession" className="text-sm border-[1px] border-white p-2 rounded-md font-semibold px-4 hover:bg-white hover:text-black transition-all ease-in-out">Update</button>
                         </div>
                     </div>

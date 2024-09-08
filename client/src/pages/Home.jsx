@@ -126,7 +126,7 @@ function Home() {
                     </div>
                     <div className="mt-5 h-max w-[14.5rem] rounded-md hidden lg:flex flex-col border-[2px] border-gray-800">
                         <h1 className=" p-2 font-bold bg-gray-900 font-sans border-b-[1px] border-gray-800">User details</h1>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length}</span></h2>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length || 0}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total questions asked</span><span>{quesLength}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total solutions provided</span><span>{solLength}</span></h2>
                         <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on questions</span><span>{quesLikes}</span></h3>

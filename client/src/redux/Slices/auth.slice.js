@@ -82,11 +82,7 @@ export const unFollowUser = createAsyncThunk('auth/unFollowUser', async(data) =>
 
 export const getUsers = createAsyncThunk('users/getUsers', async () => {     
     try {
-        const response = axiosInstance.get(`users`, {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        });
+        const response = axiosInstance.get(`users`);
         if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {

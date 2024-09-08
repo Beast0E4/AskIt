@@ -79,7 +79,7 @@ function Navbar(){
                 </ul>
             </div>
             <div className="navbar-end gap-5">
-                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 hover:border-[#F2BEA0] hover:text-[#F2BEA0] font-bold" to={`/profile`} title="Profile">{authState.isLoggedIn ? authState.data.name.substring(0, 10) : "Log In"}</Link>
+                <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 hover:border-[#F2BEA0] hover:text-[#F2BEA0] font-bold" to={`/profile`} title="Profile">{authState.isLoggedIn ? authState.data?.name.substring(0, 10) : "Log In"}</Link>
             </div>
         </div>
     )
