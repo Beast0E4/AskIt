@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 function TopicsBar() {
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const authState = useSelector((state) => state.auth);
 
@@ -18,7 +19,7 @@ function TopicsBar() {
             else navigate(`${location.pathname}`);
         } 
         else if(topic) {
-            if(location.pathname === '/questions') navigate(`${location.pathname}?userid=${authState.data?._id}&topic=${topic}`);
+            if(location.pathname === '/questions') navigate(`${location.pathname}?userid=${searchParams.get('userid')}&topic=${topic}`);
             else navigate(`${location.pathname}?topic=${topic}`);
         }
     }, [topic, location.pathname])

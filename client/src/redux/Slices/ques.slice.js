@@ -5,6 +5,7 @@ import axiosInstance from "../../config/axiosInstance";
 const initialState = {
     downloadedQuestions: [],
     questionList: [],
+    currentList: [],
     currentQuestion: {}
 };
 
@@ -102,19 +103,28 @@ const QuestionSlice = createSlice({
         },
         filterQuestionByTopic: (state, action) => {
             const topic = action?.payload?.topic;
-            state.questionList = state.questionList.filter((ques) => ques.topic === topic);
+            state.questionList = state.currentList.filter((ques) => ques.topic === topic);
         },
         filterQuestionByUserandTopic: (state, action) => {
             const id = action?.payload?.id;
             const topic = action?.payload?.topic;
-            state.questionList = state.downloadedQuestions.filter((ques) => ques.topic === topic && ques.userId === id);
-            state.questionList = JSON.parse(JSON.stringify(state.questionList));
+            state.questionList = state.currentList.filter((ques) => (ques.topic === topic && ques.userId === id));
         },
         filterQuestionForExplore: (state, action) => {
-            const list = state.questionList.filter(question => 
+            state.currentList = state.downloadedQuestions.filter(question => 
                 action.payload.includes(question.userId)
             );
-            state.questionList = JSON.parse(JSON.stringify(list));
+            state.questionList = state.currentList;
+        },
+        sortQuestionForTrending: (state) => {
+            const list = [...state.downloadedQuestions];
+            if (list.length > 0) {
+                list.sort((quesA, quesB) => {
+                    return quesB.likes - quesA.likes;
+                });
+            }
+            state.currentList = list;
+            state.questionList = state.currentList;
         },
         resetQuestionList: (state) => {
             state.questionList = state.downloadedQuestions;
@@ -136,6 +146,6 @@ const QuestionSlice = createSlice({
     }
 });
 
-export const { filterQuestionById, resetQuestionList, filterQuestionByUser, filterQuestionByTopic, filterQuestionByUserandTopic, filterQuestionForExplore } = QuestionSlice.actions;
+export const { filterQuestionById, resetQuestionList, filterQuestionByUser, filterQuestionByTopic, filterQuestionByUserandTopic, filterQuestionForExplore, sortQuestionForTrending } = QuestionSlice.actions;
 
 export default QuestionSlice.reducer;

@@ -52,7 +52,7 @@ function Home() {
         setQuesLikes(quesLikes);
         if(ques.length) setQuesLength(ques.length);
         const newArr = ansState.solutionList.flat();
-        const arr = newArr.filter((ans) => ans.userId === authState.data?._id);
+        const arr = newArr.filter((ans) => ans?.userId === authState.data?._id);
         let ansLikes = 0;
         arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
         const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
@@ -70,7 +70,7 @@ function Home() {
 
     useEffect(() => {
         calculateLength();
-    }, [searchParams.get('userid')])
+    }, [searchParams])
 
     async function loadSolutions(){
         await dispatch(getSolutionByUser(searchParams.get('userid')));
@@ -91,7 +91,7 @@ function Home() {
             <div className="flex gap-3 bg-gray-950 pt-[4rem] overflow-hidden min-h-screen px-2 justify-center">
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
-                    {(location.pathname === '/questions' || location.pathname === '/') && (loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest) => {
+                    {(location.pathname === '/questions' || location.pathname === '/' || location.pathname === '/trending') && (loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest) => {
                         let date = quest.createdAt?.split('T')[0].split('-');
                         date = date[2] + "-" + date[1] + "-" + date[0];
                         return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)

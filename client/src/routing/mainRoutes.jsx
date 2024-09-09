@@ -20,6 +20,7 @@ function MainRoutes() {
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/create-answer" element={<Answer/>}/>
             <Route path="/" element={<><Navbar/><Home/></>} />
+            <Route path="/trending" element={<><Navbar/><Home/></>} />
             <Route path="/questions" element={<><Navbar/><Home/></>} />
             <Route path="/answers" element={<><Navbar/><Home/></>} />
             <Route path="/answer" element={<><Navbar/><AnswerPage/></>}/>

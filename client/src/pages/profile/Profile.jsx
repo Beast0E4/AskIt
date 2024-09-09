@@ -3,6 +3,7 @@ import DeleteAccModal from "../../layouts/DeleteAccModal";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
+import useLikes from '../../hooks/useLikes'
 import { MdDelete, MdDone, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import LogoutModal from "../../layouts/LogoutModal";
@@ -20,6 +21,7 @@ function Profile() {
 
     const [quesState] = useQuestions();
     const [ansState] = useAnswers();
+    useLikes();
 
     const authState = useSelector((state) => state.auth); 
 
