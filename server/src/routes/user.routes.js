@@ -1,4 +1,4 @@
-const { isUserAuthenticated } = require("../validators/auth.validator")
+const { isUserAuthenticated } = require("../validators/auth.validator");
 const userController = require('../controller/user.controller');
 const upload = require("../config/multer.config");
 

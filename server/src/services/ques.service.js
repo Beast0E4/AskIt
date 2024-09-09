@@ -6,7 +6,6 @@ const User = require("../models/user.model");
 
 const createQuestion = async(data, file) => {
     try {
-        console.log('Ques image: ', file);
         const user = await User.findById(data.userId);
         if(!user){
             console.log('No user'); return;
