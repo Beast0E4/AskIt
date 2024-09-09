@@ -238,9 +238,8 @@ function Profile() {
                         {!searchParams.get('userid') && <p className="font-normal text-base leading-7 text-gray-500">{user?.email}</p>}
                         <div className="flex items-center gap-4">
                             <p className="mt-2 font-normal text-base leading-7 text-gray-400">{followers} Followers</p>
-                            <span className="font-bold">.</span>
+                            <span className="font-bold text-gray-400">.</span>
                             <p className="mt-2 font-normal text-base leading-7 text-gray-400">{user?.following?.length} Following</p>
-                            
                         </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
