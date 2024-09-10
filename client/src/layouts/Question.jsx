@@ -7,6 +7,10 @@ import { MdDelete } from "react-icons/md";
 import useAnswers from "../hooks/useAnswers";
 import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 import DeleteModal from "./DeleteModal";
+import { FiSend } from "react-icons/fi";
+import { createComment, getComments } from "../redux/Slices/comment.slice";
+import useComments from "../hooks/useComments";
+import Comment from "./Comment";
 
 // eslint-disable-next-line react/prop-types
 function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage}) {
@@ -14,6 +18,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
     const authState = useSelector((state) => state.auth);
+    const [commentState] = useComments();
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -27,6 +32,17 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [quest, setQuest] = useState(question)
     const [selectedQues, setSelectedQues] = useState();
     const [showModal, setShowModal] = useState(false);
+    const [showComments, setShowComments] = useState(false);
+    const [comments, setComments] = useState();
+    const [commentDetails, setCommentDetails] = useState({
+        userId:authState.data?._id,
+        questionId: questionId,
+        description: ""
+    })
+
+    function loadComments() {
+        setComments(commentState.commentList.filter((comment) => comment.questionId === questionId));
+    }
 
     async function answer() {
         navigate(`/create-answer?question=${questionId}`);
@@ -70,6 +86,13 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         navigate(`/answer?question=${questionId}`); 
     }
 
+    async function handleChange(e) {
+        setCommentDetails({
+            ...commentDetails,
+            description: e.target.value
+        })
+    }
+
     async function onLike() {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
@@ -99,6 +122,20 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
             await dispatch(getLikedQuestions(authState.data?._id));
         }
     }
+
+    async function submitComment(){
+        const res = await dispatch(createComment(commentDetails));
+        if(res){
+            setCommentDetails({
+                ...commentDetails, description: ""
+            })
+            await dispatch(getComments());
+        }
+    }
+
+    useEffect(() => {
+        loadComments();
+    }, [commentState.commentList.length])
 
     useEffect(() => {
         filterquestion(); findName(); 
@@ -152,11 +189,36 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                         <span className="ml-1">{totLikes}</span>
                         {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                     </button>
+                    <h2 className="text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments</h2>
                 </div>
                 {creator === authState?.data?._id && <div className="flex items-center justify-end w-16" title="Delete question">
                     <MdDelete className="hover:cursor-pointer" onClick={onDelete}/>
                 </div>}
             </div>
+            <div className="flex mt-2 items-center">
+                <a className="inline-block mr-4" href={authState.data?.image}>
+                    <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
+                </a>
+                <textarea 
+                    name="comment"
+                    onChange={handleChange}
+                    value={commentDetails.description}
+                    className="rounded-md w-full border-[2px] border-gray-800 bg-transparent focus:outline-none p-2 text-sm resize-none" 
+                    placeholder="Post comment"
+                    rows="1"
+                    onInput={(e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                    }}
+                ></textarea>
+                <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
+            </div>
+            {showComments && <div className="pt-2 pl-1">
+                {comments.length ? comments.map((comment, index) => {
+                    return (<Comment key={index} userId={comment.userId} questionId={comment.questionId} description={comment.description}/>)
+                }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
+            </div>}
+
             {showModal && <DeleteModal type='question' id={selectedQues}/>}
         </article>
     )
