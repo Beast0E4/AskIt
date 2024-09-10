@@ -6,6 +6,7 @@ const { PORT } = require('./src/config/server.config');
 const userRoutes = require('./src/routes/user.routes');
 const questionsRoutes = require('./src/routes/questions.routes');
 const solutionsRoutes = require('./src/routes/solutions.routes');
+const commentRoutes = require('./src/routes/comments.routes')
 const cors = require('cors');
 const likesRoutes = require('./src/routes/likes.routes');
 const configCloudinary = require('./src/config/cloudinary.config');
@@ -34,6 +35,7 @@ userRoutes(app);
 questionsRoutes(app);
 solutionsRoutes(app);
 likesRoutes(app);
+commentRoutes(app);
 
 app.listen(PORT, async () => {
     console.log(`Server is up at port ${PORT}`);
