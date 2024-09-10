@@ -5,7 +5,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import DeleteModal from "./DeleteModal";
 
 // eslint-disable-next-line react/prop-types
-function Comment({commentId, userId, description}) {
+function Comment({commentId, userId, description, createdAt}) {
 
     const authState = useSelector((state) => state.auth);
 
@@ -69,7 +69,10 @@ function Comment({commentId, userId, description}) {
             <div>
                 <div className="bg-gray-800 rounded-lg px-4 pt-2 pb-2.5 w-[50vw] md:w-[35vw] sm:w-[35vw]">
                     <div className="flex items-center justify-between">
-                        <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                        <div className="mb-2">
+                            <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                            <h2 className="text-slate-300 text-xs">{createdAt.toString()?.split('T')[0].split('-').reverse().join("-")}</h2>
+                        </div>
                         {userId === authState.data?._id && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                             <div>
                                 <button
