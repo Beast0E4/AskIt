@@ -70,7 +70,7 @@ function Home() {
 
     useEffect(() => {
         calculateLength();
-    }, [searchParams])
+    }, [searchParams.get('topic')])
 
     async function loadSolutions(){
         await dispatch(getSolutionByUser(searchParams.get('userid')));

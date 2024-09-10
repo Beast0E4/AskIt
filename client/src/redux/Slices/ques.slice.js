@@ -103,7 +103,8 @@ const QuestionSlice = createSlice({
         },
         filterQuestionByTopic: (state, action) => {
             const topic = action?.payload?.topic;
-            state.questionList = state.currentList.filter((ques) => ques.topic === topic);
+            console.log(JSON.parse(JSON.stringify(state.currentList)));
+            state.questionList = JSON.parse(JSON.stringify(state.currentList)).filter((ques) => ques.topic === topic);
         },
         filterQuestionByUserandTopic: (state, action) => {
             const id = action?.payload?.id;
@@ -128,6 +129,7 @@ const QuestionSlice = createSlice({
         },
         resetQuestionList: (state) => {
             state.questionList = state.downloadedQuestions;
+            state.currentList = state.questionList
         }
     },
     extraReducers: (builder) => {

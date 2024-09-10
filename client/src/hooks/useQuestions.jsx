@@ -14,14 +14,6 @@ function useQuestions () {
     async function loadQuestions() {
         if(!quesState.downloadedQuestions.length) await dispatch(getAllQuestions());
 
-        // if(location.pathname === '/') re
-
-        if (location.pathname === '/explore') {
-            const newUsers = [];
-            authState.data?.following?.forEach(id => newUsers.push(id));
-            setUsers(users => [...users, ...newUsers]);
-        }
-
         if (location.pathname === '/trending') {
             dispatch(sortQuestionForTrending());
             if (searchParams.get('topic')) {
@@ -29,6 +21,7 @@ function useQuestions () {
             }
             return;
         }
+        console.log(searchParams.get('userid'))
 
         if (searchParams.get('userid') && searchParams.get('topic')) {
             dispatch(filterQuestionByUserandTopic({ id: searchParams.get('userid'), topic: searchParams.get('topic') }));
@@ -44,7 +37,10 @@ function useQuestions () {
     }
 
     async function filterForYou() {
-        if (users.length > 0) {
+        if (location.pathname === '/explore') {
+            const newUsers = [];
+            authState.data?.following?.forEach(id => newUsers.push(id));
+            setUsers(users => [...users, ...newUsers]);
             await dispatch(filterQuestionForExplore(users));
         }
     }

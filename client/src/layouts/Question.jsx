@@ -45,6 +45,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
 
     function loadComments() {
         setComments(commentState.commentList.filter((comment) => comment.questionId === questionId));
+        setComments(comments => comments.reverse());
     }
 
     async function answer() {
@@ -134,6 +135,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 ...commentDetails, description: ""
             })
             await dispatch(getComments());
+            setShowComments(true);
         }
     }
 
@@ -188,13 +190,13 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                 </div>
                             </div>
                         </div>
-                        {creator === authState.data?._id && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
+                        <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                             <div>
                                 <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
                                 >
-                                <BsThreeDotsVertical className="h-5 w-5" />
+                                <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-950" />
                                 </button>
                             </div>
 
@@ -211,21 +213,29 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                             className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
                                             role="menuitem"
                                             tabIndex="-1"
+                                            onClick={onView}
+                                        >
+                                        View Question
+                                        </h2>
+                                        {authState.data?._id === creator && <h2
+                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
+                                            role="menuitem"
+                                            tabIndex="-1"
                                             onClick={onDelete}
                                         >
                                         Delete
-                                        </h2>
+                                        </h2>}
                                     </div>
                                 </div>
                             )}
-                        </div>}
+                        </div>
                     </div>
                     {topic && 
                     <div className="mt-4">
                         <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:cursor-pointer border-[#F2BEA0] font-inconsolata">{topic}</p>
                     </div>}
                 </div>
-                <div onClick={onView} className="pb-2 hover:cursor-pointer">
+                <div className="pb-2">
                     {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
                     <p className="ml-2 text-md">
                         {quest}
@@ -242,7 +252,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                         <span className="ml-1">{totLikes}</span>
                         {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                     </button>
-                    <h2 className="text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments</h2>
+                    <h2 className="text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments {comments?.length}</h2>
                 </div>
                 <div className="flex mt-2 items-center">
                     <a className="inline-block mr-4" href={authState.data?.image}>

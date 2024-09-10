@@ -42,7 +42,7 @@ function Explore() {
     }
 
     function calculateLength(){
-        const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
+        const ques = quesState.currentList?.filter((ques) => ques.userId === authState?.data?._id);
         let quesLikes = 0;
         ques.map((ques) => quesLikes += ques.likes);
         setQuesLikes(quesLikes);
@@ -55,8 +55,8 @@ function Explore() {
         setSolLength(lt);
     }
 
-    let filteredQuestions = quesState.questionList;
-    if(searchQuery) filteredQuestions = quesState.questionList?.filter((quest) =>
+    let filteredQuestions = quesState.currentList;
+    if(searchQuery) filteredQuestions = quesState.currentList?.filter((quest) =>
         quest.title?.toLowerCase().includes(searchQuery?.toLowerCase())
     );
 

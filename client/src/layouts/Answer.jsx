@@ -49,6 +49,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
 
     function loadComments() {
         setComments(commentState.commentList.filter((comment) => comment.solutionId === solId));
+        setComments(comments => comments.reverse());
     }
 
     async function onAnswerView(){
@@ -90,6 +91,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                 ...commentDetails, description: ""
             })
             await dispatch(getComments());
+            setShowComments(true);
         }
     }
 
@@ -170,7 +172,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
                                 >
-                                <BsThreeDotsVertical className="h-5 w-5" />
+                                <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-900" />
                                 </button>
                             </div>
 
@@ -217,7 +219,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                             <span className="ml-1">{totLikes}</span>
                             {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                         </button>
-                        <h2 className="text-sm hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments</h2>
+                        <h2 className="text-sm hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments {comments?.length}</h2>
                     </div>
                     <div className="flex mt-2 items-center">
                         <a className="inline-block mr-4" href={authState.data?.image}>
@@ -227,7 +229,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                             name="comment"
                             onChange={handleChange}
                             value={commentDetails.description}
-                            className="rounded-md w-full border-[2px] border-gray-950 bg-transparent focus:outline-none p-2 text-sm resize-none" 
+                            className="rounded-md w-full border-[2px] border-gray-600 bg-transparent focus:outline-none p-2 text-sm resize-none" 
                             placeholder="Post comment"
                             rows="1"
                             onInput={(e) => {

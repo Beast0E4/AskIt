@@ -63,11 +63,11 @@ function Comment({commentId, userId, description, createdAt}) {
 
     return (
         <div className="bg-transparent flex my-2">
-            <a className="inline-block mr-4" href={image}>
+            <a className="inline-block mr-2" href={image}>
                 <img src={image} alt={name} className="rounded-full max-w-none w-8 h-8 object-cover" />
             </a>
             <div>
-                <div className="bg-gray-800 rounded-lg px-4 pt-2 pb-2.5 w-[50vw] md:w-[35vw] sm:w-[35vw]">
+                <div className="bg-gray-800 rounded-lg pl-4 pt-2 pb-2.5 w-[50vw] md:w-[35vw] sm:w-[35vw]">
                     <div className="flex items-center justify-between">
                         <div className="mb-2">
                             <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
@@ -79,7 +79,7 @@ function Comment({commentId, userId, description, createdAt}) {
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
                                 >
-                                <BsThreeDotsVertical className="h-5 w-5" />
+                                <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-900" />
                                 </button>
                             </div>
 
