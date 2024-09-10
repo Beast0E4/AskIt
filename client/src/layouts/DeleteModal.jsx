@@ -4,6 +4,7 @@ import Loader from "./Loader";
 import { deleteQues } from "../redux/Slices/ques.slice";
 import toast from "react-hot-toast";
 import { deleteSol } from "../redux/Slices/ans.slice";
+import { deleteComment } from "../redux/Slices/comment.slice";
 
 // eslint-disable-next-line react/prop-types
 function DeleteModal({ type, id }) {
@@ -16,7 +17,8 @@ function DeleteModal({ type, id }) {
         try {
             let res;
             if(type === 'question') res = await dispatch(deleteQues(id));
-            else res = await dispatch(deleteSol(id));
+            else if(type === 'solution') res = await dispatch(deleteSol(id));
+            else res = await dispatch(deleteComment(id));
             if(res.payload) location.reload();
         } catch (error) {
             setLoading(false); toast.error('Something went wrong');

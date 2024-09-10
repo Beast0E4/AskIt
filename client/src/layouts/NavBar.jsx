@@ -30,7 +30,7 @@ function Navbar(){
     }, [topic, location.pathname])
 
     return (
-        <div className="navbar bg-gray-900 shadow-2xl border-b-[3px] border-black fixed top-0">
+        <div className="navbar bg-gray-900 shadow-2xl border-b-[3px] border-black fixed top-0 z-[100]">
             <div className="navbar-start">
                 <div className="dropdown">
                 <div onClick={() => toggle()} tabIndex={0} role="button" className="btn btn-ghost lg:hidden">

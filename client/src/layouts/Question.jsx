@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLikedQuestions } from "../redux/Slices/auth.slice";
 import { MdDelete } from "react-icons/md";
 import useAnswers from "../hooks/useAnswers";
@@ -11,6 +11,7 @@ import { FiSend } from "react-icons/fi";
 import { createComment, getComments } from "../redux/Slices/comment.slice";
 import useComments from "../hooks/useComments";
 import Comment from "./Comment";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 // eslint-disable-next-line react/prop-types
 function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage}) {
@@ -23,6 +24,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const dropdownRef = useRef(null);
+
     const [idx, setIdx] = useState();
     const [userIdx, setUserIdx] = useState();
     const [name, setName] = useState("");
@@ -34,6 +37,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [showModal, setShowModal] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState();
+    const [isOpen, setIsOpen] = useState(false);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
@@ -75,6 +79,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     }
 
     async function onDelete(){
+        setIsOpen(false);
         setSelectedQues(questionId);
         setShowModal(true);
     }
@@ -150,21 +155,70 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         }
     }, [authState.selectedUser.likedQuestion?.length])
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setIsOpen(false);
+          }
+        };
+        if (isOpen) {
+          document.addEventListener('mousedown', handleClickOutside);
+        } else {
+          document.removeEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
+      }, [isOpen]);
+
     return (
         <article className="mb-4 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border">
             <div className="flex flex-col pb-3">
-                <div className="flex">
-                    <a className="inline-block mr-4" href={image}>
-                        <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                    </a>
-                    <div className="flex flex-col justify-center">
-                        <div className="flex items-center">
-                            <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
-                        </div>
-                        <div className="text-slate-500 text-xs dark:text-slate-300">
-                            {createdAt}
+                <div className="flex justify-between">
+                    <div className="flex">
+                        <a className="inline-block mr-4" href={image}>
+                            <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
+                        </a>
+                        <div className="flex flex-col justify-center">
+                            <div className="flex items-center">
+                                <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                            </div>
+                            <div className="text-slate-500 text-xs dark:text-slate-300">
+                                {createdAt}
+                            </div>
                         </div>
                     </div>
+                    {creator === authState.data?._id && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
+                        <div>
+                            <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
+                            >
+                            <BsThreeDotsVertical className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {isOpen && (
+                            <div
+                            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-800 focus:outline-none z-10"
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="menu-button"
+                            tabIndex="-1"
+                            >
+                                <div className="py-1" role="none">
+                                    <h2
+                                        className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
+                                        role="menuitem"
+                                        tabIndex="-1"
+                                        onClick={onDelete}
+                                    >
+                                    Delete
+                                    </h2>
+                                </div>
+                            </div>
+                        )}
+                    </div>}
                 </div>
                 {topic && 
                 <div className="mt-4">
@@ -179,21 +233,16 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 {quesImage && <div className="flex justify-center"><img src={quesImage} className="py-2"/></div>}
             </div>
             <div className="bg-gray-700 h-[0.1px]"/>
-            <div className="flex">
-                <div className="w-full flex gap-4 items-center">
-                    <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
-                        <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
-                    </button>
-                    <button onClick={onView} className="h-max text-xs hover:underline">View Answers</button>
-                    <button className="flex gap-3 justify-center items-center text-sm">
-                        <span className="ml-1">{totLikes}</span>
-                        {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
-                    </button>
-                    <h2 className="text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments</h2>
-                </div>
-                {creator === authState?.data?._id && <div className="flex items-center justify-end w-16" title="Delete question">
-                    <MdDelete className="hover:cursor-pointer" onClick={onDelete}/>
-                </div>}
+            <div className="w-full flex gap-4 items-center">
+                <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
+                    <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
+                </button>
+                <button onClick={onView} className="h-max text-xs hover:underline">View Answers</button>
+                <button className="flex gap-3 justify-center items-center text-sm">
+                    <span className="ml-1">{totLikes}</span>
+                    {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
+                </button>
+                <h2 className="text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments</h2>
             </div>
             <div className="flex mt-2 items-center">
                 <a className="inline-block mr-4" href={authState.data?.image}>
@@ -215,7 +264,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
             </div>
             {showComments && <div className="pt-2 pl-1">
                 {comments.length ? comments.map((comment, index) => {
-                    return (<Comment key={index} userId={comment.userId} questionId={comment.questionId} description={comment.description}/>)
+                    return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description}/>)
                 }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
             </div>}
 
