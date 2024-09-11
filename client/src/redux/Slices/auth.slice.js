@@ -13,7 +13,8 @@ const initialState = {
         registered: [],
         profession: "",
         likedQuestion: [],
-        likedSolution: []
+        likedSolution: [],
+        likedComments: []
     },
     userList: []
 };
@@ -132,6 +133,20 @@ export const getLikedQuestions = createAsyncThunk('user/quesLiked', async(id) =>
     }
 })
 
+export const getLikedComments = createAsyncThunk('user/commentLiked', async(id) => {
+    try {
+        const response = axiosInstance.get(`likedComment/${id}`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        })
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 export const getLikedSolutions = createAsyncThunk('user/solLiked', async(id) => {
     try {
         const response = axiosInstance.get(`likedSolutions/${id}`, {
@@ -183,6 +198,10 @@ const authSlice = createSlice({
         .addCase(getLikedQuestions.fulfilled, (state, action) => {
             if(!action.payload) return;
             state.selectedUser.likedQuestion = action.payload?.data?.likedQuestion;
+        })
+        .addCase(getLikedComments.fulfilled, (state, action) => {
+            if(!action.payload) return;
+            state.selectedUser.likedComments = action.payload?.data.likedComment;
         })
         .addCase(getLikedSolutions.fulfilled, (state, action) => {
             if(!action.payload) return;

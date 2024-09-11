@@ -9,33 +9,33 @@ const initialState = {
     currentAnswer: {}
 };
 
-export const likeSolution = createAsyncThunk('question/likeQuestion', async(solution) => {
-    try {
-        const response = axiosInstance.post('like', solution, {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        });
-        if(!response) toast.error('Something went wrong');
-        return await response;
-    } catch (error) {
-        console.log(error);
-    }
-})
+// export const likeSolution = createAsyncThunk('question/likeQuestion', async(solution) => {
+//     try {
+//         const response = axiosInstance.post('like', solution, {
+//             headers: {
+//                 'x-access-token': localStorage.getItem('token')
+//             }
+//         });
+//         if(!response) toast.error('Something went wrong');
+//         return await response;
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 
-export const unLikeSolution = createAsyncThunk('question/unLikeQuestion', async(solution) => {
-    try {
-        const response = axiosInstance.post('unLike', solution, {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        });
-        if(!response) toast.error('Something went wrong');
-        return await response;
-    } catch (error) {
-        console.log(error);
-    }
-})
+// export const unLikeSolution = createAsyncThunk('question/unLikeQuestion', async(solution) => {
+//     try {
+//         const response = axiosInstance.post('unLike', solution, {
+//             headers: {
+//                 'x-access-token': localStorage.getItem('token')
+//             }
+//         });
+//         if(!response) toast.error('Something went wrong');
+//         return await response;
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 
 export const getAllSolutions = createAsyncThunk('solutions/getAllSolutions', async (data) => {
     try {

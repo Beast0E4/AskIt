@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { likeQuestion, unLikeQuestion } from "../redux/Slices/ques.slice";
+import { like, unLike } from "../redux/Slices/ques.slice";
 import { useEffect, useRef, useState } from "react";
 import { getLikedQuestions } from "../redux/Slices/auth.slice";
 import useAnswers from "../hooks/useAnswers";
-import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 import DeleteModal from "./DeleteModal";
 import { FiSend } from "react-icons/fi";
 import { createComment, getComments } from "../redux/Slices/comment.slice";
 import useComments from "../hooks/useComments";
 import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { FaRegComment, FaComment } from "react-icons/fa";
 
 // eslint-disable-next-line react/prop-types
 function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage}) {
@@ -37,6 +38,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState();
     const [isOpen, setIsOpen] = useState(false);
+    const [dateDiff, setDateDiff] = useState(0);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
@@ -102,7 +104,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        const res = await dispatch(likeQuestion({
+        const res = await dispatch(like({
             quesId : questionId,
             userId: authState.data._id
         }));
@@ -117,7 +119,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        const res = await dispatch(unLikeQuestion({
+        const res = await dispatch(unLike({
             quesId : questionId,
             userId: authState.data._id
         }));
@@ -129,15 +131,42 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     }
 
     async function submitComment(){
-        const res = await dispatch(createComment(commentDetails));
-        if(res){
-            setCommentDetails({
-                ...commentDetails, description: ""
-            })
-            await dispatch(getComments());
-            setShowComments(true);
+        if(commentDetails.description.toString().trim()){
+            const res = await dispatch(createComment(commentDetails));
+            if(res){
+                setCommentDetails({
+                    ...commentDetails, description: ""
+                })
+                await dispatch(getComments());
+                setShowComments(true);
+            }
         }
     }
+
+    function getTimeElapsed(date) {
+        const now = new Date(); 
+        const questionTime = new Date(date);
+        const elapsedTime = now - questionTime;
+
+        const seconds = Math.floor(elapsedTime / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+    
+        if (days > 0) {
+            setDateDiff(`${days} day(s) ago`);
+        } else if (hours > 0) {
+            setDateDiff(`${hours} hour(s) ago`);
+        } else if (minutes > 0) {
+            setDateDiff(`${minutes} minute(s) ago`);
+        } else {
+            setDateDiff(`${seconds} second(s) ago`);
+        }
+    }
+
+    useEffect(() => {
+        getTimeElapsed(createdAt);
+    }, [createdAt])
 
     useEffect(() => {
         loadComments();
@@ -174,9 +203,9 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
 
     return (
         <>
-            <article className="mb-2 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border">
+            <article className="mb-2 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md">
                 <div className="flex flex-col pb-3">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                         <div className="flex">
                             <a className="inline-block mr-4" href={image}>
                                 <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
@@ -186,7 +215,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                     <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
                                 </div>
                                 <div className="text-slate-300 text-xs">
-                                    {createdAt}
+                                    {dateDiff}
                                 </div>
                             </div>
                         </div>
@@ -210,12 +239,20 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                 >
                                     <div className="py-1" role="none">
                                         <h2
-                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
+                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-700 font-semibold hover:cursor-pointer"
                                             role="menuitem"
                                             tabIndex="-1"
                                             onClick={onView}
                                         >
                                         View Question
+                                        </h2>
+                                        <h2
+                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-700 font-semibold hover:cursor-pointer"
+                                            role="menuitem"
+                                            tabIndex="-1"
+                                            onClick={onView}
+                                        >
+                                        View Answers
                                         </h2>
                                         {authState.data?._id === creator && <h2
                                             className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
@@ -240,19 +277,19 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     <p className="ml-2 text-md">
                         {quest}
                     </p>
-                    {quesImage && <div className="flex justify-center"><img src={quesImage} className="py-2"/></div>}
+                    {quesImage && <div className="flex justify-center px-2"><img src={quesImage} className="py-2"/></div>}
                 </div>
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="w-full flex gap-4 items-center">
                     <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
                         <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
                     </button>
-                    <button onClick={onView} className="h-max text-xs hover:underline">View Answers</button>
                     <button className="flex gap-3 justify-center items-center text-sm">
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
                         <span className="ml-1">{totLikes}</span>
-                        {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
                     </button>
-                    <h2 className="text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments {comments?.length}</h2>
+                    <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
+                        {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
                 </div>
                 <div className="flex mt-2 items-center">
                     <a className="inline-block mr-4" href={authState.data?.image}>
@@ -276,7 +313,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
             </article>
             {showComments && <div className="w-full ml-2 my-3">
                 {comments.length ? comments.map((comment, index) => {
-                    return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt}/>)
+                    return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt} creator={creator} likes={comment.likes}/>)
                 }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
             </div>}
         </>

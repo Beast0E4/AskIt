@@ -4,7 +4,7 @@ import Question from "../layouts/Question";
 import useQuestions from "../hooks/useQuestions";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLikedQuestions, getLikedSolutions, getUsers } from "../redux/Slices/auth.slice";
+import { getLikedComments, getLikedQuestions, getLikedSolutions, getUsers } from "../redux/Slices/auth.slice";
 import Loader from "../layouts/Loader";
 import toast from "react-hot-toast";
 import useAnswers from "../hooks/useAnswers";
@@ -37,6 +37,7 @@ function Home() {
             if(authState.data?._id){
                 await dispatch(getLikedQuestions(authState.data?._id));
                 await dispatch(getLikedSolutions(authState.data?._id));
+                await dispatch(getLikedComments(authState.data?._id));
             }
         } catch (error) {
             toast.error('Something went wrong'); setLoading(false);
@@ -92,18 +93,12 @@ function Home() {
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {(location.pathname === '/questions' || location.pathname === '/' || location.pathname === '/trending') && (loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest) => {
-                        let date = quest.createdAt?.split('T')[0].split('-');
-                        date = date[2] + "-" + date[1] + "-" + date[0];
-                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)
+                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No questions yet</h2>
                     )))}
-                    {location.pathname === '/answers' && (loading ? <Loader /> : filteredSolutions?.length ? filteredSolutions?.map((ans) => {
-                        let date = ans.createdAt?.split('T')[0].split('-');
-                        if(date) {
-                            date = date[2] + "-" + date[1] + "-" + date[0];
-                            return (<Answer key={date} solId={ans._id} creator={ans.userId} solution={ans.solution} createdAt={date} likes={ans.likes}/>)
-                        }
+                    {location.pathname === '/answers' && (loading ? <Loader /> : filteredSolutions?.length ? filteredSolutions?.map((ans, index) => {
+                        return (<Answer key={index} solId={ans._id} creator={ans.userId} solution={ans.solution} createdAt={ans.createdAt} likes={ans.likes}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No solutions yet</h2>
                     ))}

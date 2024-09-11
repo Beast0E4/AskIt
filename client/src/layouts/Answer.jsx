@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSolution, likeSolution, unLikeSolution } from "../redux/Slices/ans.slice";
+import { getSolution } from "../redux/Slices/ans.slice";
 import { useNavigate } from "react-router-dom";
 import EditAnswerModal from "./EditAnswerModal";
 import { getLikedSolutions } from "../redux/Slices/auth.slice";
-import { BiSolidUpvote, BiUpvote } from "react-icons/bi";
 import DeleteModal from './DeleteModal'
 import { createComment, getComments } from "../redux/Slices/comment.slice";
 import { FiSend } from "react-icons/fi";
 import useComments from "../hooks/useComments";
 import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaComment, FaRegComment } from "react-icons/fa";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { like, unLike } from "../redux/Slices/ques.slice";
 
 // eslint-disable-next-line react/prop-types
 function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
@@ -35,6 +37,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState();
     const [isOpen, setIsOpen] = useState(false);
+    const [dateDiff, setDateDiff] = useState();
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         solutionId: solId,
@@ -66,7 +69,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
         if(!authState.data){
             navigate('/login'); return;
         }
-        const res = await dispatch(likeSolution({
+        const res = await dispatch(like({
             solId : solId,
             userId: authState.data._id
         }));
@@ -96,7 +99,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
     }
 
     async function onUnLike() {
-        const res = await dispatch(unLikeSolution({
+        const res = await dispatch(unLike({
             solId : solId,
             userId: authState.data._id
         }));
@@ -114,6 +117,31 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
         if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
         else navigate('/profile');
     }
+
+    function getTimeElapsed(date) {
+        const now = new Date(); 
+        const questionTime = new Date(date);
+        const elapsedTime = now - questionTime;
+
+        const seconds = Math.floor(elapsedTime / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+    
+        if (days > 0) {
+            setDateDiff(`${days} day(s) ago`);
+        } else if (hours > 0) {
+            setDateDiff(`${hours} hour(s) ago`);
+        } else if (minutes > 0) {
+            setDateDiff(`${minutes} minute(s) ago`);
+        } else {
+            setDateDiff(`${seconds} second(s) ago`);
+        }
+    }
+
+    useEffect(() => {
+        getTimeElapsed(createdAt);
+    }, [createdAt])
 
     useEffect(() => {
         loadComments();
@@ -162,7 +190,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                 <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
                             </div>
                             <div className="text-slate-500 text-xs dark:text-slate-300">
-                                {createdAt}
+                                {dateDiff}
                             </div>
                         </div>
                     </div>
@@ -207,7 +235,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                         </div>}
                     </div>
                 </div>
-                <div className="py-4">
+                <div className="py-2">
                     <p>
                         {ans}
                     </p>
@@ -215,11 +243,12 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="mb-2">
                     <div className="flex items-center gap-4 mt-2">
-                        <button className="flex gap-3 justify-center items-center text-sm">
-                            <span className="ml-1">{totLikes}</span>
-                            {isLiked ? <BiSolidUpvote id="liked" onClick={onUnLike}/> : <BiUpvote id="like" onClick={onLike}/>}
-                        </button>
-                        <h2 className="text-sm hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>Comments {comments?.length}</h2>
+                    <button className="flex gap-3 justify-center items-center text-sm">
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                        <span className="ml-1">{totLikes}</span>
+                    </button>
+                        <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
+                        {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
                     </div>
                     <div className="flex mt-2 items-center">
                         <a className="inline-block mr-4" href={authState.data?.image}>
@@ -245,7 +274,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
             </article>
             {showComments && <div className="w-full ml-2 my-3">
                 {comments.length ? comments.map((comment, index) => {
-                    return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt}/>)
+                    return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt} creator={creator}/>)
                 }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
             </div>}
         </>

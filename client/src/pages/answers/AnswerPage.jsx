@@ -34,9 +34,26 @@ function AnswerPage() {
         const userIdx = authState.userList?.findIndex((user) => user._id == quesState.currentQuestion[0]?.userId);
         const index = quesState.downloadedQuestions.findIndex((question) => question._id === quesState.currentQuestion[0]?._id);
         setIdx(index); setUserIdx(userIdx);
-        const dt = quesState?.currentQuestion[0]?.createdAt?.split('T')[0].split('-')
+        const dt = quesState?.currentQuestion[0]?.createdAt;
         if(dt){
-            setDate(dt[2] + "-" + dt[1] + "-" + dt[0]);
+            const now = new Date(); 
+            const questionTime = new Date(dt);
+            const elapsedTime = now - questionTime;
+
+            const seconds = Math.floor(elapsedTime / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+        
+            if (days > 0) {
+                setDate(`${days} day(s) ago`);
+            } else if (hours > 0) {
+                setDate(`${hours} hour(s) ago`);
+            } else if (minutes > 0) {
+                setDate(`${minutes} minute(s) ago`);
+            } else {
+                setDate(`${seconds} second(s) ago`);
+            }
             setName(user?.name); setImage(user?.image); 
             setQuestion(quesState.currentQuestion[0]?.question);
             setQuesImage(quesState.currentQuestion[0]?.image);
@@ -86,9 +103,7 @@ function AnswerPage() {
                 {!ansState.solutionList[idx]?.length ? (
                     <h2 className="text-white font-thin italic mb-5">No answers yet</h2>
                 ):ansState.solutionList[idx]?.map((sol) => {
-                    let date = sol?.createdAt?.split('T')[0].split('-');
-                    date = date[2] + "-" + date[1] + "-" + date[0];
-                    return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={date} likes={sol.likes} isMyQues={isMyQues}/>)
+                    return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={sol.createdAt} likes={sol.likes} isMyQues={isMyQues}/>)
                 })}
             </div>
         </div>
