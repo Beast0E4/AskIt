@@ -170,9 +170,8 @@ const followUser = async (userId, myId) => {
         if(!user) return;
         let me = await User.findById(myId);
         if(!me) return;
-        await User.updateOne({ _id: myId }, {$push: { following: userId }})
+        await User.updateOne({ _id: myId }, {$push: { following: userId }});
         me = await User.findById(myId);
-        console.log(me.following);
         return me.following; 
     } catch (error) {
         throw error;
