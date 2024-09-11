@@ -44,7 +44,6 @@ export const getAllQuestions = createAsyncThunk('questions/getAllQuestions', asy
                 'x-access-token': localStorage.getItem('token')
             }
         });
-        if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
         console.log(error);
@@ -58,11 +57,7 @@ export const deleteQues = createAsyncThunk('/ques/delete', async(id) => {
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        toast.promise(response, {
-            loading: 'Deleting the question',
-            success: 'Successfully deleted the question',
-            error: 'Something went wrong, try again'
-        });
+        if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
         console.log(error);
@@ -76,11 +71,7 @@ export const createQuestion = createAsyncThunk('question/createQuestion', async 
                 'x-access-token': localStorage.getItem('token')
             }
         });
-        toast.promise(response, {
-            success: 'Successfully created the question',
-            loading: 'Creating the question...',
-            error: 'Something went wrong'
-        });
+        if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
         console.log(error);

@@ -137,22 +137,22 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                 <img src={image} alt={name} className="rounded-full max-w-none w-8 h-8 object-cover" />
             </a>
             <div>
-                <div className="bg-gray-800 rounded-lg pl-3 pb-2.5 w-[50vw] md:w-[35vw] sm:w-[35vw]">
-                    <div className="flex items-center justify-between">
+                <div className="bg-gray-800 rounded-lg px-3 py-2 w-[50vw] md:w-[35vw] sm:w-[35vw]">
+                    <div className="flex justify-between items-center">
                         <a onClick={userView} className="inline-block font-bold text-sm hover:cursor-pointer hover:underline">{name}</a>
-                        {(creator === authState.data?._id || userId === authState.data?._id) && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
+                        {(creator === authState.data?._id || userId === authState.data?._id) && <div className="relative z-[0] h-5" ref={dropdownRef}>
                             <div>
                                 <button
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
+                                className="inline-flex justify-center w-5 h-5 object-cover shadow-sm"
                                 >
-                                <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-900" />
+                                <BsThreeDotsVertical className="h-full w-full p-[4px] rounded-full hover:bg-gray-900" />
                                 </button>
                             </div>
 
                             {isOpen && (
                                 <div
-                                className="origin-top-right absolute right-0 mt-1 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none z-10"
+                                className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none z-10"
                                 role="menu"
                                 aria-orientation="vertical"
                                 aria-labelledby="menu-button"
@@ -172,10 +172,10 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                             )}
                         </div>}
                     </div>
-                    <div className="text-normal leading-snug md:leading-normal">{description}</div>
+                    <div className="text-normal md:leading-normal">{description}</div>
                 </div>
                 <div className="text-xs ml-4 mt-0.5 text-gray-500 dark:text-gray-400">{dateDiff}</div>
-                <div className="bg-gray-600 rounded-full py-[0.5px] px-[7px] float-right gap-2  -mt-8 mr-0.5 flex shadow items-center">
+                <div className="bg-gray-900 rounded-full py-[0.5px] px-[7px] float-right gap-2  -mt-8 mr-0.5 flex shadow items-center">
                     {isLiked ? <AiFillLike id="liked" onClick={onUnLike} className="h-4 hover:cursor-pointer"/> : <AiOutlineLike id="like" onClick={onLike} className="hover:cursor-pointer"/>}
                     <span className="ml-1">{totLikes}</span>
                 </div>

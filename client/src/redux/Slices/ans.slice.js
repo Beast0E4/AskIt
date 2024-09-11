@@ -9,34 +9,6 @@ const initialState = {
     currentAnswer: {}
 };
 
-// export const likeSolution = createAsyncThunk('question/likeQuestion', async(solution) => {
-//     try {
-//         const response = axiosInstance.post('like', solution, {
-//             headers: {
-//                 'x-access-token': localStorage.getItem('token')
-//             }
-//         });
-//         if(!response) toast.error('Something went wrong');
-//         return await response;
-//     } catch (error) {
-//         console.log(error);
-//     }
-// })
-
-// export const unLikeSolution = createAsyncThunk('question/unLikeQuestion', async(solution) => {
-//     try {
-//         const response = axiosInstance.post('unLike', solution, {
-//             headers: {
-//                 'x-access-token': localStorage.getItem('token')
-//             }
-//         });
-//         if(!response) toast.error('Something went wrong');
-//         return await response;
-//     } catch (error) {
-//         console.log(error);
-//     }
-// })
-
 export const getAllSolutions = createAsyncThunk('solutions/getAllSolutions', async (data) => {
     try {
         const response = data;
@@ -96,11 +68,7 @@ export const createAnswer = createAsyncThunk('answer/createAnswer', async (answe
                 'x-access-token': localStorage.getItem('token')
             }
         });
-        toast.promise(response, {
-            success: 'Successfully created the answer',
-            loading: 'Creating the answer...',
-            error: 'Something went wrong'
-        });
+        if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
         console.log(error);
@@ -128,11 +96,7 @@ export const deleteSol = createAsyncThunk('/sol/delete', async(id) => {
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        toast.promise(response, {
-            loading: 'Deleting the solution',
-            success: 'Successfully deleted the solution',
-            error: 'Something went wrong, try again'
-        });
+        if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
         console.log(error);

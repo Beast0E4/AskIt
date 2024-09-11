@@ -124,8 +124,8 @@ function Home() {
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length || 0}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total questions asked</span><span>{quesLength}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total solutions provided</span><span>{solLength}</span></h2>
-                        <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on questions</span><span>{quesLikes}</span></h3>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Upvotes recieved on answers</span><span>{solLikes}</span></h2>
+                        <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Likes recieved on questions</span><span>{quesLikes}</span></h3>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Likes recieved on answers</span><span>{solLikes}</span></h2>
                     </div>
                 </div>
                 

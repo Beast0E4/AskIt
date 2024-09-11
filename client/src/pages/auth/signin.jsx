@@ -72,7 +72,7 @@ function SignIn() {
                             <input onChange={handleInputChange} value={loginDetails.password} type="password" name="password" id="password" placeholder="••••••••" className="text-white sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700" required/>
                         </div>
                         <button onClick={onSubmit} id="submitButton" className="w-full text-white bg-gray-700 hover:bg-gray-800 py-2 rounded-md transition-all ease-in-out">{loading ? 'Logging in ...' : 'Log In'}</button>
-                        <p className="text-sm font-light text-gray-500 dark:text-gray-400">Do not have an account? <Link to={'/signup'} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Sign up here</Link></p>
+                        <p className="text-sm font-light text-gray-500 dark:text-gray-400">Do not have an account? <Link to={'/signup'} className="font-medium text-[#F2BEA0] hover:underline">Sign up here</Link></p>
                     </div>
                 </div>
             </div>

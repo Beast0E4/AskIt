@@ -39,6 +39,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [comments, setComments] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const [dateDiff, setDateDiff] = useState(0);
+    const [check, setCheck] = useState(false);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
@@ -181,7 +182,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         }
         if(quest?.length > 1000){
             const newQuest = quest.substring(0, 1000) + "...";
-            setQuest(newQuest);
+            setQuest(newQuest); setCheck(true);
         }
     }, [authState.selectedUser.likedQuestion?.length])
 
@@ -244,14 +245,6 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                             tabIndex="-1"
                                             onClick={onView}
                                         >
-                                        View Question
-                                        </h2>
-                                        <h2
-                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-700 font-semibold hover:cursor-pointer"
-                                            role="menuitem"
-                                            tabIndex="-1"
-                                            onClick={onView}
-                                        >
                                         View Answers
                                         </h2>
                                         {authState.data?._id === creator && <h2
@@ -274,9 +267,16 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 </div>
                 <div className="pb-2">
                     {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
-                    <p className="ml-2 text-md">
-                        {quest}
-                    </p>
+                    <div className="ml-2">
+                        <p className="text-md">
+                            {quest}
+                        </p>
+                        {check && <button className="text-xs text-[#F2BEA0]" onClick={() => {
+                            setQuest(question); setCheck(!check);
+                        }}>
+                            Read more
+                        </button>}
+                    </div>
                     {quesImage && <div className="flex justify-center px-2"><img src={quesImage} className="py-2"/></div>}
                 </div>
                 <div className="bg-gray-700 h-[0.1px]"/>

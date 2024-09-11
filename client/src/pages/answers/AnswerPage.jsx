@@ -1,31 +1,57 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Answer from "../../layouts/Answer";
 import useQuestions from "../../hooks/useQuestions";
-import { getUsers } from "../../redux/Slices/auth.slice";
+import { getLikedQuestions, getUsers } from "../../redux/Slices/auth.slice";
 import useAnswers from "../../hooks/useAnswers";
 import { useNavigate } from "react-router-dom";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { like, unLike } from "../../redux/Slices/ques.slice";
+import { FaComment, FaRegComment } from "react-icons/fa";
+import { createComment, getComments } from "../../redux/Slices/comment.slice";
+import { FiSend } from "react-icons/fi";
+import DeleteModal from "../../layouts/DeleteModal";
+import Comment from "../../layouts/Comment";
 
 function AnswerPage() {
 
     const [quesState] = useQuestions();
     const [ansState] = useAnswers();
     const authState = useSelector((state) => state.auth);
+    const commentState = useSelector((state) => state.comment);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const dropdownRef = useRef(null);
  
     const [name, setName] = useState("m");
     const [isMyQues, setIsMyQues] = useState(false);
     const [date, setDate] = useState("");
-    const [question, setQuestion] = useState("");
     const [idx, setIdx] = useState();
-    const [quesImage, setQuesImage] = useState();
     const [userIdx, setUserIdx] = useState();
+    const [isOpen, setIsOpen] = useState(false);
+    const [totLikes, setTotLikes] = useState(0)
+    const [selectedQues, setSelectedQues] = useState();
+    const [showModal, setShowModal] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [showComments, setShowComments] = useState(false);
+    const [comments, setComments] = useState();
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png");
+    const [commentDetails, setCommentDetails] = useState({
+        userId:authState.data?._id,
+        questionId: quesState.currentQuestion[0]?._id,
+        description: ""
+    })
 
     async function loadUsers(){
         await dispatch(getUsers());
+    }
+
+    function loadComments() {
+        setComments(commentState.commentList.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id));
+        setComments(comments => comments.reverse());
     }
 
     function loadUser() {
@@ -34,6 +60,7 @@ function AnswerPage() {
         const userIdx = authState.userList?.findIndex((user) => user._id == quesState.currentQuestion[0]?.userId);
         const index = quesState.downloadedQuestions.findIndex((question) => question._id === quesState.currentQuestion[0]?._id);
         setIdx(index); setUserIdx(userIdx);
+        setTotLikes(quesState.currentQuestion[0]?.likes)
         const dt = quesState?.currentQuestion[0]?.createdAt;
         if(dt){
             const now = new Date(); 
@@ -55,9 +82,17 @@ function AnswerPage() {
                 setDate(`${seconds} second(s) ago`);
             }
             setName(user?.name); setImage(user?.image); 
-            setQuestion(quesState.currentQuestion[0]?.question);
-            setQuesImage(quesState.currentQuestion[0]?.image);
         }
+    }
+
+    async function answer() {
+        navigate(`/create-answer?question=${quesState.currentQuestion[0]?._id}`);
+    }
+
+    async function onDelete(){
+        setIsOpen(false);
+        setSelectedQues(quesState.currentQuestion[0]?._id);
+        setShowModal(true);
     }
 
     async function userView(){
@@ -68,6 +103,60 @@ function AnswerPage() {
         else navigate('/profile');
     }
 
+    async function onLike() {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        const res = await dispatch(like({
+            quesId : quesState.currentQuestion[0]?._id,
+            userId: authState.data._id
+        }));
+        if(res){
+            setIsLiked(true);
+            setTotLikes(totLikes + 1);
+            await dispatch(getLikedQuestions(authState.data?._id));
+        }
+    }
+
+    async function onUnLike() {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        const res = await dispatch(unLike({
+            quesId : quesState.currentQuestion[0]?._id,
+            userId: authState.data._id
+        }));
+        if(res){
+            setIsLiked(false);
+            setTotLikes(totLikes - 1);
+            await dispatch(getLikedQuestions(authState.data?._id));
+        }
+    }
+
+    async function submitComment(){
+        if(commentDetails.description.toString().trim()){
+            const res = await dispatch(createComment(commentDetails));
+            if(res){
+                setCommentDetails({
+                    ...commentDetails, description: ""
+                })
+                await dispatch(getComments());
+                setShowComments(true);
+            }
+        }
+    }
+
+    async function handleChange(e) {
+        setCommentDetails({
+            ...commentDetails,
+            description: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)
+        })
+    }
+
+    useEffect(() => {
+        loadComments();
+    }, [comments])
+
     useEffect(() => {
         if(quesState.currentQuestion[0] && authState.userList) {
             loadUsers(); loadUser();
@@ -76,30 +165,106 @@ function AnswerPage() {
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
-            <article className="w-[80vw] md:w-[50rem] sm:w-[25rem] mb-4 p-3 bg-gray-900 flex flex-col rounded-r-[1rem] rounded-bl-[1rem]">
-                <div className="flex pb-6 items-center justify-between">
-                    <div className="flex">
-                        <a className="inline-block mr-4" href={image}>
-                            <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10" />
-                        </a>
-                        <div className="flex flex-col justify-center">
-                            <div className="flex items-center">
-                                <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
+            <div>
+                <article className="mb-2 w-[75vw] md:w-[50vw] sm:w-[50vw] break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md">
+                    <div className="flex flex-col pb-3">
+                        <div className="flex justify-between items-center">
+                            <div className="flex">
+                                <a className="inline-block mr-4" href={image}>
+                                    <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
+                                </a>
+                                <div className="flex flex-col justify-center">
+                                    <div className="flex items-center">
+                                        <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                                    </div>
+                                    <div className="text-slate-300 text-xs">
+                                        {date}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="text-slate-500 text-xs dark:text-slate-300">
-                                {date}
+                            <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
+                                <div>
+                                    <button
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
+                                    >
+                                    <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-950" />
+                                    </button>
+                                </div>
+
+                                {isOpen && (
+                                    <div
+                                    className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-800 focus:outline-none z-10"
+                                    role="menu"
+                                    aria-orientation="vertical"
+                                    aria-labelledby="menu-button"
+                                    tabIndex="-1"
+                                    >
+                                        <div className="py-1" role="none">
+                                            {authState.data?._id === quesState.currentQuestion[0]?.userId && <h2
+                                                className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
+                                                role="menuitem"
+                                                tabIndex="-1"
+                                                onClick={onDelete}
+                                            >
+                                            Delete
+                                            </h2>}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
+                        {quesState.currentQuestion[0]?.topic && 
+                        <div className="mt-4">
+                            <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:cursor-pointer border-[#F2BEA0] font-inconsolata">{quesState.currentQuestion[0]?.topic}</p>
+                        </div>}
                     </div>
-                </div>
-                <div className="bg-gray-700 h-[0.1px]"/>
-                <div className="py-4">
-                    {quesState.currentQuestion[0]?.title && <h2 className="mb-2 text-lg font-bold">{quesState.currentQuestion[0].title}</h2>}
-                    <p>{question}</p>
-                    {quesImage && <div className="w-full flex justify-center"><a href={quesImage}><img src={quesImage} className="py-2"/></a></div>}
-                </div>
-            </article>
-            <div className="ml-[2rem] w-[77vw] md:w-[47rem] sm:w-[22rem] flex flex-col">
+                    <div className="pb-2">
+                        {quesState.currentQuestion[0]?.title && <h2 className="ml-2 text-lg font-bold mb-2">{quesState.currentQuestion[0]?.title}</h2>}
+                        <p className="text-md ml-2">
+                                {quesState.currentQuestion[0]?.question}
+                            </p>
+                        {quesState.currentQuestion[0]?.image && <div className="flex justify-center px-2"><img src={quesState.currentQuestion[0]?.image} className="py-2"/></div>}
+                    </div>
+                    <div className="bg-gray-700 h-[0.1px]"/>
+                    <div className="w-full flex gap-4 items-center">
+                        <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
+                            <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
+                        </button>
+                        <button className="flex gap-3 justify-center items-center text-sm">
+                            {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                            <span className="ml-1">{totLikes}</span>
+                        </button>
+                        <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
+                            {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
+                    </div>
+                    {authState.isLoggedIn && <div className="flex mt-2 items-center">
+                        <a className="inline-block mr-4" href={authState.data?.image}>
+                            <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
+                        </a>
+                        <textarea 
+                            name="comment"
+                            onChange={handleChange}
+                            value={commentDetails.description}
+                            className="rounded-md w-full border-[2px] border-gray-800 bg-transparent focus:outline-none p-2 text-sm resize-none" 
+                            placeholder="Post comment"
+                            rows="1"
+                            onInput={(e) => {
+                            e.target.style.height = 'auto';
+                            e.target.style.height = e.target.scrollHeight + 'px';
+                            }}
+                        ></textarea>
+                        <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
+                    </div>}
+                    {showModal && <DeleteModal type='question' id={selectedQues}/>}
+                </article>
+                {showComments && <div className="w-full ml-2 my-3">
+                    {comments.length ? comments.map((comment, index) => {
+                        return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt} creator={quesState.currentQuestion[0]?.userId} likes={comment.likes}/>)
+                    }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
+                </div>}
+            </div>
+            <div className="ml-[4rem] w-[70vw] md:w-[45vw] sm:w-[45vw] flex flex-col">
                 {!ansState.solutionList[idx]?.length ? (
                     <h2 className="text-white font-thin italic mb-5">No answers yet</h2>
                 ):ansState.solutionList[idx]?.map((sol) => {

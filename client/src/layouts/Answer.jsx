@@ -178,7 +178,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
 
     return (
         <>
-            <article className="mb-4 w-full break-inside p-4 bg-gray-800 flex flex-col bg-clip-border">
+            <article className="mb-4 break-inside p-4 bg-gray-800 flex flex-col bg-clip-border">
                 <div className="flex pb-3 items-center justify-between">
                 <div className="w-full flex justify-between items-center">
                     <div className="flex">
