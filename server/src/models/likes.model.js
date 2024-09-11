@@ -13,6 +13,10 @@ const likesSchema = new mongoose.Schema({
         type: String,
         default: 'none'
     },
+    commentId: {
+        type:String,
+        default: 'none'
+    },
     createdAt:{
         type: Date,
         immutable: true,

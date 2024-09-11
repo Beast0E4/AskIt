@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
-const commentService = require('../services/comments.service')
+const commentService = require('../services/comments.service');
+const { getLikedComments } = require('../services/likes.service');
 
 exports.createComment = async (req, res, next) => {
     try {
@@ -18,6 +19,28 @@ exports.getComments = async (req, res, next) => {
         res.status(StatusCodes.OK).send({
             data: response
         })
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.getLikedComments = async (req, res, next) => {
+    try {
+        const response = await getLikedComments(req.params.id);
+        res.status(StatusCodes.OK).send({
+            likedComment: response
+        })
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.deleteComments = async(req, res, next) => {
+    try {
+        const response = await commentService.deleteComment(req.params.id);
+        res.status(StatusCodes.OK).send({
+            data: response
+        });
     } catch (error) {
         throw error;
     }

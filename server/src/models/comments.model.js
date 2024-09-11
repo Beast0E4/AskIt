@@ -14,7 +14,7 @@ const commentSchema = new mongoose.Schema({
         required: true,
         default: "none"
     },
-    answerId: {
+    solutionId: {
         type: String,
         required: true,
         default: "none"

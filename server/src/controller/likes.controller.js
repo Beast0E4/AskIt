@@ -22,14 +22,3 @@ exports.unLike = async (req, res, next) => {
         throw error;
     }
 }
-
-exports.getLikes = async(req, res, next) => {
-    try {
-        const response = await getLikes();
-        res.status(StatusCodes.ACCEPTED).send({
-            likes: response
-        })
-    } catch (error) {
-        
-    }
-}
