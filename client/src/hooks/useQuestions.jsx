@@ -21,7 +21,13 @@ function useQuestions () {
             }
             return;
         }
-        console.log(searchParams.get('userid'))
+        console.log(searchParams.get('topic'));
+        if(location.pathname === '/explore' && !searchParams.get('topic')){
+            console.log('hi');
+            const newUsers = [];
+            authState.data?.following?.forEach(id => newUsers.push(id));
+            setUsers(users => [...users, ...newUsers]); return;
+        }
 
         if (searchParams.get('userid') && searchParams.get('topic')) {
             dispatch(filterQuestionByUserandTopic({ id: searchParams.get('userid'), topic: searchParams.get('topic') }));
@@ -37,16 +43,13 @@ function useQuestions () {
     }
 
     async function filterForYou() {
-        if (location.pathname === '/explore') {
-            const newUsers = [];
-            authState.data?.following?.forEach(id => newUsers.push(id));
-            setUsers(users => [...users, ...newUsers]);
-            await dispatch(filterQuestionForExplore(users));
-        }
+        await dispatch(filterQuestionForExplore(users));
     }
 
     useEffect(() => {
-        filterForYou();
+        if(users?.length > 0){
+            filterForYou();
+        }
     }, [users]);
 
     useEffect(() => {

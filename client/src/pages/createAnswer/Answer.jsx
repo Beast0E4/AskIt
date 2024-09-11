@@ -25,7 +25,7 @@ function Answer() {
         const {name, value} = e.target;
         setAns({
             ...ans,
-            [name]: value
+            [name]: value.charAt(0).toUpperCase() + value.slice(1)
         });
     }
 

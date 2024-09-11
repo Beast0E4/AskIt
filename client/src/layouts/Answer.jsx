@@ -250,7 +250,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                         <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
                         {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
                     </div>
-                    <div className="flex mt-2 items-center">
+                    {authState.isLoggedIn && <div className="flex mt-2 items-center">
                         <a className="inline-block mr-4" href={authState.data?.image}>
                             <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
                         </a>
@@ -267,7 +267,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                             }}
                         ></textarea>
                         <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
-                    </div>
+                    </div>}
                 </div>
                 {showModal && <DeleteModal type="solution" id={selectedSol}/>}
                 <EditAnswerModal />

@@ -42,7 +42,7 @@ function Explore() {
     }
 
     function calculateLength(){
-        const ques = quesState.currentList?.filter((ques) => ques.userId === authState?.data?._id);
+        const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
         let quesLikes = 0;
         ques.map((ques) => quesLikes += ques.likes);
         setQuesLikes(quesLikes);
@@ -55,8 +55,8 @@ function Explore() {
         setSolLength(lt);
     }
 
-    let filteredQuestions = quesState.currentList;
-    if(searchQuery) filteredQuestions = quesState.currentList?.filter((quest) =>
+    let filteredQuestions = quesState.questionList;
+    if(searchQuery) filteredQuestions = quesState.questionList?.filter((quest) =>
         quest.title?.toLowerCase().includes(searchQuery?.toLowerCase())
     );
 
@@ -74,9 +74,7 @@ function Explore() {
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest) => {
-                        let date = quest.createdAt?.split('T')[0].split('-');
-                        date = date[2] + "-" + date[1] + "-" + date[0];
-                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={date} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)
+                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">Follow users to see questions here</h2>
                     ))}

@@ -32,6 +32,10 @@ function SignUp() {
         }
         const { name, value } = e.target;
         if (name === 'confirmPassword') setPassword(value);
+        else if (name === 'name' || name === 'profession') setUserDetails({
+            ...userDetails,
+            [name]: value.charAt(0).toUpperCase() + value.slice(1)
+        });
         else setUserDetails({
             ...userDetails,
             [name]: value

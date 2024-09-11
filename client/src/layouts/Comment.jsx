@@ -23,7 +23,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedComment, setSelectedComment] = useState();
     const [showModal, setShowModal] = useState(false);
-    const [totLikes, setTotLikes] = useState(likes)
+    const [totLikes, setTotLikes] = useState(likes || 0)
     const [isLiked, setIsLiked] = useState(false);
     const [dateDiff, setDateDiff] = useState(0);
 
@@ -137,9 +137,9 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                 <img src={image} alt={name} className="rounded-full max-w-none w-8 h-8 object-cover" />
             </a>
             <div>
-                <div className="bg-gray-800 rounded-lg pl-4 pt-2 pb-2.5 w-[50vw] md:w-[35vw] sm:w-[35vw]">
+                <div className="bg-gray-800 rounded-lg pl-3 pb-2.5 w-[50vw] md:w-[35vw] sm:w-[35vw]">
                     <div className="flex items-center justify-between">
-                        <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                        <a onClick={userView} className="inline-block font-bold text-sm hover:cursor-pointer hover:underline">{name}</a>
                         {(creator === authState.data?._id || userId === authState.data?._id) && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                             <div>
                                 <button
@@ -152,7 +152,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
 
                             {isOpen && (
                                 <div
-                                className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none z-10"
+                                className="origin-top-right absolute right-0 mt-1 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none z-10"
                                 role="menu"
                                 aria-orientation="vertical"
                                 aria-labelledby="menu-button"

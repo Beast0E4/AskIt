@@ -45,7 +45,7 @@ function Following() {
                 {loading && <Loader />}
                 {filteredUsers?.length ? filteredUsers?.map((user) => {
                     return (<UserLayout key={user._id} userId={user._id} username={user.name} profession={user.profession} image={user.image || "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png"}/>)
-                }) : <h2 className="text-white font-thin italic">You do not follow anybody yet</h2>}
+                }) : <h2 className="text-white font-thin italic">No users available</h2>}
             </div>
             <div className="fixed sm:right-5">
                 <div className="hidden lg:flex mt-5 relative text-gray-600 w-[14.5rem]">

@@ -46,7 +46,7 @@ function Question() {
         }
         setQuestion({
             ...question,
-            [name]: value
+            [name]: value.charAt(0).toUpperCase() + value.slice(1)
         })
     }
 

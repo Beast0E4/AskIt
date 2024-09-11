@@ -96,7 +96,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     async function handleChange(e) {
         setCommentDetails({
             ...commentDetails,
-            description: e.target.value
+            description: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)
         })
     }
 
@@ -291,7 +291,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
                         {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
                 </div>
-                <div className="flex mt-2 items-center">
+                {authState.isLoggedIn && <div className="flex mt-2 items-center">
                     <a className="inline-block mr-4" href={authState.data?.image}>
                         <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
                     </a>
@@ -308,7 +308,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                         }}
                     ></textarea>
                     <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
-                </div>
+                </div>}
                 {showModal && <DeleteModal type='question' id={selectedQues}/>}
             </article>
             {showComments && <div className="w-full ml-2 my-3">
