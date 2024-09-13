@@ -14,7 +14,7 @@ const quesSchema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: String,
+        type: String
     },
     repost:{
         type: String,

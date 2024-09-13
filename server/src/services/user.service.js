@@ -49,6 +49,7 @@ const verifyUser = async(data) => {
                     profession: userData.profession,
                     image: userData.image,
                     following: userData.following,
+                    savedQuestions: userData.savedQuestions,
                     createdAt:userData.createdAt,
                     updatedAt:userData.updatedAt,
                 };
@@ -193,6 +194,18 @@ const unFollowUser = async (userId, myId) => {
     }
 }
 
+const saveQuestion = async(userId, questionId) => {
+    try {
+        let res;
+        const user = await User.findById(userId);
+        if(user.savedQuestions?.includes(questionId)) res = User.findByIdAndUpdate(userId, {$pull: {savedQuestions: questionId}});
+        else res = User.findByIdAndUpdate(userId, {$push: {savedQuestions: questionId}});
+        return res;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, followUser, unFollowUser
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, followUser, unFollowUser, saveQuestion
 }

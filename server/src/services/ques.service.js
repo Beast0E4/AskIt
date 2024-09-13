@@ -22,7 +22,7 @@ const createQuestion = async(data, file) => {
             question: data.question,
             topic: data.topic,
             image: result?.secure_url,
-            repost: data.repost ? data.repost : null
+            repost: data.repost ? data.repost : 'none'
         }
         const response = Questions.create(quesObj);
         return response;

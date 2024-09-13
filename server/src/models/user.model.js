@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema({
     following: {
         type: [String]
     },
+    savedQuestions: {
+        type: [String]
+    },
     createdAt:{
         type: Date,
         immutable: true,

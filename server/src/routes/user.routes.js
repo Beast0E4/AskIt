@@ -9,4 +9,5 @@ module.exports = function(app) {
     app.delete('/askit/users/deleteUser/:id', isUserAuthenticated, userController.deleteUser);
     app.post('/askit/users/follow', isUserAuthenticated, userController.followUser);
     app.patch('/askit/users/unFollow', isUserAuthenticated, userController.unFollowUser);
+    app.patch('/askit/user/question', isUserAuthenticated, userController.saveQuestion)
 }

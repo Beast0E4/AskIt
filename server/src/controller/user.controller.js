@@ -74,3 +74,14 @@ exports.unFollowUser = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.saveQuestion = async(req, res, next) => {
+    try {
+        const result = await userService.saveQuestion(req.body.userId, req.body.questionId);
+        res.status(StatusCodes.ACCEPTED).send({
+            saved: result
+        })
+    } catch (error) {
+        throw error;
+    }
+}
