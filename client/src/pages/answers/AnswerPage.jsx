@@ -6,7 +6,7 @@ import { getLikedQuestions, getUsers } from "../../redux/Slices/auth.slice";
 import useAnswers from "../../hooks/useAnswers";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
 import { like, unLike } from "../../redux/Slices/ques.slice";
 import { FaComment, FaRegComment } from "react-icons/fa";
 import { createComment, getComments } from "../../redux/Slices/comment.slice";
@@ -39,6 +39,8 @@ function AnswerPage() {
     const [isLiked, setIsLiked] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState();
+    const [retweets, setRetweets] = useState(0);
+    const [answers, setAnswers] = useState(0);
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png");
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
@@ -46,13 +48,24 @@ function AnswerPage() {
         description: ""
     })
 
+    function countSolutions(){
+        const list = ansState.downloadedAnswers.filter((ans) => ans.questionId === quesState.currentQuestion[0]?._id);
+        setAnswers(list?.length);
+    }
+
+    function calculateRetweets(){
+        const list = quesState.downloadedQuestions.filter((ques) => ques.repost === quesState.currentQuestion[0]?._id);
+        setRetweets(list?.length);
+    }
+
     async function loadUsers(){
         await dispatch(getUsers());
     }
 
     function loadComments() {
-        setComments(commentState.commentList.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id));
-        setComments(comments => comments.reverse());
+        const list = commentState.commentList.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id);
+        list.reverse();
+        setComments(list);
     }
 
     function loadUser() {
@@ -155,14 +168,25 @@ function AnswerPage() {
     }
 
     useEffect(() => {
-        loadComments();
-    }, [comments])
+        countSolutions();
+    }, [ansState.downloadedAnswers.flat().length])
+
 
     useEffect(() => {
-        if(quesState.currentQuestion[0] && authState.userList) {
-            loadUsers(); loadUser();
+        loadComments();
+    }, [comments?.length])
+
+    // useEffect(() => {
+        
+    // }, [quesState.currentQuestion]);
+    
+    useEffect(() => {
+        calculateRetweets();
+        if (quesState.currentQuestion[0] && authState.userList) {
+            loadUsers(); 
+            loadUser();
         }
-    }, [quesState.currentQuestion, authState.userList.length, ansState.solutionList, idx]);
+    }, [quesState.currentQuestion, authState.userList.length]);
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
@@ -231,12 +255,16 @@ function AnswerPage() {
                     <div className="bg-gray-700 h-[0.1px]"/>
                     <div className="w-full flex gap-4 items-center">
                         <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
-                            <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
+                            <span className="ml-3">{answers}</span>
                         </button>
                         <button className="flex gap-3 justify-center items-center text-sm">
                             {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
                             <span className="ml-1">{totLikes}</span>
                         </button>
+                        <div className="flex gap-3 justify-center items-center text-sm">
+                            <AiOutlineRetweet title="Reposts"/>
+                            <span className="ml-1">{retweets}</span>
+                        </div>
                         <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
                             {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
                     </div>

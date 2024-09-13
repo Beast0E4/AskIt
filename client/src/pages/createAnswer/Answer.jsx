@@ -36,7 +36,7 @@ function Answer() {
         } catch (error) {
             toast.error('Could not create your answer'); setLoading(false);
         } finally {
-            navigate('/'); setLoading(false);
+            setLoading(false); navigate(`/answer?question=${searchParams.get('question')}`);
         }
     }
 

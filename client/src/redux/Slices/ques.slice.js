@@ -118,6 +118,11 @@ const QuestionSlice = createSlice({
             state.currentList = list;
             state.questionList = state.currentList;
         },
+        filterQuestionForSaved: (state, action) => {
+            state.currentList = state.downloadedQuestions.filter(question => action.payload.includes(question._id));
+            state.questionList = state.currentList;
+            console.log('Saved', state.currentList)
+        },
         resetQuestionList: (state) => {
             state.questionList = state.downloadedQuestions;
             state.currentList = state.questionList
@@ -139,6 +144,6 @@ const QuestionSlice = createSlice({
     }
 });
 
-export const { filterQuestionById, resetQuestionList, filterQuestionByUser, filterQuestionByTopic, filterQuestionByUserandTopic, filterQuestionForExplore, sortQuestionForTrending } = QuestionSlice.actions;
+export const { filterQuestionById, resetQuestionList, filterQuestionByUser, filterQuestionByTopic, filterQuestionByUserandTopic, filterQuestionForExplore, sortQuestionForTrending, filterQuestionForSaved } = QuestionSlice.actions;
 
 export default QuestionSlice.reducer;

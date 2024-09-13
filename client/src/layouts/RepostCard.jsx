@@ -28,7 +28,6 @@ function RepostCard({ questionId }) {
       (ques) => ques._id === questionId
     );
     setQuest(foundQuest);
-    console.log("Repost", foundQuest);
   }
 
   async function findName() {
@@ -112,7 +111,7 @@ function RepostCard({ questionId }) {
 
   return (
     <>
-      <article className="mb-2 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md border-[1.5px] border-gray-800">
+      <article className="mb-2 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md border-[2px] border-gray-700">
         <div className="flex flex-col pb-3">
         <div className="flex justify-between items-center">
                         <div className="flex">

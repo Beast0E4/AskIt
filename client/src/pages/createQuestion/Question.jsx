@@ -54,9 +54,9 @@ function Question() {
     }
 
     async function handleSubmit() {
+        if(!question.question.toString().trim() || !question.title.toString().trim()) return;
         setLoading(true);
         try {
-            if(!question.question.toString().trim() || !question.title.toString().trim()) throw 'Error';
             const formData = new FormData();
             formData.append('userId', authState.data._id);
             formData.append('title', question.title.toString().trim());

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { filterQuestionById, filterQuestionByTopic, filterQuestionByUser, filterQuestionByUserandTopic, filterQuestionForExplore, getAllQuestions, resetQuestionList, sortQuestionForTrending } from "../redux/Slices/ques.slice";
+import { filterQuestionById, filterQuestionByTopic, filterQuestionByUser, filterQuestionByUserandTopic, filterQuestionForExplore, filterQuestionForSaved, getAllQuestions, resetQuestionList, sortQuestionForTrending } from "../redux/Slices/ques.slice";
 import { useSearchParams } from "react-router-dom";
 
 function useQuestions () {
@@ -21,12 +21,15 @@ function useQuestions () {
             }
             return;
         }
-        console.log(searchParams.get('topic'));
+
         if(location.pathname === '/explore' && !searchParams.get('topic')){
-            console.log('hi');
             const newUsers = [];
             authState.data?.following?.forEach(id => newUsers.push(id));
             setUsers(users => [...users, ...newUsers]); return;
+        }
+
+        if(location.pathname === '/saved' && !searchParams.get('topic')){
+            dispatch(filterQuestionForSaved(authState.data?.savedQuestions)); return;
         }
 
         if (searchParams.get('userid') && searchParams.get('topic')) {

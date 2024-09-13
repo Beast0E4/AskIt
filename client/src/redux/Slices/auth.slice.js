@@ -161,6 +161,20 @@ export const getLikedSolutions = createAsyncThunk('user/solLiked', async(id) => 
     }
 })
 
+export const saveQuestion = createAsyncThunk('user/question', async(data) => {
+    try {
+        const response = axiosInstance.patch(`user/question/`, data, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        })
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,

@@ -29,6 +29,7 @@ function MainRoutes() {
             <Route path="/followers" element={<><Navbar/><Following/></>} />
             <Route path="/liked" element={<><Navbar/><LikedQuestions/></>}/>
             <Route path="/explore" element={<><Navbar/><Explore/></>} />
+            <Route path="/saved" element={<><Navbar/><Explore/></>} />
             <Route path="/comment" element={<Comment/>} />
         </Routes>
     )

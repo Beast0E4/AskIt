@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { like, unLike } from "../redux/Slices/ques.slice";
 import { useEffect, useRef, useState } from "react";
-import { getLikedQuestions } from "../redux/Slices/auth.slice";
+import { getLikedQuestions, login, saveQuestion } from "../redux/Slices/auth.slice";
 import useAnswers from "../hooks/useAnswers";
 import DeleteModal from "./DeleteModal";
 import { FiSend } from "react-icons/fi";
@@ -10,8 +10,8 @@ import { createComment, getComments } from "../redux/Slices/comment.slice";
 import useComments from "../hooks/useComments";
 import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai";
-import { FaRegComment, FaComment } from "react-icons/fa";
+import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
+import { FaRegComment, FaComment, FaRegBookmark, FaBookmark } from "react-icons/fa";
 import RepostCard from "./RepostCard";
 
 // eslint-disable-next-line react/prop-types
@@ -27,7 +27,6 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
 
     const dropdownRef = useRef(null);
 
-    const [idx, setIdx] = useState();
     const [userIdx, setUserIdx] = useState();
     const [name, setName] = useState("");
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png")
@@ -41,11 +40,24 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [isOpen, setIsOpen] = useState(false);
     const [dateDiff, setDateDiff] = useState(0);
     const [check, setCheck] = useState(false);
+    const [retweets, setRetweets] = useState(0);
+    const [answers, setAnswers] = useState(0);
+    const [checkSaved, setCheckSaved] = useState(false);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
         description: ""
     })
+
+    function countSolutions(){
+        const list = ansState.downloadedAnswers.flat().filter((ans) => ans?.questionId === questionId);
+        setAnswers(list?.length);
+    }
+
+    function calculateRetweets(){
+        const list = quesState.downloadedQuestions.filter((ques) => ques.repost === questionId);
+        setRetweets(list?.length);
+    }
 
     function loadComments() {
         setComments(commentState.commentList.filter((comment) => comment.questionId === questionId));
@@ -54,17 +66,6 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
 
     async function answer() {
         navigate(`/create-answer?question=${questionId}`);
-    }
-
-    function filterquestion() {
-        const n = quesState.downloadedQuestions.length;
-        let index = 0;
-        for(var i = 0; i < n; i ++){
-            if(quesState.downloadedQuestions[i]._id === questionId){
-                index = i; break;
-            }
-        }
-        setIdx(index);
     }
 
     async function findName(){
@@ -173,16 +174,43 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         navigate(`/create-question?repost=${questionId}`)
     }
 
+    async function save(){
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        const res = await dispatch(saveQuestion({
+            userId: authState.data?._id,
+            questionId: questionId
+        }))
+        if(res){
+            await dispatch(login({
+                email: authState.data?.email
+            }))
+        }
+    }
+
+
+
     useEffect(() => {
+        countSolutions();
+    }, [ansState.downloadedAnswers.flat().length])
+
+    useEffect(() => {
+        calculateRetweets();
         getTimeElapsed(createdAt);
-    }, [createdAt])
+    }, [questionId])
+
+    useEffect(() => {
+        if(authState.isLoggedIn && authState.data?.savedQuestions?.includes(questionId)) setCheckSaved(true);
+        else setCheckSaved(false);
+    }, [authState.data?.savedQuestions?.length])
 
     useEffect(() => {
         loadComments();
     }, [commentState.commentList.length])
 
     useEffect(() => {
-        filterquestion(); findName(); 
+        findName(); 
         if(authState.data){
             const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === questionId));
             if(ques?.length) setIsLiked(true);
@@ -300,14 +328,19 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="w-full flex gap-4 items-center">
                     <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
-                        <span className="ml-3">{ansState.solutionList[idx]?.length}</span>
+                        <span className="ml-3">{answers}</span>
                     </button>
                     <button className="flex gap-3 justify-center items-center text-sm">
                         {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
                         <span className="ml-1">{totLikes}</span>
                     </button>
+                    <div className="flex gap-3 justify-center items-center text-sm">
+                        <AiOutlineRetweet title="Reposts"/>
+                        <span className="ml-1">{retweets}</span>
+                    </div>
                     <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
                         {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
+                    {checkSaved ? <FaBookmark className="w-2 hover:cursor-pointer" onClick={save}/> : <FaRegBookmark className="w-2 hover:cursor-pointer" onClick={save}/>}
                 </div>
                 {authState.isLoggedIn && <div className="flex mt-2 items-center">
                     <a className="inline-block mr-4" href={authState.data?.image}>
