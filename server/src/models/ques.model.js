@@ -16,6 +16,10 @@ const quesSchema = new mongoose.Schema({
     image: {
         type: String,
     },
+    repost:{
+        type: String,
+        default: 'none'
+    },
     likes:{
         type: Number,
         required: true,

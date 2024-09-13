@@ -21,7 +21,8 @@ const createQuestion = async(data, file) => {
             title: data.title,
             question: data.question,
             topic: data.topic,
-            image: result?.secure_url
+            image: result?.secure_url,
+            repost: data.repost ? data.repost : null
         }
         const response = Questions.create(quesObj);
         return response;

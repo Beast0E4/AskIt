@@ -4,6 +4,7 @@ const { getLikedQuestions } = require('../services/likes.service')
 
 exports.createQuestion = async (req, res, next) => {
     try {
+        console.log('Info', req.body)
         const response = await createQuestion(req.body, req.file);
         res.status(StatusCodes.CREATED).send({
             question: response
