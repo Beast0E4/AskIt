@@ -93,7 +93,7 @@ function Home() {
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {(location.pathname === '/questions' || location.pathname === '/' || location.pathname === '/trending') && (loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest) => {
-                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image}/>)
+                        return (<Question key={quest._id} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No questions yet</h2>
                     )))}

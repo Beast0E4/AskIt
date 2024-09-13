@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import DeleteAccModal from "../../layouts/DeleteAccModal";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useQuestions from "../../hooks/useQuestions";
 import useLikes from '../../hooks/useLikes'
 import { MdDelete, MdDone, MdLogout } from "react-icons/md";
@@ -14,8 +14,11 @@ import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/cropUtils';
 import { RiUserFollowFill } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";
+import { BiSolidImageAdd } from "react-icons/bi";
  
 function Profile() {
+
+    const fileInputRef = useRef(null);
 
     const navigate = useNavigate();
 
@@ -45,6 +48,7 @@ function Profile() {
     const [name, setName] = useState(authState.data?.name);
     const [profession, setProfession] = useState(authState.data?.profession);
     const [followers, setFollowers] = useState(0);
+    const [imageName, setImageName] = useState();
 
     const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory", "Sports"];
 
@@ -58,6 +62,16 @@ function Profile() {
     function showDeleteModal() {
         document.getElementById('deleteModal').showModal();
     }
+
+    const handleIconClick = () => {
+        fileInputRef.current.click(); 
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]; 
+        setCropping(true); setFile(file);
+        setImageName(file?.name.toString().substring(0, 16) + "..."); 
+    };
 
     const incrementValueAtIndex = (index) => {
         setTopicsCount(prevArray => {
@@ -334,7 +348,11 @@ function Profile() {
                     <div className="w-full flex flex-col sm:flex-row justify-between p-4 gap-4">
                         <h2 className="text-gray-400 font-inconsolata flex items-center">Update image</h2>
                         <div className="w-max flex flex-col sm:flex-row sm:items-center items-start gap-4">
-                            <input onChange={handleChange} type="file" name="image" encType="multipart/form-data" id="fileInput" required></input>
+                            <div className="flex gap-4">
+                                {imageName && <h2>{imageName}</h2>}
+                                <BiSolidImageAdd className="h-6 w-6 hover:cursor-pointer" onClick={handleIconClick}/>
+                            </div>
+                            <input id="fileInput" type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
                             <button onClick={onSubmit} id="image" className="text-sm border-[1px] border-white p-2 rounded-md hover:bg-white hover:text-black transition-all ease-in-out font-semibold px-4">Update</button>
                         </div>
                     </div>

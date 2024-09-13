@@ -32,8 +32,7 @@ function Answer() {
     async function onSubmit(){
         setLoading(true);
         try {
-            if(!ans.solution.toString().trim()) throw 'Error';
-            await dispatch(createAnswer(ans));
+            if(ans.solution.toString().trim()) await dispatch(createAnswer(ans));
         } catch (error) {
             toast.error('Could not create your answer'); setLoading(false);
         } finally {

@@ -13,6 +13,7 @@ import { createComment, getComments } from "../../redux/Slices/comment.slice";
 import { FiSend } from "react-icons/fi";
 import DeleteModal from "../../layouts/DeleteModal";
 import Comment from "../../layouts/Comment";
+import RepostCard from "../../layouts/RepostCard";
 
 function AnswerPage() {
 
@@ -166,7 +167,7 @@ function AnswerPage() {
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
             <div>
-                <article className="mb-2 w-[75vw] md:w-[50vw] sm:w-[50vw] break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md">
+                <article className="mb-2 w-[75vw] md:w-[50vw] sm:w-[50vw] break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md border-[1.5px] border-gray-800">
                     <div className="flex flex-col pb-3">
                         <div className="flex justify-between items-center">
                             <div className="flex">
@@ -182,7 +183,7 @@ function AnswerPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
+                            {authState.data?._id === quesState.currentQuestion[0]?.userId && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                                 <div>
                                     <button
                                     onClick={() => setIsOpen(!isOpen)}
@@ -201,18 +202,18 @@ function AnswerPage() {
                                     tabIndex="-1"
                                     >
                                         <div className="py-1" role="none">
-                                            {authState.data?._id === quesState.currentQuestion[0]?.userId && <h2
+                                            <h2
                                                 className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
                                                 role="menuitem"
                                                 tabIndex="-1"
                                                 onClick={onDelete}
                                             >
                                             Delete
-                                            </h2>}
+                                            </h2>
                                         </div>
                                     </div>
                                 )}
-                            </div>
+                            </div>}
                         </div>
                         {quesState.currentQuestion[0]?.topic && 
                         <div className="mt-4">
@@ -226,6 +227,7 @@ function AnswerPage() {
                             </p>
                         {quesState.currentQuestion[0]?.image && <div className="flex justify-center px-2"><img src={quesState.currentQuestion[0]?.image} className="py-2"/></div>}
                     </div>
+                    {quesState.currentQuestion[0]?.repost !== 'none' && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
                     <div className="bg-gray-700 h-[0.1px]"/>
                     <div className="w-full flex gap-4 items-center">
                         <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer

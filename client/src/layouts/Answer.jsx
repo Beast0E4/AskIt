@@ -214,7 +214,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                 >
                                     <div className="py-1">
                                         <h2
-                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
+                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
                                             role="menuitem"
                                             tabIndex="-1"
                                             onClick={onDelete}
@@ -222,7 +222,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                         Delete
                                         </h2>
                                         {creator === authState.data?._id && <h2
-                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
+                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
                                             role="menuitem"
                                             tabIndex="-1"
                                             onClick={onAnswerView}

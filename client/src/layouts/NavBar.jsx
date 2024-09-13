@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { MdExplore, MdOutlineTrendingUp } from "react-icons/md";
+import { FaHome } from "react-icons/fa";
 
 function Navbar(){
 
@@ -74,9 +76,9 @@ function Navbar(){
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="flex text-base font-medium px-1 gap-5">
-                    <li><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') && !searchParams.get('trending') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Home">Home</Link></li>
-                    <li><Link to={'/explore'} className={`${location.pathname === `/explore` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Explore">Explore</Link></li>
-                    <li><Link to={'/trending'} className={`${location.pathname === `/trending` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Trending">Trending</Link></li>
+                    <li className="flex items-center gap-2"><FaHome className={`${location.pathname === '/' && !searchParams.get('userid') && !searchParams.get('trending') ? 'text-[#F2BEA0]' : ''}`}/><Link to={'/'} id="Home" className={`${location.pathname === '/' && !searchParams.get('userid') && !searchParams.get('trending') ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Home">Home</Link></li>
+                    <li className="flex items-center gap-2"><MdExplore className={`${location.pathname === `/explore` ? 'text-[#F2BEA0]' : ''}`}/><Link to={'/explore'} className={`${location.pathname === `/explore` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Explore">Explore</Link></li>
+                    <li className="flex items-center gap-2"><MdOutlineTrendingUp className={`${location.pathname === `/trending` ? 'text-[#F2BEA0]' : ''}`}/><Link to={'/trending'} className={`${location.pathname === `/trending` ? 'border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : ''}`} title="Trending">Trending</Link></li>
                     <li className={`${location.pathname === `/following` ? 'block border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : 'hidden'}`}><h2 title="Following">Following</h2></li>
                     <li className={`${location.pathname === `/followers` ? 'block border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : 'hidden'}`}><h2 title="Followers">Followers</h2></li>
                 </ul>

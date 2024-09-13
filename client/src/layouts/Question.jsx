@@ -12,9 +12,10 @@ import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { FaRegComment, FaComment } from "react-icons/fa";
+import RepostCard from "./RepostCard";
 
 // eslint-disable-next-line react/prop-types
-function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage}) {
+function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage, repost}) {
 
     const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
@@ -165,6 +166,13 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         }
     }
 
+    function onRepost(){
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        navigate(`/create-question?repost=${questionId}`)
+    }
+
     useEffect(() => {
         getTimeElapsed(createdAt);
     }, [createdAt])
@@ -201,10 +209,9 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
           document.removeEventListener('mousedown', handleClickOutside);
         };
       }, [isOpen]);
-
     return (
         <>
-            <article className="mb-2 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md">
+            <article className="mb-2 w-full break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md border-[1.5px] border-gray-800">
                 <div className="flex flex-col pb-3">
                     <div className="flex justify-between items-center">
                         <div className="flex">
@@ -247,6 +254,14 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                         >
                                         View Answers
                                         </h2>
+                                        <h2
+                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-700 font-semibold hover:cursor-pointer"
+                                            role="menuitem"
+                                            tabIndex="-1"
+                                            onClick={onRepost}
+                                        >
+                                        Repost
+                                        </h2>
                                         {authState.data?._id === creator && <h2
                                             className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
                                             role="menuitem"
@@ -279,6 +294,9 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     </div>
                     {quesImage && <div className="flex justify-center px-2"><img src={quesImage} className="py-2"/></div>}
                 </div>
+                {repost && repost !== 'none' && <div>
+                    <RepostCard questionId={repost} />
+                </div>}
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="w-full flex gap-4 items-center">
                     <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer

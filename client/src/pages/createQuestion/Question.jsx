@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createQuestion } from "../../redux/Slices/ques.slice";
 import toast from "react-hot-toast";
 import { BiSolidImageAdd } from "react-icons/bi";
@@ -11,6 +11,8 @@ function Question() {
 
     const authState = useSelector((state) => state.auth)
     const fileInputRef = useRef(null);
+    const [searchParams] = useSearchParams();
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -22,7 +24,8 @@ function Question() {
     const [question, setQuestion] = useState({
         title: "",
         question: "",
-        topic: ""
+        topic: "",
+        repost: searchParams.get('repost')
     })
     const [croppedFile, setCroppedFile] = useState(null);
     const [cropping, setCropping] = useState(false);
@@ -59,6 +62,7 @@ function Question() {
             formData.append('title', question.title.toString().trim());
             formData.append('question', question.question.toString().trim());
             formData.append('topic', selectedTopic);
+            formData.append('repost', searchParams.get('repost'));
             if(file) formData.append('image', croppedFile);
             await dispatch(createQuestion(formData));
         } catch (error) {
@@ -141,6 +145,7 @@ function Question() {
                     <input id="fileInput" type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
                     <input name="title" onChange={handleONChange} value={question.title} className="textarea w-full" placeholder="Title for question"/>
                     <textarea name="question" onChange={handleONChange} value={question.question} className="textarea textarea-bordered w-full resize-none" placeholder="Your question" rows={5}></textarea>
+                    {searchParams.get('repost') && <h3>Repost: {searchParams.get('repost')}</h3>}
                     <button onClick={handleSubmit} className="btn btn-primary bg-gray-700 hover:bg-gray-800 hover:border-transparent border-transparent w-full font-bold text-white">{loading ? 'Uploading question ...' : 'CREATE'}</button>
                 </div>
             </div>
