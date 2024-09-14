@@ -1,4 +1,5 @@
 const cloudinary = require("../config/cloudinary.config");
+const Comments = require("../models/comments.model");
 const Likes = require("../models/likes.model");
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
@@ -54,12 +55,14 @@ const deleteQuestion = async(ques) => {
         const res = await Solutions.find({questionId: ques.id});
         res.forEach(async (sol) => {
             await Likes.deleteMany({solutionId: sol.id});
+            await Comments.deleteMany({solutionId: sol.id});
         })
         const quest = await Questions.findById(ques.id);
         if(quest.image){
             const publicId = quest.image.split('/').slice(-2).join('/').split('.')[0];
             await cloudinary.uploader.destroy(publicId);
         }
+        await Comments.deleteMany({questionId: ques.id});
         await Solutions.deleteMany({questionId: ques.id});
         await Likes.deleteMany({questionId: ques.id})
         const question = await Questions.findByIdAndDelete(ques.id);

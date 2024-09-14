@@ -155,10 +155,6 @@ const deleteUser = async (data) => {
         const publicId = details.image.split('/').slice(-2).join('/').split('.')[0];
         const result = await cloudinary.uploader.destroy(publicId);
         const response = await User.deleteOne({_id: data.id});
-        const ques = await Questions.find({userId: data.id});
-        ques.forEach(async (quest) => await Solutions.deleteMany({questionId: quest._id}));
-        await Questions.deleteMany({userId: data.id});
-        await Solutions.deleteMany({userId: data.id});
         return response;
     } catch (error) {
         throw error;
@@ -173,7 +169,7 @@ const followUser = async (userId, myId) => {
         if(!me) return;
         await User.updateOne({ _id: myId }, {$push: { following: userId }});
         me = await User.findById(myId);
-        return me.following; 
+        return me.following;
     } catch (error) {
         throw error;
     }

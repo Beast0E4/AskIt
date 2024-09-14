@@ -1,3 +1,4 @@
+const Comments = require("../models/comments.model");
 const Likes = require("../models/likes.model");
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
@@ -54,6 +55,7 @@ const getSolutionByUser = async(sol) => {
 const deleteSolution = async(sol) => {
     try {
         await Likes.deleteMany({solutionId: sol.id});
+        await Comments.deleteMany({solutionId: sol.id})
         const soln = await Solutions.findByIdAndDelete(sol.id);
         return soln;
     } catch (error) {
