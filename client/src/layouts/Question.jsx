@@ -28,7 +28,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const dropdownRef = useRef(null);
 
     const [userIdx, setUserIdx] = useState();
-    const [name, setName] = useState("");
+    const [name, setName] = useState('Anonymous');
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png")
     const [totLikes, setTotLikes] = useState(likes)
     const [isLiked, setIsLiked] = useState(false);
@@ -71,8 +71,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     async function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
         setUserIdx(nm);
-        setName(authState?.userList[nm]?.name.substring(0, 10));
-        setImage(authState.userList[nm]?.image);
+        if(authState?.userList[nm]?.name) setName(authState?.userList[nm]?.name.substring(0, 10));
+        if(authState.userList[nm]?.image) setImage(authState.userList[nm]?.image);
     }
 
     async function userView() {
@@ -188,8 +188,6 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
             }))
         }
     }
-
-
 
     useEffect(() => {
         countSolutions();

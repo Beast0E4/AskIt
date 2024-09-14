@@ -46,7 +46,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
 
     function findName(){
         const nm = authState.userList.findIndex((e) => e._id === creator);
-        setName(authState.userList[nm]?.name); setUserIdx(nm);
+        if(authState.userList[nm]?.name) setName(authState.userList[nm]?.name); setUserIdx(nm);
         if(authState.userList[nm]?.image) setImage(authState.userList[nm].image);
     }
 

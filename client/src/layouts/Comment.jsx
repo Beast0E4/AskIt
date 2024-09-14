@@ -18,7 +18,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
     const dropdownRef = useRef(null);
     
     const [userIdx, setUserIdx] = useState();
-    const [name, setName] = useState("");
+    const [name, setName] = useState("Anonymous");
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png")
     const [isOpen, setIsOpen] = useState(false);
     const [selectedComment, setSelectedComment] = useState();
@@ -30,8 +30,8 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
     function findName(){
         const nm = authState.userList.findIndex((e) => e._id === userId);
         setUserIdx(nm);
-        setName(authState?.userList[nm]?.name.substring(0, 10));
-        setImage(authState.userList[nm]?.image);
+        if(authState?.userList[nm]?.name) setName(authState?.userList[nm]?.name.substring(0, 10));
+        if(authState.userList[nm]?.image) setImage(authState.userList[nm]?.image);
     }
 
     async function onDelete(){

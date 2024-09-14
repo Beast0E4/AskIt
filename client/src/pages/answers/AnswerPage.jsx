@@ -27,7 +27,8 @@ function AnswerPage() {
 
     const dropdownRef = useRef(null);
  
-    const [name, setName] = useState("m");
+    const id = quesState.currentQuestion[0]?.repost;
+    const [name, setName] = useState("Anonymous");
     const [isMyQues, setIsMyQues] = useState(false);
     const [date, setDate] = useState("");
     const [idx, setIdx] = useState();
@@ -49,7 +50,7 @@ function AnswerPage() {
     })
 
     function countSolutions(){
-        const list = ansState.downloadedAnswers.filter((ans) => ans.questionId === quesState.currentQuestion[0]?._id);
+        const list = ansState.downloadedAnswers.flat().filter((ans) => ans.questionId === quesState.currentQuestion[0]?._id);
         setAnswers(list?.length);
     }
 
@@ -95,7 +96,8 @@ function AnswerPage() {
             } else {
                 setDate(`${seconds} second(s) ago`);
             }
-            setName(user?.name); setImage(user?.image); 
+            if(user?.name) setName(user?.name); 
+            if(user?.image) setImage(user?.image); 
         }
     }
 
@@ -169,16 +171,12 @@ function AnswerPage() {
 
     useEffect(() => {
         countSolutions();
-    }, [ansState.downloadedAnswers.flat().length])
+    }, [ansState.downloadedAnswers.flat().length, quesState.currentQuestion[0]?._id])
 
 
     useEffect(() => {
         loadComments();
     }, [comments?.length])
-
-    // useEffect(() => {
-        
-    // }, [quesState.currentQuestion]);
     
     useEffect(() => {
         calculateRetweets();
@@ -251,7 +249,7 @@ function AnswerPage() {
                             </p>
                         {quesState.currentQuestion[0]?.image && <div className="flex justify-center px-2"><img src={quesState.currentQuestion[0]?.image} className="py-2"/></div>}
                     </div>
-                    {quesState.currentQuestion[0]?.repost !== 'none' && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
+                    {quesState.currentQuestion[0]?.repost !== 'none' && <RepostCard questionId={id}/>}
                     <div className="bg-gray-700 h-[0.1px]"/>
                     <div className="w-full flex gap-4 items-center">
                         <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
