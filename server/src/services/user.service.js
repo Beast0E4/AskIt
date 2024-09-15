@@ -14,11 +14,14 @@ const createUser = async(data, file) => {
             response.error = "User present"
             return response;
         }
-        const result = await cloudinary.uploader.upload(file.path, {
-            folder: 'profile_images',
-        });
+        let result;
+        if(file?.path) {
+            result = await cloudinary.uploader.upload(file.path, {
+                folder: 'profile_images',
+            });
+        }
         const userObj = {
-            image: result.secure_url,
+            image: result?.secure_url,
             name: data.name,
             email: data.email,
             profession: data.profession,
