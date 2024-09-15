@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Answer from "../../layouts/Answer";
 import useQuestions from "../../hooks/useQuestions";
-import { getLikedQuestions, getUsers } from "../../redux/Slices/auth.slice";
+import { getLikedComments, getLikedQuestions, getLikedSolutions, getUsers } from "../../redux/Slices/auth.slice";
 import useAnswers from "../../hooks/useAnswers";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -14,6 +14,8 @@ import { FiSend } from "react-icons/fi";
 import DeleteModal from "../../layouts/DeleteModal";
 import Comment from "../../layouts/Comment";
 import RepostCard from "../../layouts/RepostCard";
+import toast from "react-hot-toast";
+import Loader from "../../layouts/Loader";
 
 function AnswerPage() {
 
@@ -26,8 +28,8 @@ function AnswerPage() {
     const navigate = useNavigate();
 
     const dropdownRef = useRef(null);
- 
-    const id = quesState.currentQuestion[0]?.repost;
+
+    const [loading, setLoading] = useState(true);
     const [name, setName] = useState("Anonymous");
     const [isMyQues, setIsMyQues] = useState(false);
     const [date, setDate] = useState("");
@@ -49,6 +51,22 @@ function AnswerPage() {
         description: ""
     })
 
+    async function loadUsers(){
+        setLoading(true);
+        try {
+            await dispatch(getUsers());
+            if(authState.data?._id){
+                await dispatch(getLikedQuestions(authState.data?._id));
+                await dispatch(getLikedSolutions(authState.data?._id));
+                await dispatch(getLikedComments(authState.data?._id));
+            }
+        } catch (error) {
+            toast.error('Something went wrong'); setLoading(false);
+        } finally{
+            setLoading(false);
+        }
+    }
+
     function countSolutions(){
         const list = ansState.downloadedAnswers.flat().filter((ans) => ans.questionId === quesState.currentQuestion[0]?._id);
         setAnswers(list?.length);
@@ -59,9 +77,6 @@ function AnswerPage() {
         setRetweets(list?.length);
     }
 
-    async function loadUsers(){
-        await dispatch(getUsers());
-    }
 
     function loadComments() {
         const list = commentState.commentList.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id);
@@ -86,8 +101,16 @@ function AnswerPage() {
             const minutes = Math.floor(seconds / 60);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
-        
-            if (days > 0) {
+            const months = Math.floor(days / 30);
+            const years = Math.floor(months / 12);
+
+            if(years > 0){
+                setDate(`${years} year(s) ago`)
+            }
+            else if(months > 0){
+                setDate(`${months} month(s) ago`)
+            }
+            else if (days > 0) {
                 setDate(`${days} day(s) ago`);
             } else if (hours > 0) {
                 setDate(`${hours} hour(s) ago`);
@@ -115,6 +138,7 @@ function AnswerPage() {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
+        if(!authState.userList[userIdx]?._id) return;
         if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
         else navigate('/profile');
     }
@@ -170,6 +194,13 @@ function AnswerPage() {
     }
 
     useEffect(() => {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        loadUsers();
+    }, [])
+
+    useEffect(() => {
         countSolutions();
     }, [ansState.downloadedAnswers.flat().length, quesState.currentQuestion[0]?._id])
 
@@ -184,11 +215,18 @@ function AnswerPage() {
             loadUsers(); 
             loadUser();
         }
+        if(authState.data){
+            const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === quesState.currentQuestion[0]?._id));
+            console.log(ques)
+            if(ques?.length) setIsLiked(true);
+            else setIsLiked(false);
+        }
     }, [quesState.currentQuestion, authState.userList.length]);
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
             <div>
+                {loading && <Loader />}
                 <article className="mb-2 w-[75vw] md:w-[50vw] sm:w-[50vw] break-inside p-3 bg-gray-900 flex flex-col bg-clip-border rounded-md border-[1.5px] border-gray-800">
                     <div className="flex flex-col pb-3">
                         <div className="flex justify-between items-center">
@@ -244,12 +282,12 @@ function AnswerPage() {
                     </div>
                     <div className="pb-2">
                         {quesState.currentQuestion[0]?.title && <h2 className="ml-2 text-lg font-bold mb-2">{quesState.currentQuestion[0]?.title}</h2>}
-                        <p className="text-md ml-2">
+                        <p className="text-md ml-2"> 
                                 {quesState.currentQuestion[0]?.question}
                             </p>
                         {quesState.currentQuestion[0]?.image && <div className="flex justify-center px-2"><img src={quesState.currentQuestion[0]?.image} className="py-2"/></div>}
                     </div>
-                    {quesState.currentQuestion[0]?.repost !== 'none' && <RepostCard questionId={id}/>}
+                    {quesState.currentQuestion[0]?.repost !== 'none' && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
                     <div className="bg-gray-700 h-[0.1px]"/>
                     <div className="w-full flex gap-4 items-center">
                         <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer

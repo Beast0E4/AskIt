@@ -56,7 +56,7 @@ function Home() {
         const arr = newArr.filter((ans) => ans?.userId === authState.data?._id);
         let ansLikes = 0;
         arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
-        const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
+        const lt = newArr.filter(sol => sol?.userId === authState.data?._id).length;
         setSolLength(lt);
     }
 

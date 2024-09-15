@@ -26,7 +26,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
 
     const dropdownRef = useRef(null);
 
-    const [name, setName] = useState("");
+    const [name, setName] = useState("Anonymous");
     const [userIdx, setUserIdx] = useState();
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png")
     const [totLikes, setTotLikes] = useState(likes)
@@ -114,6 +114,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
+        if(!authState.userList[userIdx]?._id) return;
         if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
         else navigate('/profile');
     }
@@ -127,8 +128,16 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
         const minutes = Math.floor(seconds / 60);
         const hours = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
-    
-        if (days > 0) {
+        const months = Math.floor(days / 30);
+        const years = Math.floor(months / 12);
+
+        if(years > 0){
+            setDateDiff(`${years} year(s) ago`)
+        }
+        else if(months > 0){
+            setDateDiff(`${months} month(s) ago`)
+        }
+        else if (days > 0) {
             setDateDiff(`${days} day(s) ago`);
         } else if (hours > 0) {
             setDateDiff(`${hours} hour(s) ago`);
@@ -177,7 +186,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
       }, [isOpen]);
 
     return (
-        <>
+        <div className="w-full">
             <article className="mb-4 break-inside p-4 bg-gray-800 flex flex-col bg-clip-border">
                 <div className="flex pb-3 items-center justify-between">
                 <div className="w-full flex justify-between items-center">
@@ -212,6 +221,14 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                 aria-labelledby="menu-button"
                                 tabIndex="-1"
                                 >
+                                    {creator === authState.data?._id && <h2
+                                        className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
+                                        role="menuitem"
+                                        tabIndex="-1"
+                                        onClick={onAnswerView}
+                                    >
+                                    Edit answer
+                                    </h2>}
                                     <div className="py-1">
                                         <h2
                                             className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
@@ -221,14 +238,6 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                         >
                                         Delete
                                         </h2>
-                                        {creator === authState.data?._id && <h2
-                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
-                                            role="menuitem"
-                                            tabIndex="-1"
-                                            onClick={onAnswerView}
-                                        >
-                                        Edit answer
-                                        </h2>}
                                     </div>
                                 </div>
                             )}
@@ -277,7 +286,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                     return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt} creator={creator}/>)
                 }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
             </div>}
-        </>
+        </div>
     )
 }
 

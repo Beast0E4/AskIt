@@ -5,6 +5,7 @@ import { deleteQues } from "../redux/Slices/ques.slice";
 import toast from "react-hot-toast";
 import { deleteSol } from "../redux/Slices/ans.slice";
 import { deleteComment } from "../redux/Slices/comment.slice";
+import { IoWarningSharp } from "react-icons/io5";
 
 // eslint-disable-next-line react/prop-types
 function DeleteModal({ type, id }) {
@@ -30,14 +31,17 @@ function DeleteModal({ type, id }) {
     return (
         <dialog open className="modal modal-bottom sm:modal-middle">
             {loading && <Loader />}
-            <div className="modal-box">
-                <h3 className="font-bold text-lg">WARNING !</h3>
-                <p className="py-4">Are you sure you want to delete the selected {type}?</p>
-                <div className="modal-action">
-                <form method="dialog">
-                    <button className="btn">CANCEL</button>
-                </form>
-                <button onClick={onDelete} className="btn text-red-500">DELETE</button>
+            <div className="modal-box flex items-start gap-4">
+                <IoWarningSharp className="h-10 w-10 text-[#F2BEA0]"/>
+                <div>
+                    <h3 className="font-bold text-lg">Are you sure ?</h3>
+                    <p className="py-4">Are you sure you want to delete the selected {type}?</p>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn">Cancel</button>
+                        </form>
+                        <button onClick={onDelete} className="btn bg-[#f3a274] hover:bg-[#F2BEA0]">Confirm</button>
+                    </div>
                 </div>
             </div>
         </dialog>

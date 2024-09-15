@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { BiSolidImageAdd } from "react-icons/bi";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/cropUtils';
+import Loader from "../../layouts/Loader";
 
 function Question() {
 
@@ -25,7 +26,7 @@ function Question() {
         title: "",
         question: "",
         topic: "",
-        repost: searchParams.get('repost')
+        repost: searchParams.get('repost') ? searchParams.get('repost') : null
     })
     const [croppedFile, setCroppedFile] = useState(null);
     const [cropping, setCropping] = useState(false);
@@ -87,6 +88,7 @@ function Question() {
     return (
         <section className="h-[90vh] bg-gray-950 flex flex-col items-center min-h-screen py-6 justify-center">
             <div className="w-[25rem] sm:w-[50rem] bg-gray-900 rounded-lg shadow md:mt-0 xl:p-0">
+                {loading && <Loader />}
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your question</h1>
                     <div className="my-4 bg-gray-800 py-5 px-2">

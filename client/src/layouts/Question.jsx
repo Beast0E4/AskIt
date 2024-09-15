@@ -79,7 +79,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        if(authState.userList[userIdx]._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]._id}`);
+        if(!authState.userList[userIdx]?._id) return;
+        if(authState.userList[userIdx]?._id != authState.data?._id) navigate(`/profile?userid=${authState.userList[userIdx]?._id}`);
         else navigate('/profile');
     }
 
@@ -155,8 +156,16 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         const minutes = Math.floor(seconds / 60);
         const hours = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
-    
-        if (days > 0) {
+        const months = Math.floor(days / 30);
+        const years = Math.floor(months / 12);
+
+        if(years > 0){
+            setDateDiff(`${years} year(s) ago`)
+        }
+        else if(months > 0){
+            setDateDiff(`${months} month(s) ago`)
+        }
+        else if (days > 0) {
             setDateDiff(`${days} day(s) ago`);
         } else if (hours > 0) {
             setDateDiff(`${hours} hour(s) ago`);
@@ -325,11 +334,11 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 </div>}
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="w-full flex gap-4 items-center">
-                    <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
+                    <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md" title="Create answer">Add answer
                         <span className="ml-3">{answers}</span>
                     </button>
                     <button className="flex gap-3 justify-center items-center text-sm">
-                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike} title="Unlike"/> : <AiOutlineLike id="like" onClick={onLike} title="Like"/>}
                         <span className="ml-1">{totLikes}</span>
                     </button>
                     <div className="flex gap-3 justify-center items-center text-sm">
@@ -338,7 +347,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     </div>
                     <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
                         {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
-                    {checkSaved ? <FaBookmark className="w-2 hover:cursor-pointer" onClick={save}/> : <FaRegBookmark className="w-2 hover:cursor-pointer" onClick={save}/>}
+                    {checkSaved ? <FaBookmark className="w-2 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-2 hover:cursor-pointer" onClick={save}/>}
                 </div>
                 {authState.isLoggedIn && <div className="flex mt-2 items-center">
                     <a className="inline-block mr-4" href={authState.data?.image}>

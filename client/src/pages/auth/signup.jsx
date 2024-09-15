@@ -5,6 +5,7 @@ import { signup } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/cropUtils';
+import Loader from "../../layouts/Loader";
 
 function SignUp() {
     const dispatch = useDispatch();
@@ -99,6 +100,7 @@ function SignUp() {
     return (
         <section className="h-[100vh] bg-gray-950 flex flex-col items-center pt-6 justify-center">
             <div className="w-[75vw] bg-gray-900 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+                {loading && <Loader />}
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Create an account</h1>
                     <div className="space-y-4 md:space-y-6">

@@ -105,7 +105,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
     useEffect(() => {
         if(authState.data){
             const check = authState.selectedUser?.likedComments?.filter((like) => (like.commentId === commentId));
-            // console.log()
+            setTotLikes(check?.length || 0)
             if(check?.length) setIsLiked(true);
             else setIsLiked(false);
         }

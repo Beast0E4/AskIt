@@ -220,6 +220,12 @@ function Profile() {
     }
 
     useEffect(() => {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+    }, [])
+
+    useEffect(() => {
         loadUser(); followerCount();
     }, [authState.userList?.length]);
 
@@ -305,7 +311,7 @@ function Profile() {
                     </div>
                     <div className="flex flex-col sm:items-end items-center">
                         {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer hover:bg-slate-700" title="Liked questions">{authState.selectedUser?.likedQuestion?.length} like(s) provided</div></Link>}
-                        <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} like(s) revieved</div>
+                        <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} like(s) recieved</div>
                         {!searchParams.get('userid') && <Link to={'/saved'} className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{authState.data?.savedQuestions?.length} saved question(s)</Link>}
                     </div>
                 </div>

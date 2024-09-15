@@ -16,7 +16,6 @@ export const createComment = createAsyncThunk('createComment', async (comment) =
             }
         });
         if(!response) toast.error('Something went wrong');
-        else toast.success('Added your comment');
         return await response;
     } catch (error) {
         console.log(error);
