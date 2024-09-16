@@ -78,6 +78,30 @@ export const createQuestion = createAsyncThunk('question/createQuestion', async 
     }
 });
 
+export const voteQuestion = createAsyncThunk('question/vote', async({quesId, req}) => {
+    try {
+        const response = axiosInstance.patch(`question/votes/${quesId}`, req, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+export const getQuestion = createAsyncThunk('questionById', async(id) => {
+    try {
+        const response = axiosInstance.get(`question/${id}`);
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 const QuestionSlice = createSlice({
     name: 'Questions',
     initialState,

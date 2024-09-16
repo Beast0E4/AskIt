@@ -217,7 +217,6 @@ function AnswerPage() {
         }
         if(authState.data){
             const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === quesState.currentQuestion[0]?._id));
-            console.log(ques)
             if(ques?.length) setIsLiked(true);
             else setIsLiked(false);
         }
@@ -334,7 +333,16 @@ function AnswerPage() {
                 {!ansState.solutionList[idx]?.length ? (
                     <h2 className="text-white font-thin italic mb-5">No answers yet</h2>
                 ):ansState.solutionList[idx]?.map((sol) => {
-                    return (<Answer key={sol._id} solId={sol._id} creator={sol.userId} solution={sol.solution} createdAt={sol.createdAt} likes={sol.likes} isMyQues={isMyQues}/>)
+                    return (<Answer 
+                        key={sol._id} 
+                        solId={sol._id} 
+                        creator={sol.userId} 
+                        solution={sol.solution} 
+                        createdAt={sol.createdAt} 
+                        likes={sol.likes} 
+                        isMyQues={isMyQues}
+                        solImage={sol.image}
+                        isVerified={sol.verified}/>)
                 })}
             </div>
         </div>

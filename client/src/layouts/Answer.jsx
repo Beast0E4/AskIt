@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSolution } from "../redux/Slices/ans.slice";
+import { getSolution, verifySol } from "../redux/Slices/ans.slice";
 import { useNavigate } from "react-router-dom";
 import EditAnswerModal from "./EditAnswerModal";
 import { getLikedSolutions } from "../redux/Slices/auth.slice";
@@ -13,9 +13,10 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaComment, FaRegComment } from "react-icons/fa";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { like, unLike } from "../redux/Slices/ques.slice";
+import { MdVerified } from "react-icons/md";
 
 // eslint-disable-next-line react/prop-types
-function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
+function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage, isVerified}) {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -38,6 +39,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
     const [comments, setComments] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const [dateDiff, setDateDiff] = useState();
+    const [verified, setVerified] = useState(isVerified);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         solutionId: solId,
@@ -148,6 +150,12 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
         }
     }
 
+    async function onVerifyClick() {
+        await dispatch(verifySol(solId));
+        setVerified(verified => !verified);
+        setIsOpen(false);
+    }
+
     useEffect(() => {
         getTimeElapsed(createdAt);
     }, [createdAt])
@@ -197,6 +205,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                         <div className="flex flex-col justify-center">
                             <div className="flex items-center">
                                 <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
+                                {verified && <MdVerified className="w-4 h-4 text-[#F2BEA0]"/>}
                             </div>
                             <div className="text-slate-500 text-xs dark:text-slate-300">
                                 {dateDiff}
@@ -229,6 +238,14 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                                     >
                                     Edit answer
                                     </h2>}
+                                    {isMyQues && <h2
+                                        className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
+                                        role="menuitem"
+                                        tabIndex="-1"
+                                        onClick={onVerifyClick}
+                                    >
+                                    Set to {verified ? 'not verified' : 'verified'}
+                                    </h2>}
                                     <div className="py-1">
                                         <h2
                                             className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold hover:cursor-pointer"
@@ -244,20 +261,21 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues}) {
                         </div>}
                     </div>
                 </div>
-                <div className="py-2">
+                <div className="py-2 pl-2">
                     <p>
                         {ans}
                     </p>
+                    {solImage && <div className="flex justify-center px-2"><img src={solImage} className="py-2"/></div>}
                 </div>
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="mb-2">
-                    <div className="flex items-center gap-4 mt-2">
-                    <button className="flex gap-3 justify-center items-center text-sm">
-                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
-                        <span className="ml-1">{totLikes}</span>
-                    </button>
-                        <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
-                        {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
+                    <div className="flex items-center gap-4 mt-2 pl-2">
+                        <button className="flex gap-3 justify-center items-center text-sm">
+                            {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                            <span className="ml-1">{totLikes}</span>
+                        </button>
+                            <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
+                            {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
                     </div>
                     {authState.isLoggedIn && <div className="flex mt-2 items-center">
                         <a className="inline-block mr-4" href={authState.data?.image}>

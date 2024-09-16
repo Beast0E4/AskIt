@@ -16,7 +16,8 @@ const initialState = {
         likedSolution: [],
         likedComments: []
     },
-    userList: []
+    userList: [],
+    voted: []
 };
 
 export const login = createAsyncThunk('/auth/login', async (data) => {    
@@ -175,6 +176,16 @@ export const saveQuestion = createAsyncThunk('user/question', async(data) => {
     }
 })
 
+export const getVoted = createAsyncThunk('user/getVoted', async(id) => {
+    try {
+        const response = axiosInstance.get(`users/voted/${id}`);
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -220,6 +231,9 @@ const authSlice = createSlice({
         .addCase(getLikedSolutions.fulfilled, (state, action) => {
             if(!action.payload) return;
             state.selectedUser.likedSolution = action.payload?.data?.likedSolution;
+        })
+        .addCase(getVoted.fulfilled, (state, action) => {
+            state.voted = action.payload?.data?.fetched;
         })
     }
 });

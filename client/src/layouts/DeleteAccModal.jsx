@@ -29,9 +29,9 @@ function DeleteAccModal() {
     return (
         <dialog id="deleteModal" className="modal modal-bottom sm:modal-middle">
             {loading && <Loader />}
-            <div className="modal-box flex items-start gap-10">
+            <div className="modal-box flex items-start gap-4">
                 <IoWarningSharp className="h-10 w-10 text-[#F2BEA0]"/>
-                <div>
+                <div className="w-full">
                     <h3 className="font-bold text-lg">Are you sure ?</h3>
                     <p className="py-4">Are you sure you want to delete your account?</p>
                     <div className="modal-action">
