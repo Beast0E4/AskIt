@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema({
     savedQuestions: {
         type: [String]
     },
+    voted: {
+        type: [String]
+    },
     createdAt:{
         type: Date,
         immutable: true,

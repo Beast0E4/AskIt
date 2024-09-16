@@ -8,4 +8,5 @@ module.exports = function(app) {
     app.get('/askit/question', quesController.getAllQuestions);
     app.get('/askit/question/:id', quesController.getQuestion);
     app.delete('/askit/question/deleteQuestion/:id', isUserAuthenticated, quesController.deleteQuestion);
+    app.patch('/askit/question/votes/:id', isUserAuthenticated, quesController.vote)
 }

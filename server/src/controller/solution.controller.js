@@ -1,10 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
-const { createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion, getSolutionByUser } = require("../services/solution.service");
+const { createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion, getSolutionByUser, verifyAnswer } = require("../services/solution.service");
 const { getLikedSolutions } = require("../services/likes.service");
 
 exports.createSolution = async (req, res, next) => {
     try {
-        const response = await createSolution(req.body);
+        const response = await createSolution(req.body, req.file);
         res.status(StatusCodes.CREATED).send({
             data: response
         });
@@ -82,5 +82,17 @@ exports.getLikes = async(req, res, next) => {
         })
     } catch (error) {
         next(error);
+    }
+}
+
+exports.verifySolution = async(req, res, next) => {
+    try {
+        console.log(req.params.id);
+        const response = await verifyAnswer(req.params.id);
+        return res.status(StatusCodes.OK).send({
+            sol: response
+        })
+    } catch (error) {
+        next(error)
     }
 }

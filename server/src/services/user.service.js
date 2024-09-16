@@ -205,6 +205,15 @@ const saveQuestion = async(userId, questionId) => {
     }
 }
 
+const getVoted = async(userId) => {
+    try {
+        const user = await User.findById(userId.toString());
+        return user.voted;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, followUser, unFollowUser, saveQuestion
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, followUser, unFollowUser, saveQuestion, getVoted
 }

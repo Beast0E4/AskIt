@@ -1,10 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
-const { createQuestion, deleteQuestion, getAllQuestions, getQuestion } = require("../services/ques.service")
+const { createQuestion, deleteQuestion, getAllQuestions, getQuestion, vote } = require("../services/ques.service")
 const { getLikedQuestions } = require('../services/likes.service')
 
 exports.createQuestion = async (req, res, next) => {
     try {
-        console.log('Info', req.body)
         const response = await createQuestion(req.body, req.file);
         res.status(StatusCodes.CREATED).send({
             question: response
@@ -58,5 +57,17 @@ exports.getLikes = async(req, res, next) => {
         })
     } catch (error) {
         next(error);
+    }
+}
+
+exports.vote = async(req, res, next) => {
+    try {
+        console.log(req.body)
+        const response = await vote(req.params.id, req.body.optionId, req.body.userId);
+        return res.status(StatusCodes.CREATED).send({
+            voted: response
+        })
+    } catch (error) {
+        throw error;
     }
 }

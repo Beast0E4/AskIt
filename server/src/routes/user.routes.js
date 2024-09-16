@@ -10,4 +10,5 @@ module.exports = function(app) {
     app.post('/askit/users/follow', isUserAuthenticated, userController.followUser);
     app.patch('/askit/users/unFollow', isUserAuthenticated, userController.unFollowUser);
     app.patch('/askit/user/question', isUserAuthenticated, userController.saveQuestion)
+    app.get('/askit/users/voted/:id', userController.getVoted);
 }

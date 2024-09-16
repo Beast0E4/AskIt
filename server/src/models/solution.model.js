@@ -13,10 +13,17 @@ const solSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    image: {
+        type: String
+    },
     likes:{
         type: Number,
         required: true,
         default: 0
+    },
+    verified:{
+        type: Boolean,
+        default: false
     },
     createdAt:{
         type: Date,

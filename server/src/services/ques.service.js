@@ -17,16 +17,30 @@ const createQuestion = async(data, file) => {
                 folder: 'question_images',
             });
         }
-        const quesObj = {
-            userId: data.userId,
-            title: data.title,
-            question: data.question,
-            topic: data.topic,
-            image: result?.secure_url,
-            repost: data.repost !== 'null' ? data.repost : 'none'
+        if(data.question){
+            const quesObj = {
+                userId: data.userId,
+                title: data.title,
+                question: data.question,
+                topic: data.topic,
+                image: result?.secure_url,
+                repost: data.repost !== 'null' ? data.repost : 'none'
+            }
+            const response = Questions.create(quesObj);
+            return response;
+        } else {
+            const pollArray = JSON.parse(data.options);
+            const quesObj = {
+                userId: data.userId,
+                title: data.title,
+                poll: pollArray.filter((opt) => opt.option?.length > 0),
+                topic: data.topic,
+                image: result?.secure_url,
+                repost: data.repost !== 'null' ? data.repost : 'none'
+            }
+            const response = Questions.create(quesObj);
+            return response;
         }
-        const response = Questions.create(quesObj);
-        return response;
     } catch (error) {
         throw error;
     }
@@ -65,6 +79,9 @@ const deleteQuestion = async(ques) => {
         await Comments.deleteMany({questionId: ques.id});
         await Solutions.deleteMany({questionId: ques.id});
         await Likes.deleteMany({questionId: ques.id})
+        if(!ques.question){
+            quest.poll?.forEach(async(opt) => await User.updateMany({}, {$pull : {voted: opt._id}}));
+        }
         const question = await Questions.findByIdAndDelete(ques.id);
         return question;
     } catch (error) {
@@ -72,6 +89,22 @@ const deleteQuestion = async(ques) => {
     }
 }
 
+const vote = async (quesId, optId, userId) => {
+    try {
+        const ques = await Questions.findById(quesId);
+        if(!ques){
+            console.log('No question'); return;
+        }
+        const poll = ques.poll.find(p => p._id.toString() === optId);
+        poll.votes += 1;
+        await User.updateOne({ _id: userId }, {$push: { voted: poll._id }});
+        const res = await ques.save();
+        return res;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createQuestion, deleteQuestion, getAllQuestions, getQuestion
+    createQuestion, deleteQuestion, getAllQuestions, getQuestion, vote
 }

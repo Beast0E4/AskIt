@@ -3,7 +3,7 @@ const userService = require('../services/user.service')
 
 const isUserAuthenticated = async (req, res, next) => {
     const token = req.headers['x-access-token'];
- 
+
     if(!token){
         res.status(401).send({
             message: "Jwt token is not provided"
@@ -21,7 +21,7 @@ const isUserAuthenticated = async (req, res, next) => {
      try{
         const userInfo = await userService.getUserByEmail({email: isVerifiedToken.email});
         if(!userInfo){
-            return res.status(401).send({
+            return res.status(401).send({       
                 message: "Email is invalid"
             })
         }

@@ -85,3 +85,14 @@ exports.saveQuestion = async(req, res, next) => {
         throw error;
     }
 }
+
+exports.getVoted = async(req, res, next) => {
+    try {
+        const result = await userService.getVoted(req.params.id);
+        res.status(StatusCodes.OK).send({
+            fetched: result
+        })
+    } catch (error) {
+        throw error;
+    }
+}

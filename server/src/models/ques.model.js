@@ -10,12 +10,23 @@ const quesSchema = new mongoose.Schema({
         required: false
     },
     question: {
-        type: String,
-        required: true
+        type: String
     },
     image: {
         type: String
     },
+    poll: [
+        {
+          option: {
+            type: String,
+            required: true
+          },
+          votes: {
+            type: Number,
+            default: 0
+          }
+        }
+    ],
     repost:{
         type: String,
         default: 'none'

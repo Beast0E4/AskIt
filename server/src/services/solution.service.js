@@ -2,19 +2,27 @@ const Comments = require("../models/comments.model");
 const Likes = require("../models/likes.model");
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
+const cloudinary = require("../config/cloudinary.config");
 const User = require("../models/user.model");
 
-const createSolution = async(data) => {
+const createSolution = async(data, file) => {
     try {
         const user = User.findById(data.userId);
         const ques = Questions.findById(data.questionId);
         if(!user || !ques){
             console.log('No user or no question'); return;
         }
+        let result = null;
+        if(file){
+            result = await cloudinary.uploader.upload(file.path, {
+                folder: 'solution_images',
+            });
+        }
         const solObj = {
             userId: data.userId,
             questionId: data.questionId,
-            solution: data.solution
+            solution: data.solution,
+            image: result?.secure_url
         }
         const response = Solutions.create(solObj);
         return response;
@@ -72,6 +80,16 @@ const getSolutionByQuestion = async(quesId) => {
     }
 }
 
+const verifyAnswer = async(ansId) => {
+    try {
+        const solution = await Solutions.findById(ansId);
+        const sol = await Solutions.findByIdAndUpdate(ansId, {verified: !solution.verified});
+        return sol;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion, getSolutionByUser
+    createSolution, updateSolution, deleteSolution, getSolution, getSolutionByQuestion, getSolutionByUser, verifyAnswer
 }
