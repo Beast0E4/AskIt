@@ -13,7 +13,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaComment, FaRegComment } from "react-icons/fa";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { like, unLike } from "../redux/Slices/ques.slice";
-import { MdVerified } from "react-icons/md";
+import { MdOutlineSentimentSatisfied } from "react-icons/md";
 
 // eslint-disable-next-line react/prop-types
 function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage, isVerified}) {
@@ -198,19 +198,22 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
             <article className="mb-4 break-inside p-4 bg-gray-800 flex flex-col bg-clip-border">
                 <div className="flex pb-3 items-center justify-between">
                 <div className="w-full flex justify-between items-center">
-                    <div className="flex">
-                        <a className="inline-block mr-4" href={image}>
-                            <img src={image} alt="user-avatar-image" className="rounded-full max-w-none w-10 h-10 object-cover" />
-                        </a>
-                        <div className="flex flex-col justify-center">
-                            <div className="flex items-center">
-                                <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
-                                {verified && <MdVerified className="w-4 h-4 text-[#F2BEA0]"/>}
-                            </div>
-                            <div className="text-slate-500 text-xs dark:text-slate-300">
-                                {dateDiff}
+                    <div className="flex items-start gap-10">
+                        <div className="flex items-start">
+                            <a className="inline-block mr-4" href={image}>
+                                <img src={image} alt="user-avatar-image" className="rounded-full max-w-none w-10 h-10 object-cover" />
+                            </a>
+                            <div className="flex flex-col justify-center">
+                                <div className="flex items-center">
+                                    <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
+                                    
+                                </div>
+                                <div className="text-slate-500 text-xs dark:text-slate-300">
+                                    {dateDiff}
+                                </div>
                             </div>
                         </div>
+                        {verified && <MdOutlineSentimentSatisfied className="w-8 h-8 text-[#F2BEA0]"/>}
                     </div>
                     {(creator === authState.data?._id || isMyQues) && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                             <div>

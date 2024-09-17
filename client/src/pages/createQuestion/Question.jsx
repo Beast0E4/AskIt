@@ -77,6 +77,7 @@ function Question() {
 
     async function handleSubmit() {
         if(!question.title.toString().trim()) return;
+        if(!isPoll && !question.question.toString().trim()) return;
         setLoading(true);
         try {
             const formData = new FormData();

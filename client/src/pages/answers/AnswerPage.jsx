@@ -4,10 +4,10 @@ import Answer from "../../layouts/Answer";
 import useQuestions from "../../hooks/useQuestions";
 import { getLikedComments, getLikedQuestions, getLikedSolutions, getUsers } from "../../redux/Slices/auth.slice";
 import useAnswers from "../../hooks/useAnswers";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
-import { like, unLike } from "../../redux/Slices/ques.slice";
+import { getQuestion, like, unLike } from "../../redux/Slices/ques.slice";
 import { FaComment, FaRegComment } from "react-icons/fa";
 import { createComment, getComments } from "../../redux/Slices/comment.slice";
 import { FiSend } from "react-icons/fi";
@@ -16,6 +16,7 @@ import Comment from "../../layouts/Comment";
 import RepostCard from "../../layouts/RepostCard";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
+import RepostPollCard from "../../layouts/RepostPollCard";
 
 function AnswerPage() {
 
@@ -28,6 +29,7 @@ function AnswerPage() {
     const navigate = useNavigate();
 
     const dropdownRef = useRef(null);
+    const [searchParams] = useSearchParams();
 
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState("Anonymous");
@@ -44,10 +46,11 @@ function AnswerPage() {
     const [comments, setComments] = useState();
     const [retweets, setRetweets] = useState(0);
     const [answers, setAnswers] = useState(0);
+    const [isPoll, setIsPoll] = useState(false);
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png");
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
-        questionId: quesState.currentQuestion[0]?._id,
+        questionId: searchParams.get('question'),
         description: ""
     })
 
@@ -79,7 +82,7 @@ function AnswerPage() {
 
 
     function loadComments() {
-        const list = commentState.commentList.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id);
+        const list = commentState.commentList?.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id);
         list.reverse();
         setComments(list);
     }
@@ -174,6 +177,7 @@ function AnswerPage() {
     }
 
     async function submitComment(){
+        console.log(commentDetails)
         if(commentDetails.description.toString().trim()){
             const res = await dispatch(createComment(commentDetails));
             if(res){
@@ -193,6 +197,18 @@ function AnswerPage() {
         })
     }
 
+    async function checkPoll() {
+        if(quesState.currentQuestion[0]?.repost && quesState.currentQuestion[0]?.repost !== 'none'){
+            const res = await dispatch(getQuestion(quesState.currentQuestion[0]?.repost));
+            const ques = res.payload?.data?.question;
+            if(!ques.question) setIsPoll(true);
+        }
+    }
+
+    useEffect(() => {
+        checkPoll();
+    }, [quesState.currentQuestion[0]?._id])
+
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
@@ -207,7 +223,7 @@ function AnswerPage() {
 
     useEffect(() => {
         loadComments();
-    }, [comments?.length])
+    }, [commentState.commentList?.length])
     
     useEffect(() => {
         calculateRetweets();
@@ -286,7 +302,8 @@ function AnswerPage() {
                             </p>
                         {quesState.currentQuestion[0]?.image && <div className="flex justify-center px-2"><img src={quesState.currentQuestion[0]?.image} className="py-2"/></div>}
                     </div>
-                    {quesState.currentQuestion[0]?.repost !== 'none' && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
+                    {quesState.currentQuestion[0]?.repost !== 'none' && !isPoll && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
+                    {quesState.currentQuestion[0]?.repost !== 'none' && isPoll && <RepostPollCard questionId={quesState.currentQuestion[0]?.repost}/>}
                     <div className="bg-gray-700 h-[0.1px]"/>
                     <div className="w-full flex gap-4 items-center">
                         <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer

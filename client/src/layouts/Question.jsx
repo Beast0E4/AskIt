@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { like, unLike } from "../redux/Slices/ques.slice";
+import { getQuestion, like, unLike } from "../redux/Slices/ques.slice";
 import { useEffect, useRef, useState } from "react";
 import { getLikedQuestions, login, saveQuestion } from "../redux/Slices/auth.slice";
 import useAnswers from "../hooks/useAnswers";
@@ -12,7 +12,9 @@ import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
 import { FaRegComment, FaComment, FaRegBookmark, FaBookmark } from "react-icons/fa";
+import { MdEditNote } from "react-icons/md";
 import RepostCard from "./RepostCard";
+import RepostPollCard from "./RepostPollCard";
 
 // eslint-disable-next-line react/prop-types
 function Question({questionId,  question, createdAt, creator, likes, topic, title, quesImage, repost}) {
@@ -43,6 +45,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [retweets, setRetweets] = useState(0);
     const [answers, setAnswers] = useState(0);
     const [checkSaved, setCheckSaved] = useState(false);
+    const [isPoll, setIsPoll] = useState(false);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
@@ -198,11 +201,20 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         }
     }
 
+    async function checkPoll() {
+        if(repost && repost !== 'none'){
+            const res = await dispatch(getQuestion(repost));
+            const ques = res.payload?.data?.question;
+            if(!ques.question) setIsPoll(true);
+        }
+    }
+
     useEffect(() => {
         countSolutions();
     }, [ansState.downloadedAnswers.flat().length])
 
     useEffect(() => {
+        checkPoll();
         calculateRetweets();
         getTimeElapsed(createdAt);
     }, [questionId])
@@ -214,7 +226,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
 
     useEffect(() => {
         loadComments();
-    }, [commentState.commentList.length])
+    }, [commentState.commentList?.length])
 
     useEffect(() => {
         findName(); 
@@ -329,25 +341,27 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     </div>
                     {quesImage && <div className="flex justify-center px-2"><img src={quesImage} className="py-2"/></div>}
                 </div>
-                {repost && repost !== 'none' && <div>
-                    <RepostCard questionId={repost} />
-                </div>}
+                {repost && repost !== 'none' && !isPoll && <div>
+                    <RepostCard questionId={repost} /> </div>}
+                {repost && repost !== 'none' && isPoll && <div>
+                        <RepostPollCard questionId={repost} /> </div>}
                 <div className="bg-gray-700 h-[0.1px]"/>
-                <div className="w-full flex gap-4 items-center">
-                    <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md" title="Create answer">Add answer
-                        <span className="ml-3">{answers}</span>
-                    </button>
+                <div className="w-full flex gap-4 items-center my-2">
+                    <div className="flex gap-2 items-center">
+                        <MdEditNote onClick={answer} className="w-7 h-7 hover:cursor-pointer text-white" title="Create answer"/>
+                        <span>{answers}</span>
+                    </div>
                     <button className="flex gap-3 justify-center items-center text-sm">
-                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike} title="Unlike"/> : <AiOutlineLike id="like" onClick={onLike} title="Like"/>}
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike} title="Unlike" className="w-5 h-5"/> : <AiOutlineLike id="like" onClick={onLike} title="Like" className="w-5 h-5"/>}
                         <span className="ml-1">{totLikes}</span>
                     </button>
                     <div className="flex gap-3 justify-center items-center text-sm">
-                        <AiOutlineRetweet title="Reposts"/>
+                        <AiOutlineRetweet title="Reposts" className="w-5 h-5"/>
                         <span className="ml-1">{retweets}</span>
                     </div>
                     <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
-                        {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
-                    {checkSaved ? <FaBookmark className="w-2 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-2 hover:cursor-pointer" onClick={save}/>}
+                        {showComments ? <FaComment className="w-5 h-5"/> : <FaRegComment className="w-5 h-5" />} {comments?.length}</div>
+                    {checkSaved ? <FaBookmark className="w-3 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-3 hover:cursor-pointer" onClick={save}/>}
                 </div>
                 {authState.isLoggedIn && <div className="flex mt-2 items-center">
                     <a className="inline-block mr-4" href={authState.data?.image}>
@@ -367,7 +381,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     ></textarea>
                     <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
                 </div>}
-                {showModal && <DeleteModal type='question' id={selectedQues}/>}
+                {showModal && <DeleteModal type='question' id={selectedQues} setShowModal={setShowModal}/>}
             </article>
             {showComments && <div className="w-full ml-2 my-3">
                 {comments.length ? comments.map((comment, index) => {
