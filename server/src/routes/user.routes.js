@@ -7,8 +7,8 @@ module.exports = function(app) {
     app.get('/askit/users/:id', isUserAuthenticated, userController.getUser);
     app.patch('/askit/users/updateUser', isUserAuthenticated, upload.single('image'), userController.updateUser);
     app.delete('/askit/users/deleteUser/:id', isUserAuthenticated, userController.deleteUser);
-    app.post('/askit/users/follow', isUserAuthenticated, userController.followUser);
-    app.patch('/askit/users/unFollow', isUserAuthenticated, userController.unFollowUser);
+    app.patch('/askit/users/toggleFollow', isUserAuthenticated, userController.toggleFollow);
     app.patch('/askit/user/question', isUserAuthenticated, userController.saveQuestion)
     app.get('/askit/users/voted/:id', userController.getVoted);
+    app.get('/askit/users/getFollowing/:id', isUserAuthenticated, userController.getFollowing);
 }

@@ -7,6 +7,7 @@ const User = require("../models/user.model");
 
 const createQuestion = async(data, file) => {
     try {
+        console.log('Data: ', data);
         const user = await User.findById(data.userId);
         if(!user){
             console.log('No user'); return;
@@ -17,10 +18,11 @@ const createQuestion = async(data, file) => {
                 folder: 'question_images',
             });
         }
-        if(data.question){
+        const pollArray = JSON.parse(data.options);
+        if(!pollArray?.length){
             const quesObj = {
                 userId: data.userId,
-                title: data.title,
+                title: data?.title,
                 question: data.question,
                 topic: data.topic,
                 image: result?.secure_url,
@@ -29,10 +31,10 @@ const createQuestion = async(data, file) => {
             const response = Questions.create(quesObj);
             return response;
         } else {
-            const pollArray = JSON.parse(data.options);
             const quesObj = {
                 userId: data.userId,
                 title: data.title,
+                question: data?.question,
                 poll: pollArray.filter((opt) => opt.option?.length > 0),
                 topic: data.topic,
                 image: result?.secure_url,

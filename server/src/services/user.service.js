@@ -164,30 +164,16 @@ const deleteUser = async (data) => {
     }
 }
 
-const followUser = async (userId, myId) => {
+const toggleFollow = async (userId, myId) => {
     try {
         const user = await User.findById(userId);
         if(!user) return;
         let me = await User.findById(myId);
         if(!me) return;
-        await User.updateOne({ _id: myId }, {$push: { following: userId }});
+        if(!me.following.includes(userId)) await User.updateOne({ _id: myId }, {$push: { following: userId }});
+        else await User.updateOne({ _id: myId }, {$pull: { following: userId }})
         me = await User.findById(myId);
         return me.following;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const unFollowUser = async (userId, myId) => {
-    try {
-        const user = await User.findById(userId);
-        if(!user) return;
-        let me = await User.findById(myId);
-        if(!me) return;
-        await User.updateOne({ _id: myId }, {$pull: { following: userId }})
-        me = await User.findById(myId);
-        console.log(me.following);
-        return me.following; 
     } catch (error) {
         throw error;
     }
@@ -208,12 +194,21 @@ const saveQuestion = async(userId, questionId) => {
 const getVoted = async(userId) => {
     try {
         const user = await User.findById(userId.toString());
-        return user.voted;
+        return user?.voted;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getFollowing = async(userId) => {
+    try {
+        const user = await User.findById(userId);
+        return user.following;
     } catch (error) {
         throw error;
     }
 }
 
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, followUser, unFollowUser, saveQuestion, getVoted
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing
 }

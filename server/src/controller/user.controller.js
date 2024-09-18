@@ -52,10 +52,9 @@ exports.deleteUser = async (req, res, next) => {
     }
 }
 
-exports.followUser = async (req, res, next) => {
+exports.toggleFollow = async (req, res, next) => {
     try {
-        console.log('Req:', req.body);
-        const result = await userService.followUser(req.body.userId, req.body.myId);
+        const result = await userService.toggleFollow(req.body.userId, req.body.myId);
         if(result) res.status(StatusCodes.CREATED).send({
             following: result
         })
@@ -64,9 +63,10 @@ exports.followUser = async (req, res, next) => {
     }
 }
 
-exports.unFollowUser = async (req, res, next) => {
+exports.getFollowing = async(req, res, next) => {
     try {
-        const result = await userService.unFollowUser(req.body.userId, req.body.myId);
+        console.log(req.params.id)
+        const result = await userService.getFollowing(req.params.id);
         if(result) res.status(StatusCodes.CREATED).send({
             following: result
         })
