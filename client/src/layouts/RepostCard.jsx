@@ -54,26 +54,10 @@ function RepostCard({ questionId }) {
     navigate(`/answer?question=${questionId}`);
   }
 
-  function getTimeElapsed(date) {
-    const now = new Date();
-    const questionTime = new Date(date);
-    const elapsedTime = now - questionTime;
-
-    const seconds = Math.floor(elapsedTime / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) {
-      setDateDiff(`${days} day(s) ago`);
-    } else if (hours > 0) {
-      setDateDiff(`${hours} hour(s) ago`);
-    } else if (minutes > 0) {
-      setDateDiff(`${minutes} minute(s) ago`);
-    } else {
-      setDateDiff(`${seconds} second(s) ago`);
-    }
-  }
+  function getDate() {
+    let date = quest.createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+    setDateDiff(date);
+}
 
   useEffect(() => {
     findQues();
@@ -85,7 +69,7 @@ function RepostCard({ questionId }) {
 
   useEffect(() => {
     if (quest) {
-      getTimeElapsed(quest.createdAt);
+      getDate();
       if (quest.question?.length > 1000) {
         const newQuest = quest.question.substring(0, 1000) + "...";
         setQuest({ ...quest, question: newQuest });

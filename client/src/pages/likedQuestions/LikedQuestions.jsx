@@ -8,6 +8,7 @@ import useLikes from "../../hooks/useLikes";
 import { useDispatch } from "react-redux";
 import { getUsers } from "../../redux/Slices/auth.slice";
 import { useSearchParams } from "react-router-dom";
+import PollCard from "../../layouts/PollCard";
 
 function LikedQuestions() {
 
@@ -65,10 +66,9 @@ function LikedQuestions() {
             <div className="flex gap-3 bg-gray-950 pt-[4rem] overflow-hidden min-h-screen px-2 justify-center">
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
-                    {(!authState.isLoggedIn ? (<h2 className="text-white font-thin italic">No questions yet</h2>) : loading ? <Loader /> : (likedQuestions?.length ? likedQuestions.map((quest, index) => {
-                        let date = quest?.createdAt?.split('T')[0].split('-');
-                        if(date) date = date[2] + "-" + date[1] + "-" + date[0];
-                        return (<Question key={index} questionId={quest?._id} title={quest?.title} creator={quest?.userId} question={quest?.question} createdAt={date} likes={quest?.likes} topic={quest?.topic}/>)
+                    {(!authState.isLoggedIn ? (<h2 className="text-white font-thin italic">No questions yet</h2>) : loading ? <Loader /> : (likedQuestions?.length ? likedQuestions.map((quest, key) => {
+                        if(!quest.poll?.length) return (<Question key={key} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
+                        return (<PollCard key={key} questionId={quest._id}/>)
                     }) : (
                         <h2 className="text-white font-thin italic">No questions yet</h2>
                     )))}

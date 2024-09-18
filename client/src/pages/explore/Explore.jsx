@@ -76,8 +76,8 @@ function Explore() {
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest, key) => {
-                        if(quest.question) return (<Question key={key} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
-                        else return (<PollCard key={key} questionId={quest._id}/>)
+                        if(!quest.poll?.length) return (<Question key={key} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
+                        return (<PollCard key={key} questionId={quest._id}/>)
                     }) : 
                         location.pathname === '/explore' ? (<h2 className="text-white font-thin italic">Follow users to see questions here</h2>) : (<h2 className="text-white font-thin italic">No saved questions yet</h2>)
                     )}

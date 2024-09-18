@@ -43,11 +43,12 @@ function Question() {
         const file = event.target.files[0]; 
         setCropping(true); setFile(file);
         setImageName(file?.name.toString().substring(0, 16) + "..."); 
+        console.log(imageName)
     };
 
     const handleOptionChange = (index, e) => {
         const updatedOptions = [...options];
-        updatedOptions[index].option = e.target.value;
+        updatedOptions[index].option = e.target.value.toString().trim();
         setOptions(updatedOptions);
         if(options?.length <= index + 1) setOptions([...options, { option: '', votes: 0 }])
     };
@@ -76,20 +77,18 @@ function Question() {
     }
 
     async function handleSubmit() {
-        if(!question.title.toString().trim()) return;
-        if(!isPoll && !question.question.toString().trim()) return;
+        if(!question.question.toString().trim()) return;
         setLoading(true);
         try {
             const formData = new FormData();
             formData.append('userId', authState.data._id);
             formData.append('title', question.title.toString().trim());
+            formData.append('question', question.question.toString().trim());
+            if(file) formData.append('image', croppedFile);
+            formData.append('topic', selectedTopic); 
             if(!isPoll){
-                formData.append('question', question.question.toString().trim());
-                formData.append('topic', selectedTopic);
                 formData.append('repost', searchParams.get('repost'));
-                if(file) formData.append('image', croppedFile);
             } else {
-                console.log(options)
                 formData.append('options', JSON.stringify(options));
             }
             await dispatch(createQuestion(formData));
@@ -126,7 +125,10 @@ function Question() {
                             <li>Double-check grammar and spelling</li>
                         </ul>
                     </div>
-                    <button onClick={changeComponent} className="btn bg-gray-800 hover:bg-gray-700 hover:border-transparent border-transparent w-full font-bold text-white">{!isPoll ? 'Switch to Poll' : 'Switch to question'}</button>
+                    <div onClick={changeComponent} className="w-full py-2 bg-gray-800 px-2 rounded-md">
+                        <button className={`${!isPoll ? 'w-[50%] border-r-2 text-[#F2BEA0] font-bold' : 'w-[50%] border-r-2 text-white'}`} onClick={() => setPoll(false)}>Question</button>
+                        <button className={`${isPoll ? 'w-[50%] text-[#F2BEA0] font-bold' : 'w-[50%] text-white'}`} onClick={() => setPoll(true)}>Poll</button>
+                    </div>
                     <div id="problem" className="space-y-4 md:space-y-6">
                         <h3 className="mt-10">Add question here</h3>
                         <div className="flex gap-40 items-end justify-between">
@@ -186,12 +188,47 @@ function Question() {
                                     <option key={topic}>{topic}</option>
                                 ))}
                             </select>
-                            {/* <div className="flex gap-4">
+                            <div className="flex gap-4">
                                 {imageName && <h2>{imageName}</h2>}
                                 <BiSolidImageAdd className="h-6 w-6 hover:cursor-pointer" onClick={handleIconClick}/>
-                            </div> */}
+                            </div>
                         </div>
+                        {cropping && file && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center z-50">
+                                    <div className="relative w-full max-w-md h-[80vh] bg-white rounded-lg">
+                                        <Cropper
+                                            image={URL.createObjectURL(file)}
+                                            crop={crop}
+                                            zoom={zoom}
+                                            aspect={1}
+                                            onCropChange={setCrop}
+                                            onZoomChange={setZoom}
+                                            onCropComplete={(_, croppedAreaPixels) => {
+                                                getCroppedImg(URL.createObjectURL(file), croppedAreaPixels)
+                                                    .then((croppedImage) => setCroppedFile(croppedImage))
+                                                    .catch((error) => console.error(error));
+                                            }}
+                                        />
+                                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+                                            <button 
+                                                onClick={() => setCropping(false)} 
+                                                className="bg-gray-700 text-green-600 px-4 py-2 rounded"
+                                            >
+                                                Done
+                                            </button>
+                                            <button 
+                                                onClick={handleCancelCrop} 
+                                                className="text-red-500 bg-gray-700 px-4 py-2 rounded"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        <input id="fileInput" type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
                         <input name="title" onChange={handleONChange} value={question.title} className="textarea w-full" placeholder="Title for question"/>
+                        <textarea name="question" onChange={handleONChange} value={question.question} className="textarea textarea-bordered w-full resize-none" placeholder="Your question" rows={5}></textarea>
                         {options.map((opt, index) => (
                             <input
                             key={index}

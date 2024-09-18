@@ -16,6 +16,7 @@ const initialState = {
         likedSolution: [],
         likedComments: []
     },
+    following: [],
     userList: [],
     voted: []
 };
@@ -29,6 +30,20 @@ export const login = createAsyncThunk('/auth/login', async (data) => {
         console.log(error);
     }
 });
+
+export const getFollowing = createAsyncThunk('/users/getFollowing', async(id) => {
+    try {
+        const response = axiosInstance.get(`users/getFollowing/${id}`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
+        if(!response) toast.error('Something went wrong, try again');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 export const signup = createAsyncThunk('/auth/signup', async (data) => {     
     try {
@@ -54,23 +69,9 @@ export const getUser = createAsyncThunk('auth/getUser', async (id) => {
     }
 });
 
-export const followUser = createAsyncThunk('auth/followUser', async(data) => {
+export const toggleFollowUser = createAsyncThunk('auth/toggleFollow', async(data) => {
     try {
-        const response = axiosInstance.post(`users/follow`, data, {
-            headers: {
-                'x-access-token': localStorage.getItem('token')
-            }
-        });
-        if(!response) toast.error('Something went wrong');
-        return await response;
-    } catch (error) {
-        console.log(error);
-    }
-})
-
-export const unFollowUser = createAsyncThunk('auth/unFollowUser', async(data) => {
-    try {
-        const response = axiosInstance.patch(`users/unFollow`, data, {
+        const response = axiosInstance.patch(`users/toggleFollow`, data, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
             }
@@ -234,6 +235,9 @@ const authSlice = createSlice({
         })
         .addCase(getVoted.fulfilled, (state, action) => {
             state.voted = action.payload?.data?.fetched;
+        })
+        .addCase(getFollowing.fulfilled, (state, action) => {
+            state.following = action.payload?.data?.following;
         })
     }
 });

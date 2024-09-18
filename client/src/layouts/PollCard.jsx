@@ -8,10 +8,11 @@ import { getLikedQuestions, getVoted, login, saveQuestion } from "../redux/Slice
 import { createComment, getComments } from "../redux/Slices/comment.slice";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
-import { FaBookmark, FaComment, FaRegBookmark, FaRegComment } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { FiSend } from "react-icons/fi";
 import DeleteModal from "./DeleteModal";
 import Comment from "./Comment";
+import { MdModeComment, MdOutlineModeComment } from "react-icons/md";
 
 // eslint-disable-next-line react/prop-types
 function PollCard({questionId}) {
@@ -45,11 +46,13 @@ function PollCard({questionId}) {
     const [comments, setComments] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const [dateDiff, setDateDiff] = useState(0);
+    const [orgQues, setOrgQues] = useState("");
     const [selectedId, setSelectedId] = useState(null);
     // const [check, setCheck] = useState(false);
     const [retweets, setRetweets] = useState(0);
     // const [answers, setAnswers] = useState(0);
     const [checkSaved, setCheckSaved] = useState(false);
+    const [check, setCheck] = useState(false);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
@@ -154,33 +157,9 @@ function PollCard({questionId}) {
         }
     }
 
-    function getTimeElapsed(date) {
-        const now = new Date(); 
-        const questionTime = new Date(date);
-        const elapsedTime = now - questionTime;
-
-        const seconds = Math.floor(elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const months = Math.floor(days / 30);
-        const years = Math.floor(months / 12);
-
-        if(years > 0){
-            setDateDiff(`${years} year(s) ago`)
-        }
-        else if(months > 0){
-            setDateDiff(`${months} month(s) ago`)
-        }
-        else if (days > 0) {
-            setDateDiff(`${days} day(s) ago`);
-        } else if (hours > 0) {
-            setDateDiff(`${hours} hour(s) ago`);
-        } else if (minutes > 0) {
-            setDateDiff(`${minutes} minute(s) ago`);
-        } else {
-            setDateDiff(`${seconds} second(s) ago`);
-        }
+    function getDate() {
+        let date = createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+        setDateDiff(date);
     }
 
     function onRepost(){
@@ -218,6 +197,8 @@ function PollCard({questionId}) {
         setArr(ques.poll);
         setTopic(ques.topic);
         setTitle(ques.title);
+        setQuest(ques.question);
+        setOrgQues(ques.question);
     }
 
     useEffect(() => {
@@ -261,7 +242,7 @@ function PollCard({questionId}) {
     }, [commentState.commentList.length])
 
     useEffect(() => {
-        findName(); getTimeElapsed(createdAt);
+        findName(); getDate();
     }, [creator, createdAt])
 
     useEffect(() => {
@@ -272,7 +253,7 @@ function PollCard({questionId}) {
         }
         if(quest?.length > 1000){
             const newQuest = quest.substring(0, 1000) + "...";
-            setQuest(newQuest); 
+            setQuest(newQuest); setCheck(true);
         }
     }, [authState.selectedUser.likedQuestion?.length, questionId])
 
@@ -357,16 +338,16 @@ function PollCard({questionId}) {
             </div>
             <div className="pb-2">
                 {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
-                {/* <div className="ml-2">
+                <div className="ml-2 mb-2">
                     <p className="text-md">
                         {quest}
                     </p>
                     {check && <button className="text-xs text-[#F2BEA0]" onClick={() => {
-                        setQuest(question); setCheck(!check);
+                        setQuest(orgQues); setCheck(!check);
                     }}>
                         Read more
                     </button>}
-                </div> */}
+                </div>
                 {quesImage && <div className="flex justify-center px-2"><img src={quesImage} className="py-2"/></div>}
                 <div>
                 <div className="space-y-4 px-5">
@@ -382,15 +363,15 @@ function PollCard({questionId}) {
                                     />
                                     <h2 className="text-white text-lg">{option.option}</h2>
                                 </div>
-                                <h2 className="text-sm text-gray-400 mt-2">{option.votes}</h2>
+                                <h2 className="text-sm text-gray-400 mt-2">{selectedId && option.votes}</h2>
                             </div>
                             <div className="w-full bg-gray-700 rounded-sm h-2 mt-2">
-                            <div
+                            {selectedId && <div
                                 className="bg-[#F2BEA0] h-2 rounded-sm"
                                 style={{
                                 width: `${votes > 0 ? (option.votes / votes) * 100 : 0}%`,
                                 }}
-                            ></div>
+                            ></div>}
                             </div>
                         </div>
                         ))}
@@ -400,11 +381,8 @@ function PollCard({questionId}) {
                     </div>
                 </div>
             </div>
-            {/* {repost && repost !== 'none' && <div>
-                <RepostCard questionId={repost} />
-            </div>} */}
             <div className="bg-gray-700 h-[0.1px]"/>
-                <div className="w-full flex gap-4 items-center my-2">
+                <div className="w-full flex gap-4 items-center my-2 ml-2">
                     <button className="flex gap-3 justify-center items-center text-sm">
                         {isLiked ? <AiFillLike id="liked" onClick={onUnLike} title="Unlike" className="w-5 h-5"/> : <AiOutlineLike id="like" onClick={onLike} title="Like" className="w-5 h-5"/>}
                         <span className="ml-1">{totLikes}</span>
@@ -414,7 +392,7 @@ function PollCard({questionId}) {
                         <span className="ml-1">{retweets}</span>
                     </div>
                     <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
-                        {showComments ? <FaComment className="w-5 h-5"/> : <FaRegComment className="w-5 h-5" />} {comments?.length}</div>
+                    {showComments ? <MdModeComment className="w-5 h-5"/> : <MdOutlineModeComment className="w-5 h-5" />} {comments?.length}</div>
                     {checkSaved ? <FaBookmark className="w-3 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-3 hover:cursor-pointer" onClick={save}/>}
                 </div>
             {authState.isLoggedIn && <div className="flex mt-2 items-center">
@@ -435,7 +413,7 @@ function PollCard({questionId}) {
                 ></textarea>
                 <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
             </div>}
-            {showModal && <DeleteModal type='question' id={selectedQues}/>}
+            {showModal && <DeleteModal type='question' typeId={selectedQues}/>}
         </article>
         {showComments && <div className="w-full ml-2 my-3">
             {comments.length ? comments.map((comment, index) => {

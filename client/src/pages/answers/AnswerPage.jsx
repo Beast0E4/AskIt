@@ -2,13 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Answer from "../../layouts/Answer";
 import useQuestions from "../../hooks/useQuestions";
-import { getLikedComments, getLikedQuestions, getLikedSolutions, getUsers } from "../../redux/Slices/auth.slice";
+import { getLikedComments, getLikedQuestions, getLikedSolutions, getUsers, login, saveQuestion } from "../../redux/Slices/auth.slice";
 import useAnswers from "../../hooks/useAnswers";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
 import { getQuestion, like, unLike } from "../../redux/Slices/ques.slice";
-import { FaComment, FaRegComment } from "react-icons/fa";
 import { createComment, getComments } from "../../redux/Slices/comment.slice";
 import { FiSend } from "react-icons/fi";
 import DeleteModal from "../../layouts/DeleteModal";
@@ -17,6 +16,8 @@ import RepostCard from "../../layouts/RepostCard";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import RepostPollCard from "../../layouts/RepostPollCard";
+import { MdEditNote, MdModeComment, MdOutlineModeComment } from "react-icons/md";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
 function AnswerPage() {
 
@@ -48,6 +49,7 @@ function AnswerPage() {
     const [answers, setAnswers] = useState(0);
     const [isPoll, setIsPoll] = useState(false);
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png");
+    const [checkSaved, setCheckSaved] = useState(false);
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: searchParams.get('question'),
@@ -161,6 +163,21 @@ function AnswerPage() {
         }
     }
 
+    async function save(){
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        const res = await dispatch(saveQuestion({
+            userId: authState.data?._id,
+            questionId: quesState.currentQuestion[0]?._id
+        }))
+        if(res){
+            await dispatch(login({
+                email: authState.data?.email
+            }))
+        }
+    }
+
     async function onUnLike() {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
@@ -204,6 +221,11 @@ function AnswerPage() {
             if(!ques.question) setIsPoll(true);
         }
     }
+
+    useEffect(() => {
+        if(authState.isLoggedIn && authState.data?.savedQuestions?.includes(quesState.currentQuestion[0]?._id)) setCheckSaved(true);
+        else setCheckSaved(false);
+    }, [authState.data?.savedQuestions?.length])
 
     useEffect(() => {
         checkPoll();
@@ -305,21 +327,23 @@ function AnswerPage() {
                     {quesState.currentQuestion[0]?.repost !== 'none' && !isPoll && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
                     {quesState.currentQuestion[0]?.repost !== 'none' && isPoll && <RepostPollCard questionId={quesState.currentQuestion[0]?.repost}/>}
                     <div className="bg-gray-700 h-[0.1px]"/>
-                    <div className="w-full flex gap-4 items-center">
-                        <button onClick={answer} className="p-2 text-xs hover:bg-gray-800 rounded-md">Add answer
-                            <span className="ml-3">{answers}</span>
-                        </button>
-                        <button className="flex gap-3 justify-center items-center text-sm">
-                            {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
-                            <span className="ml-1">{totLikes}</span>
-                        </button>
-                        <div className="flex gap-3 justify-center items-center text-sm">
-                            <AiOutlineRetweet title="Reposts"/>
-                            <span className="ml-1">{retweets}</span>
-                        </div>
-                        <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
-                            {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
+                    <div className="w-full flex gap-4 items-center my-2 ml-2">
+                    <div className="flex gap-2 items-center">
+                        <MdEditNote onClick={answer} className="w-7 h-7 hover:cursor-pointer text-white" title="Create answer"/>
+                        <span>{answers}</span>
                     </div>
+                    <button className="flex gap-3 justify-center items-center text-sm">
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike} title="Unlike" className="w-5 h-5"/> : <AiOutlineLike id="like" onClick={onLike} title="Like" className="w-5 h-5"/>}
+                        <span className="ml-1">{totLikes}</span>
+                    </button>
+                    <div className="flex gap-3 justify-center items-center text-sm">
+                        <AiOutlineRetweet title="Reposts" className="w-5 h-5"/>
+                        <span className="ml-1">{retweets}</span>
+                    </div>
+                    <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
+                        {showComments ? <MdModeComment className="w-5 h-5"/> : <MdOutlineModeComment className="w-5 h-5" />} {comments?.length}</div>
+                    {checkSaved ? <FaBookmark className="w-3 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-3 hover:cursor-pointer" onClick={save}/>}
+                </div>
                     {authState.isLoggedIn && <div className="flex mt-2 items-center">
                         <a className="inline-block mr-4" href={authState.data?.image}>
                             <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />

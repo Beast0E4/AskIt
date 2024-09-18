@@ -7,7 +7,7 @@ import useLikes from '../../hooks/useLikes'
 import { MdDelete, MdDone, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import LogoutModal from "../../layouts/LogoutModal";
-import { followUser, getUsers, login, unFollowUser, updateUser } from "../../redux/Slices/auth.slice";
+import { getFollowing, getUsers, login, toggleFollowUser, updateUser } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import Cropper from 'react-easy-crop';
@@ -168,7 +168,8 @@ function Profile() {
     }
 
     function isFollowing(){
-        authState.data?.following?.map((user) => {
+        setCheck(false);
+        authState.following?.map((user) => {
             if(user === searchParams.get('userid')){
                 setCheck(true); return;
             }
@@ -193,36 +194,23 @@ function Profile() {
         })
     }
 
-    async function follow() {
-        const res = await dispatch(followUser({
+    async function toggleFollow() {
+        const res = await dispatch(toggleFollowUser({
             userId: searchParams.get('userid'),
             myId: authState.data?._id
         }));
-        if(res){
-            await dispatch(login({
-                email: authState.data?.email
-            }))
-            location.reload();
-        }
+        if(res) getFollowings();
     }
 
-    async function unFollow() {
-        const res = await dispatch(unFollowUser({
-            userId: searchParams.get('userid'),
-            myId: authState.data?._id
-        }));
-        if(res){
-            await dispatch(login({
-                email: authState.data?.email
-            }))
-            location.reload();
-        }
+    async function getFollowings() {
+        await dispatch(getFollowing(authState.data?._id));
     }
 
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
+        getFollowings();
     }, [])
 
     useEffect(() => {
@@ -246,7 +234,7 @@ function Profile() {
         let date = user?.createdAt.split('T')[0].split('-');
         if(date) date = date[2] + "-" + date[1] + "-" + date[0];
         setDate(date);
-    }, [quesState.questionList.length, ansState.solutionList?.length]);
+    }, [quesState.questionList.length, ansState.solutionList?.length,  authState.following?.length]);
 
     return (
         <section className="min-h-screen relative pt-5 bg-gray-950">
@@ -294,8 +282,8 @@ function Profile() {
                                     <IoPerson className="w-5 h-5"/> Followers
                                 </Link>
                             </>}
-                            {!check && searchParams.get('userid') && <button className="border-gray-800 border-2 px-4 py-2 rounded-full font-bold font-inconsolata hover:bg-gray-800 transition-all ease-in-out" onClick={follow}>+ Follow</button>}
-                            {check && <button className="bg-gray-800 px-4 py-2 rounded-full font-bold font-inconsolata flex gap-2 items-center" onClick={unFollow}><MdDone/> Following</button>}
+                            {!check && searchParams.get('userid') && <button className="border-gray-800 border-2 px-4 py-2 rounded-full font-bold font-inconsolata hover:bg-gray-800 transition-all ease-in-out" onClick={toggleFollow}>+ Follow</button>}
+                            {check && <button className="bg-gray-800 px-4 py-2 rounded-full font-bold font-inconsolata flex gap-2 items-center" onClick={toggleFollow}><MdDone/> Following</button>}
                         </div>
                     </div>
                     <div className="flex gap-4">

@@ -27,6 +27,9 @@ function RepostPollCard({questionId}) {
     const [isOpen, setIsOpen] = useState(false);
     const [dateDiff, setDateDiff] = useState(0);
     const [selectedId, setSelectedId] = useState(null);
+    const [orgQues, setOrgQues] = useState("");
+    const [quest, setQuest] = useState("");
+    const [check, setCheck] = useState(false);
 
     async function onVoted(index, id) {
         if(!authState.isLoggedIn){
@@ -60,33 +63,9 @@ function RepostPollCard({questionId}) {
         else navigate('/profile');
     }
 
-    function getTimeElapsed(date) {
-        const now = new Date(); 
-        const questionTime = new Date(date);
-        const elapsedTime = now - questionTime;
-
-        const seconds = Math.floor(elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const months = Math.floor(days / 30);
-        const years = Math.floor(months / 12);
-
-        if(years > 0){
-            setDateDiff(`${years} year(s) ago`)
-        }
-        else if(months > 0){
-            setDateDiff(`${months} month(s) ago`)
-        }
-        else if (days > 0) {
-            setDateDiff(`${days} day(s) ago`);
-        } else if (hours > 0) {
-            setDateDiff(`${hours} hour(s) ago`);
-        } else if (minutes > 0) {
-            setDateDiff(`${minutes} minute(s) ago`);
-        } else {
-            setDateDiff(`${seconds} second(s) ago`);
-        }
+    function getDate() {
+        let date = createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+        setDateDiff(date);
     }
 
     async function loadVoted() {
@@ -102,10 +81,19 @@ function RepostPollCard({questionId}) {
         setArr(ques.poll);
         setTopic(ques.topic);
         setTitle(ques.title);
+        setQuest(ques.question);
+        setOrgQues(ques.question);
     }
 
     useEffect(() => {
         loadVoted();
+    }, [questionId])
+
+    useEffect(() => {
+        if(quest?.length > 1000){
+            const newQuest = quest.substring(0, 1000) + "...";
+            setQuest(newQuest); setCheck(true);
+        }
     }, [questionId])
 
     useEffect(() => {
@@ -132,7 +120,7 @@ function RepostPollCard({questionId}) {
     }, [arr])
 
     useEffect(() => {
-        findName(); getTimeElapsed(createdAt);
+        findName(); getDate();
     }, [creator, createdAt])
 
 
@@ -170,45 +158,6 @@ function RepostPollCard({questionId}) {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
-                        <div>
-                            <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
-                            >
-                            <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-950" />
-                            </button>
-                        </div>
-
-                        {isOpen && (
-                            <div
-                            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-800 focus:outline-none z-10"
-                            role="menu"
-                            aria-orientation="vertical"
-                            aria-labelledby="menu-button"
-                            tabIndex="-1"
-                            >
-                                <div className="py-1" role="none">
-                                    <h2
-                                        className="block px-4 py-2 text-sm text-white hover:bg-gray-700 font-semibold hover:cursor-pointer"
-                                        role="menuitem"
-                                        tabIndex="-1"
-                                        onClick={onRepost}
-                                    >
-                                    Repost
-                                    </h2>
-                                    {authState.data?._id === creator && <h2
-                                        className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
-                                        role="menuitem"
-                                        tabIndex="-1"
-                                        onClick={onDelete}
-                                    >
-                                    Delete
-                                    </h2>}
-                                </div>
-                            </div>
-                        )}
-                    </div> */}
                 </div>
                 {topic && 
                 <div className="mt-4">
@@ -217,16 +166,16 @@ function RepostPollCard({questionId}) {
             </div>
             <div className="pb-2">
                 {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
-                {/* <div className="ml-2">
+                <div className="ml-2 mb-2">
                     <p className="text-md">
                         {quest}
                     </p>
                     {check && <button className="text-xs text-[#F2BEA0]" onClick={() => {
-                        setQuest(question); setCheck(!check);
+                        setQuest(orgQues); setCheck(!check);
                     }}>
                         Read more
                     </button>}
-                </div> */}
+                </div>
                 {quesImage && <div className="flex justify-center px-2"><img src={quesImage} className="py-2"/></div>}
                 <div>
                 <div className="space-y-4 px-5">

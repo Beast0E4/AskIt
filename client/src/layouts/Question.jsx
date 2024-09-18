@@ -11,8 +11,8 @@ import useComments from "../hooks/useComments";
 import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
-import { FaRegComment, FaComment, FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { MdEditNote } from "react-icons/md";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa";
+import { MdEditNote, MdModeComment, MdOutlineModeComment } from "react-icons/md";
 import RepostCard from "./RepostCard";
 import RepostPollCard from "./RepostPollCard";
 
@@ -150,33 +150,9 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
         }
     }
 
-    function getTimeElapsed(date) {
-        const now = new Date(); 
-        const questionTime = new Date(date);
-        const elapsedTime = now - questionTime;
-
-        const seconds = Math.floor(elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const months = Math.floor(days / 30);
-        const years = Math.floor(months / 12);
-
-        if(years > 0){
-            setDateDiff(`${years} year(s) ago`)
-        }
-        else if(months > 0){
-            setDateDiff(`${months} month(s) ago`)
-        }
-        else if (days > 0) {
-            setDateDiff(`${days} day(s) ago`);
-        } else if (hours > 0) {
-            setDateDiff(`${hours} hour(s) ago`);
-        } else if (minutes > 0) {
-            setDateDiff(`${minutes} minute(s) ago`);
-        } else {
-            setDateDiff(`${seconds} second(s) ago`);
-        }
+    function getDate() {
+        let date = createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+        setDateDiff(date);
     }
 
     function onRepost(){
@@ -216,7 +192,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     useEffect(() => {
         checkPoll();
         calculateRetweets();
-        getTimeElapsed(createdAt);
+        getDate(createdAt);
     }, [questionId])
 
     useEffect(() => {
@@ -346,7 +322,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 {repost && repost !== 'none' && isPoll && <div>
                         <RepostPollCard questionId={repost} /> </div>}
                 <div className="bg-gray-700 h-[0.1px]"/>
-                <div className="w-full flex gap-4 items-center my-2">
+                <div className="w-full flex gap-4 items-center my-2 ml-2">
                     <div className="flex gap-2 items-center">
                         <MdEditNote onClick={answer} className="w-7 h-7 hover:cursor-pointer text-white" title="Create answer"/>
                         <span>{answers}</span>
@@ -360,7 +336,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                         <span className="ml-1">{retweets}</span>
                     </div>
                     <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
-                        {showComments ? <FaComment className="w-5 h-5"/> : <FaRegComment className="w-5 h-5" />} {comments?.length}</div>
+                        {showComments ? <MdModeComment className="w-5 h-5"/> : <MdOutlineModeComment className="w-5 h-5" />} {comments?.length}</div>
                     {checkSaved ? <FaBookmark className="w-3 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-3 hover:cursor-pointer" onClick={save}/>}
                 </div>
                 {authState.isLoggedIn && <div className="flex mt-2 items-center">
@@ -381,7 +357,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     ></textarea>
                     <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
                 </div>}
-                {showModal && <DeleteModal type='question' id={selectedQues} setShowModal={setShowModal}/>}
+                {showModal && <DeleteModal type='question' typeId={selectedQues} setShowModal={setShowModal}/>}
             </article>
             {showComments && <div className="w-full ml-2 my-3">
                 {comments.length ? comments.map((comment, index) => {

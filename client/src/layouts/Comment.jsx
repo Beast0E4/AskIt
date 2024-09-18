@@ -176,7 +176,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                 </div>
                 <div className="text-xs ml-4 mt-0.5 text-gray-500 dark:text-gray-400">{dateDiff}</div>
                 <div className="bg-gray-900 rounded-full py-[0.5px] px-[7px] float-right gap-2  -mt-8 mr-0.5 flex shadow items-center">
-                    {isLiked ? <AiFillLike id="liked" onClick={onUnLike} className="h-4 hover:cursor-pointer"/> : <AiOutlineLike id="like" onClick={onLike} className="hover:cursor-pointer"/>}
+                    {isLiked ? <AiFillLike id="liked" onClick={onUnLike} className="w-5 h-5 hover:cursor-pointer"/> : <AiOutlineLike id="like" onClick={onLike} className="hover:cursor-pointer w-5 h-5"/>}
                     <span className="ml-1">{totLikes}</span>
                 </div>
             </div>

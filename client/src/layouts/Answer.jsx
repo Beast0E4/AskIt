@@ -10,10 +10,10 @@ import { FiSend } from "react-icons/fi";
 import useComments from "../hooks/useComments";
 import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaComment, FaRegComment } from "react-icons/fa";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { like, unLike } from "../redux/Slices/ques.slice";
-import { MdOutlineSentimentSatisfied } from "react-icons/md";
+import { MdModeComment, MdOutlineModeComment } from "react-icons/md";
+import { FaCheck } from "react-icons/fa";
 
 // eslint-disable-next-line react/prop-types
 function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage, isVerified}) {
@@ -206,14 +206,13 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
                             <div className="flex flex-col justify-center">
                                 <div className="flex items-center">
                                     <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
-                                    
+                                    {verified && <FaCheck className="text-[#F2BEA0]"/>}
                                 </div>
                                 <div className="text-slate-500 text-xs dark:text-slate-300">
                                     {dateDiff}
                                 </div>
                             </div>
                         </div>
-                        {verified && <MdOutlineSentimentSatisfied className="w-8 h-8 text-[#F2BEA0]"/>}
                     </div>
                     {(creator === authState.data?._id || isMyQues) && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                             <div>
@@ -271,15 +270,17 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
                     {solImage && <div className="flex justify-center px-2"><img src={solImage} className="py-2"/></div>}
                 </div>
                 <div className="bg-gray-700 h-[0.1px]"/>
-                <div className="mb-2">
+                <div className="my-2 ml-2">
                     <div className="flex items-center gap-4 mt-2 pl-2">
                         <button className="flex gap-3 justify-center items-center text-sm">
-                            {isLiked ? <AiFillLike id="liked" onClick={onUnLike}/> : <AiOutlineLike id="like" onClick={onLike}/>}
+                        {isLiked ? <AiFillLike id="liked" onClick={onUnLike} title="Unlike" className="w-5 h-5"/> : <AiOutlineLike id="like" onClick={onLike} title="Like" className="w-5 h-5"/>}
                             <span className="ml-1">{totLikes}</span>
                         </button>
                             <div className="flex gap-4 items-center text-xs hover:cursor-pointer" onClick={() => setShowComments(!showComments)}>
-                            {showComments ? <FaComment/> : <FaRegComment />} {comments?.length}</div>
+                            {showComments ? <MdModeComment className="w-5 h-5"/> : <MdOutlineModeComment className="w-5 h-5" />} {comments?.length}</div>
                     </div>
+                </div>
+                <div>
                     {authState.isLoggedIn && <div className="flex mt-2 items-center">
                         <a className="inline-block mr-4" href={authState.data?.image}>
                             <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
