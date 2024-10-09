@@ -4,7 +4,7 @@ import Question from "../layouts/Question";
 import useQuestions from "../hooks/useQuestions";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLikedComments, getLikedQuestions, getLikedSolutions, getUsers } from "../redux/Slices/auth.slice";
+import { getFollowing, getLikedComments, getLikedQuestions, getLikedSolutions, getUsers } from "../redux/Slices/auth.slice";
 import Loader from "../layouts/Loader";
 import toast from "react-hot-toast";
 import useAnswers from "../hooks/useAnswers";
@@ -70,13 +70,21 @@ function Home() {
         sol.solution?.toLowerCase().includes(searchQuery?.toLowerCase())
     );
 
-    useEffect(() => {
-        calculateLength();
-    }, [searchParams.get('topic')])
+    async function loadFollowing() {
+        if(authState.isLoggedIn) await dispatch(getFollowing(authState.data?._id));
+    }
 
     async function loadSolutions(){
         await dispatch(getSolutionByUser(searchParams.get('userid')));
     }
+
+    useEffect(() => {
+        calculateLength();
+    }, [searchParams.get('topic'), quesState.questionList?.length])
+
+    useEffect(() => {
+        loadFollowing();
+    }, [])
 
     useEffect(() => {
         if(location.pathname === '/answers'){
@@ -123,7 +131,7 @@ function Home() {
                     </div>
                     <div className="mt-5 h-max w-[14.5rem] rounded-md hidden lg:flex flex-col border-[2px] border-gray-800">
                         <h1 className=" p-2 font-bold bg-gray-900 font-sans border-b-[1px] border-gray-800">User details</h1>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length || 0}</span></h2>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.following?.length || 0}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total questions asked</span><span>{quesLength}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total solutions provided</span><span>{solLength}</span></h2>
                         <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Likes recieved on questions</span><span>{quesLikes}</span></h3>

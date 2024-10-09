@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useComments from "../hooks/useComments";
 // import useAnswers from "../hooks/useAnswers";
 import { getQuestion, like, unLike, voteQuestion } from "../redux/Slices/ques.slice";
-import { getLikedQuestions, getVoted, login, saveQuestion } from "../redux/Slices/auth.slice";
+import { getLikedQuestions, getSaved, getVoted, saveQuestion } from "../redux/Slices/auth.slice";
 import { createComment, getComments } from "../redux/Slices/comment.slice";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
@@ -13,11 +13,11 @@ import { FiSend } from "react-icons/fi";
 import DeleteModal from "./DeleteModal";
 import Comment from "./Comment";
 import { MdModeComment, MdOutlineModeComment } from "react-icons/md";
+import PicModal from "./PicModal";
 
 // eslint-disable-next-line react/prop-types
 function PollCard({questionId}) {
 
-    // const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
     const authState = useSelector((state) => state.auth);
     const [commentState] = useComments();
@@ -48,11 +48,12 @@ function PollCard({questionId}) {
     const [dateDiff, setDateDiff] = useState(0);
     const [orgQues, setOrgQues] = useState("");
     const [selectedId, setSelectedId] = useState(null);
-    // const [check, setCheck] = useState(false);
     const [retweets, setRetweets] = useState(0);
-    // const [answers, setAnswers] = useState(0);
     const [checkSaved, setCheckSaved] = useState(false);
     const [check, setCheck] = useState(false);
+    const [userName, setUserName] = useState('');
+    const [showPicModal, setShowPicModal] = useState(false);
+    const [modalData, setModalData] = useState({ image: '', name: '' });
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: questionId,
@@ -90,6 +91,7 @@ function PollCard({questionId}) {
         setUserIdx(nm);
         if(authState?.userList[nm]?.name) setName(authState?.userList[nm]?.name.substring(0, 10));
         if(authState.userList[nm]?.image) setImage(authState.userList[nm]?.image);
+        if(authState.userList[nm]?.username) setUserName(authState.userList[nm]?.username);
     }
 
     async function userView() {
@@ -177,11 +179,7 @@ function PollCard({questionId}) {
             userId: authState.data?._id,
             questionId: questionId
         }))
-        if(res){
-            await dispatch(login({
-                email: authState.data?.email
-            }))
-        }
+        if(res) await dispatch(getSaved(authState.data?._id));
     }
 
     async function loadVoted() {
@@ -191,6 +189,7 @@ function PollCard({questionId}) {
     async function loadQuestion() {
         const res = await dispatch(getQuestion(questionId));
         const ques = res.payload?.data?.question;
+        setTotLikes(ques.likes)
         setCreatedAt(ques.createdAt);
         setCreator(ques.userId);
         setQuesImage(ques.image);
@@ -201,13 +200,30 @@ function PollCard({questionId}) {
         setOrgQues(ques.question);
     }
 
+    async function loadSaved() {
+        if(authState.isLoggedIn) await dispatch(getSaved(authState.data?._id));
+    }
+
+    const closeModal = () => {
+        setShowPicModal(false);
+    };
+
+    const imageClick = (name, image) => {
+        console.log('haha' ,name, image)
+        setModalData({
+            name: name,
+            image: image
+        });
+        setShowPicModal(true);
+    }
+
     useEffect(() => {
-        loadVoted();
-    }, [questionId])
+        loadVoted(); loadSaved();
+    }, [questionId, creator])
 
     useEffect(() => {
         loadQuestion();
-    }, [selectedId, authState.voted?.length])
+    }, [selectedId, authState.voted?.length, questionId])
 
     useEffect(() => {
         if(!authState.isLoggedIn){
@@ -233,9 +249,9 @@ function PollCard({questionId}) {
     }, [questionId])
 
     useEffect(() => {
-        if(authState.isLoggedIn && authState.data?.savedQuestions?.includes(questionId)) setCheckSaved(true);
+        if(authState.isLoggedIn && authState.savedQuestions?.includes(questionId)) setCheckSaved(true);
         else setCheckSaved(false);
-    }, [authState.data?.savedQuestions?.length])
+    }, [authState.savedQuestions?.length])
 
     useEffect(() => {
         loadComments();
@@ -243,10 +259,10 @@ function PollCard({questionId}) {
 
     useEffect(() => {
         findName(); getDate();
-    }, [creator, createdAt])
+    }, [creator, createdAt, questionId])
 
     useEffect(() => {
-        if(authState.data){
+        if(authState.isLoggedIn){
             const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === questionId));
             if(ques?.length) setIsLiked(true);
             else setIsLiked(false);
@@ -255,7 +271,7 @@ function PollCard({questionId}) {
             const newQuest = quest.substring(0, 1000) + "...";
             setQuest(newQuest); setCheck(true);
         }
-    }, [authState.selectedUser.likedQuestion?.length, questionId])
+    }, [authState.selectedUser.likedQuestion?.length, questionId, creator])
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -279,12 +295,11 @@ function PollCard({questionId}) {
             <div className="flex flex-col pb-3">
                 <div className="flex justify-between items-center">
                     <div className="flex">
-                        <a className="inline-block mr-4" href={image}>
-                            <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                        </a>
+                        <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
                         <div className="flex flex-col justify-center">
                             <div className="flex items-center">
                                 <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
+                                <h2 className="inline-block mr-2 text-xs text-[#F2BEA0]">{userName}</h2>
                             </div>
                             <div className="text-slate-300 text-xs">
                                 {dateDiff}
@@ -396,9 +411,7 @@ function PollCard({questionId}) {
                     {checkSaved ? <FaBookmark className="w-3 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-3 hover:cursor-pointer" onClick={save}/>}
                 </div>
             {authState.isLoggedIn && <div className="flex mt-2 items-center">
-                <a className="inline-block mr-4" href={authState.data?.image}>
-                    <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                </a>
+                <img src={authState.data?.image} alt={authState.data?.name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(authState.data?.name, authState.data?.image)}/>
                 <textarea 
                     name="comment"
                     onChange={handleChange}
@@ -414,6 +427,10 @@ function PollCard({questionId}) {
                 <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
             </div>}
             {showModal && <DeleteModal type='question' typeId={selectedQues}/>}
+            {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
         </article>
         {showComments && <div className="w-full ml-2 my-3">
             {comments.length ? comments.map((comment, index) => {

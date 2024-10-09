@@ -10,7 +10,6 @@ import Following from "../pages/Following/Following";
 import Explore from "../pages/explore/Explore";
 import Navbar from '../layouts/NavBar'
 import LikedQuestions from "../pages/likedQuestions/LikedQuestions";
-import Comment from "../layouts/Comment";
 
 function MainRoutes() {
     return (
@@ -30,7 +29,6 @@ function MainRoutes() {
             <Route path="/liked" element={<><Navbar/><LikedQuestions/></>}/>
             <Route path="/explore" element={<><Navbar/><Explore/></>} />
             <Route path="/saved" element={<><Navbar/><Explore/></>} />
-            <Route path="/comment" element={<Comment/>} />
         </Routes>
     )
 }

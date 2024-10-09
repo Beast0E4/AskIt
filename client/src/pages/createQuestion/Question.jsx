@@ -86,9 +86,8 @@ function Question() {
             formData.append('question', question.question.toString().trim());
             if(file) formData.append('image', croppedFile);
             formData.append('topic', selectedTopic); 
-            if(!isPoll){
-                formData.append('repost', searchParams.get('repost'));
-            } else {
+            if(searchParams.get('repost')) formData.append('repost', searchParams.get('repost'));
+            if(isPoll){
                 formData.append('options', JSON.stringify(options));
             }
             await dispatch(createQuestion(formData));
@@ -178,7 +177,6 @@ function Question() {
                         <input id="fileInput" type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
                         <input name="title" onChange={handleONChange} value={question.title} className="textarea w-full" placeholder="Title for question"/>
                         <textarea name="question" onChange={handleONChange} value={question.question} className="textarea textarea-bordered w-full resize-none" placeholder="Your question" rows={5}></textarea>
-                        {searchParams.get('repost') && <h3>Repost: {searchParams.get('repost')}</h3>}
                     </div>
                     <div id="poll" className="hidden space-y-4 md:space-y-6">
                         <h3 className="mt-10">Add question here</h3>

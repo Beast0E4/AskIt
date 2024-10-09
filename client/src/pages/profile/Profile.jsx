@@ -7,7 +7,7 @@ import useLikes from '../../hooks/useLikes'
 import { MdDelete, MdDone, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import LogoutModal from "../../layouts/LogoutModal";
-import { getFollowing, getUsers, login, toggleFollowUser, updateUser } from "../../redux/Slices/auth.slice";
+import { getFollowing, getSaved, getUsers, login, toggleFollowUser, updateUser } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import Cropper from 'react-easy-crop';
@@ -15,6 +15,7 @@ import { getCroppedImg } from '../../utils/cropUtils';
 import { RiUserFollowFill } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";
 import { BiSolidImageAdd } from "react-icons/bi";
+import PicModal from "../../layouts/PicModal";
  
 function Profile() {
 
@@ -49,6 +50,8 @@ function Profile() {
     const [profession, setProfession] = useState(authState.data?.profession);
     const [followers, setFollowers] = useState(0);
     const [imageName, setImageName] = useState();
+    const [showPicModal, setShowPicModal] = useState(false);
+    const [modalData, setModalData] = useState({ image: '', name: '' });
 
     const topics = ["Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory", "Sports"];
 
@@ -90,7 +93,7 @@ function Profile() {
     };
 
     function calculateLength(){
-        const ques = quesState.questionList?.filter((ques) => ques.userId === user?._id);
+        const ques = quesState.downloadedQuestions?.filter((ques) => ques.userId === user?._id);
         let quesLikes = 0;
         ques.map((ques) => quesLikes += ques.likes);
         ques.map((quest) => {
@@ -206,11 +209,28 @@ function Profile() {
         await dispatch(getFollowing(authState.data?._id));
     }
 
+    async function loadSaved() {
+        await dispatch(getSaved(authState.data?._id));
+    }
+
+    const closeModal = () => {
+        setShowPicModal(false);
+    };
+
+    const imageClick = (name, image) => {
+        console.log('haha' ,name, image)
+        setModalData({
+            name: name,
+            image: image
+        });
+        setShowPicModal(true);
+    }
+
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
-        getFollowings();
+        getFollowings(); loadSaved(); calculateLength();
     }, [])
 
     useEffect(() => {
@@ -234,17 +254,18 @@ function Profile() {
         let date = user?.createdAt.split('T')[0].split('-');
         if(date) date = date[2] + "-" + date[1] + "-" + date[0];
         setDate(date);
-    }, [quesState.questionList.length, ansState.solutionList?.length,  authState.following?.length]);
+    }, [quesState.questionList?.length, ansState.solutionList?.length,  authState.following?.length, location.pathname]);
 
     return (
         <section className="min-h-screen relative pt-5 bg-gray-950">
             <div className="w-full max-w-7xl mx-auto px-6 md:px-8">
                 <div className="flex items-center justify-center sm:justify-start relative z-10 mb-5">
-                    <a href={user?.image} className="w-max"><img src={user?.image} alt="user-avatar-image" className="rounded-full w-32 h-32 object-cover" /></a>
+                    <img src={user?.image} alt={user?.name} className="rounded-full w-32 h-32 object-cover hover:cursor-pointer" onClick={() => imageClick(user?.name, user?.image)} />
                 </div>
                 <div className="flex flex-col sm:flex-row max-sm:gap-5 items-center sm:items-end justify-between mb-3">
                     <div className="block">
                         <h3 className="font-manrope font-bold text-4xl text-white mb-1">{user?.name}</h3>
+                        <p className="font-normal text-base leading-7 text-[#F2BEA0]">{user?.username}</p>
                         {!searchParams.get('userid') && <p className="font-normal text-base leading-7 text-gray-500">{user?.email}</p>}
                         <div className="flex items-center gap-4">
                             <p className="mt-2 font-normal text-base leading-7 text-gray-400">{followers} Followers</p>
@@ -300,7 +321,7 @@ function Profile() {
                     <div className="flex flex-col sm:items-end items-center">
                         {!searchParams.get('userid') && <Link to={'/liked'}><div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base hover:cursor-pointer hover:bg-slate-700" title="Liked questions">{authState.selectedUser?.likedQuestion?.length} like(s) provided</div></Link>}
                         <div className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{solLikes + quesLikes} like(s) recieved</div>
-                        {!searchParams.get('userid') && <Link to={'/saved'} className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{authState.data?.savedQuestions?.length} saved question(s)</Link>}
+                        {!searchParams.get('userid') && <Link to={'/saved'} className="py-2 px-5 mt-[1rem] rounded-md bg-gray-800 text-white text-base">{authState.savedQuestions?.length} saved question(s)</Link>}
                     </div>
                 </div>
                 <div className="w-full bg-gray-800 h-[1px] mb-2 mt-4"></div>
@@ -369,6 +390,10 @@ function Profile() {
             </div>
             <DeleteAccModal />
             <LogoutModal />
+            {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
         </section>   
     )
 }

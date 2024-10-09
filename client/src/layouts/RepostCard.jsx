@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import useQuestions from "../hooks/useQuestions";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import PicModal from "./PicModal";
 
 // eslint-disable-next-line react/prop-types
 function RepostCard({ questionId }) {
@@ -20,6 +21,8 @@ function RepostCard({ questionId }) {
   const [fullQuestion, setFullQuestion] = useState(null);
   const [dateDiff, setDateDiff] = useState(0);
   const [check, setCheck] = useState(false);
+  const [showPicModal, setShowPicModal] = useState(false);
+  const [modalData, setModalData] = useState({ image: '', name: '' });
 
   async function findQues() {
     const foundQuest = quesState.downloadedQuestions.filter((q) => q._id === questionId);
@@ -57,7 +60,20 @@ function RepostCard({ questionId }) {
   function getDate() {
     let date = quest.createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
     setDateDiff(date);
-}
+  }
+
+  const closeModal = () => {
+    setShowPicModal(false);
+  };
+
+  const imageClick = (name, image) => {
+      console.log('haha' ,name, image)
+      setModalData({
+          name: name,
+          image: image
+      });
+      setShowPicModal(true);
+  }
 
   useEffect(() => {
     findQues();
@@ -109,9 +125,7 @@ function RepostCard({ questionId }) {
         <div className="flex flex-col pb-3">
           <div className="flex justify-between items-center">
             <div className="flex">
-              <a className="inline-block mr-4" href={image}>
-                <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-              </a>
+              <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
               <div className="flex flex-col justify-center">
                 <div className="flex items-center">
                   <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">
@@ -174,6 +188,10 @@ function RepostCard({ questionId }) {
             </div>
           )}
         </div>
+        {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
       </article>
     </>
   );

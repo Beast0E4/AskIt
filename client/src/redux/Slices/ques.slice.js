@@ -118,8 +118,8 @@ const QuestionSlice = createSlice({
         },
         filterQuestionByTopic: (state, action) => {
             const topic = action?.payload?.topic;
-            console.log(JSON.parse(JSON.stringify(state.currentList)));
             state.questionList = JSON.parse(JSON.stringify(state.currentList)).filter((ques) => ques.topic === topic);
+            state.questionList = JSON.parse(JSON.stringify(state.questionList));
         },
         filterQuestionByUserandTopic: (state, action) => {
             const id = action?.payload?.id;
@@ -143,9 +143,8 @@ const QuestionSlice = createSlice({
             state.questionList = state.currentList;
         },
         filterQuestionForSaved: (state, action) => {
-            state.currentList = state.downloadedQuestions.filter(question => action.payload.includes(question._id));
-            state.questionList = state.currentList;
-            console.log('Saved', state.currentList)
+            state.currentList = state.downloadedQuestions?.filter(question => action.payload?.includes(question._id));
+            state.questionList = JSON.parse(JSON.stringify(state.currentList));
         },
         resetQuestionList: (state) => {
             state.questionList = state.downloadedQuestions;
@@ -156,8 +155,9 @@ const QuestionSlice = createSlice({
         builder
         .addCase(getAllQuestions.fulfilled, (state, action) => {
             if(!action?.payload?.data) return;
-            state.questionList = action?.payload?.data?.question;
             state.downloadedQuestions = action?.payload?.data?.question.reverse();
+            state.questionList = state.downloadedQuestions;
+            state.currentList = state.downloadedQuestions;
         })
         .addCase(createQuestion.fulfilled, (state, action) => {
             if(action?.payload?.data === undefined) return;

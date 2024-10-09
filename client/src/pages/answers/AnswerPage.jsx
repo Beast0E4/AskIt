@@ -18,6 +18,7 @@ import Loader from "../../layouts/Loader";
 import RepostPollCard from "../../layouts/RepostPollCard";
 import { MdEditNote, MdModeComment, MdOutlineModeComment } from "react-icons/md";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import PicModal from "../../layouts/PicModal";
 
 function AnswerPage() {
 
@@ -50,6 +51,9 @@ function AnswerPage() {
     const [isPoll, setIsPoll] = useState(false);
     const [image, setImage] = useState("https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png");
     const [checkSaved, setCheckSaved] = useState(false);
+    const [quest, setQuest] = useState({});
+    const [showPicModal, setShowPicModal] = useState(false);
+    const [modalData, setModalData] = useState({ image: '', name: '' });
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         questionId: searchParams.get('question'),
@@ -73,69 +77,42 @@ function AnswerPage() {
     }
 
     function countSolutions(){
-        const list = ansState.downloadedAnswers.flat().filter((ans) => ans.questionId === quesState.currentQuestion[0]?._id);
+        const list = ansState.downloadedAnswers.flat().filter((ans) => ans.questionId === quest._id);
         setAnswers(list?.length);
     }
 
     function calculateRetweets(){
-        const list = quesState.downloadedQuestions.filter((ques) => ques.repost === quesState.currentQuestion[0]?._id);
+        const list = quesState.downloadedQuestions.filter((ques) => ques.repost === quest?._id);
         setRetweets(list?.length);
     }
 
 
     function loadComments() {
-        const list = commentState.commentList?.filter((comment) => comment.questionId === quesState.currentQuestion[0]?._id);
+        const list = commentState.commentList?.filter((comment) => comment.questionId === quest?._id);
         list.reverse();
         setComments(list);
     }
 
     function loadUser() {
-        const user = authState.userList?.find((user) => user._id == quesState.currentQuestion[0]?.userId)
-        if(quesState.currentQuestion[0]?.userId === authState.data?._id) setIsMyQues(true);
-        const userIdx = authState.userList?.findIndex((user) => user._id == quesState.currentQuestion[0]?.userId);
-        const index = quesState.downloadedQuestions.findIndex((question) => question._id === quesState.currentQuestion[0]?._id);
+        const user = authState.userList?.find((user) => user._id == quest?.userId)
+        if(quest?.userId === authState.data?._id) setIsMyQues(true);
+        const userIdx = authState.userList?.findIndex((user) => user._id == quest?.userId);
+        const index = quesState.downloadedQuestions.findIndex((question) => question._id === quest?._id);
         setIdx(index); setUserIdx(userIdx);
-        setTotLikes(quesState.currentQuestion[0]?.likes)
-        const dt = quesState?.currentQuestion[0]?.createdAt;
-        if(dt){
-            const now = new Date(); 
-            const questionTime = new Date(dt);
-            const elapsedTime = now - questionTime;
-
-            const seconds = Math.floor(elapsedTime / 1000);
-            const minutes = Math.floor(seconds / 60);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
-            const months = Math.floor(days / 30);
-            const years = Math.floor(months / 12);
-
-            if(years > 0){
-                setDate(`${years} year(s) ago`)
-            }
-            else if(months > 0){
-                setDate(`${months} month(s) ago`)
-            }
-            else if (days > 0) {
-                setDate(`${days} day(s) ago`);
-            } else if (hours > 0) {
-                setDate(`${hours} hour(s) ago`);
-            } else if (minutes > 0) {
-                setDate(`${minutes} minute(s) ago`);
-            } else {
-                setDate(`${seconds} second(s) ago`);
-            }
-            if(user?.name) setName(user?.name); 
-            if(user?.image) setImage(user?.image); 
-        }
+        setTotLikes(quest?.likes)
+        let date = quest?.createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+        setDate(date);
+        if(user?.name) setName(user?.name); 
+        if(user?.image) setImage(user?.image); 
     }
 
     async function answer() {
-        navigate(`/create-answer?question=${quesState.currentQuestion[0]?._id}`);
+        navigate(`/create-answer?question=${quest?._id}`);
     }
 
     async function onDelete(){
         setIsOpen(false);
-        setSelectedQues(quesState.currentQuestion[0]?._id);
+        setSelectedQues(quest?._id);
         setShowModal(true);
     }
 
@@ -153,7 +130,7 @@ function AnswerPage() {
             navigate('/login'); return;
         }
         const res = await dispatch(like({
-            quesId : quesState.currentQuestion[0]?._id,
+            quesId : quest?._id,
             userId: authState.data._id
         }));
         if(res){
@@ -169,7 +146,7 @@ function AnswerPage() {
         }
         const res = await dispatch(saveQuestion({
             userId: authState.data?._id,
-            questionId: quesState.currentQuestion[0]?._id
+            questionId: quest?._id
         }))
         if(res){
             await dispatch(login({
@@ -183,7 +160,7 @@ function AnswerPage() {
             navigate('/login'); return;
         }
         const res = await dispatch(unLike({
-            quesId : quesState.currentQuestion[0]?._id,
+            quesId : quest?._id,
             userId: authState.data._id
         }));
         if(res){
@@ -215,32 +192,56 @@ function AnswerPage() {
     }
 
     async function checkPoll() {
-        if(quesState.currentQuestion[0]?.repost && quesState.currentQuestion[0]?.repost !== 'none'){
-            const res = await dispatch(getQuestion(quesState.currentQuestion[0]?.repost));
+        if(quest?.repost && quest?.repost !== 'none'){
+            const res = await dispatch(getQuestion(quest?.repost));
             const ques = res.payload?.data?.question;
             if(!ques.question) setIsPoll(true);
         }
     }
 
+    const closeModal = () => {
+        setShowPicModal(false);
+    };
+
+    const imageClick = (name, image) => {
+        console.log('haha' ,name, image)
+        setModalData({
+            name: name,
+            image: image
+        });
+        setShowPicModal(true);
+    }
+
     useEffect(() => {
-        if(authState.isLoggedIn && authState.data?.savedQuestions?.includes(quesState.currentQuestion[0]?._id)) setCheckSaved(true);
+        const loadQuestion = async () => {
+            const question = await dispatch(getQuestion(searchParams.get('question')));
+            if (question.payload?.data) {
+                setQuest(question.payload.data?.question);
+            }
+        };
+        
+        loadQuestion();
+    }, []);
+
+    useEffect(() => {
+        if(authState.isLoggedIn && authState.data?.savedQuestions?.includes(quest?._id)) setCheckSaved(true);
         else setCheckSaved(false);
     }, [authState.data?.savedQuestions?.length])
 
     useEffect(() => {
         checkPoll();
-    }, [quesState.currentQuestion[0]?._id])
+    }, [quest?._id])
 
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
         }
         loadUsers();
-    }, [])
+    }, [quest])
 
     useEffect(() => {
         countSolutions();
-    }, [ansState.downloadedAnswers.flat().length, quesState.currentQuestion[0]?._id])
+    }, [ansState.downloadedAnswers.flat().length, quest?._id])
 
 
     useEffect(() => {
@@ -249,16 +250,16 @@ function AnswerPage() {
     
     useEffect(() => {
         calculateRetweets();
-        if (quesState.currentQuestion[0] && authState.userList) {
+        if (quest && authState.userList) {
             loadUsers(); 
             loadUser();
         }
         if(authState.data){
-            const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === quesState.currentQuestion[0]?._id));
+            const ques = authState.selectedUser?.likedQuestion?.filter((ques) => (ques.questionId === quest?._id));
             if(ques?.length) setIsLiked(true);
             else setIsLiked(false);
         }
-    }, [quesState.currentQuestion, authState.userList.length]);
+    }, [quest, name, authState.userList.length]);
 
     return (
         <div className="flex flex-col items-center w-full bg-gray-950 min-h-screen pt-[5rem]">
@@ -268,9 +269,7 @@ function AnswerPage() {
                     <div className="flex flex-col pb-3">
                         <div className="flex justify-between items-center">
                             <div className="flex">
-                                <a className="inline-block mr-4" href={image}>
-                                    <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                                </a>
+                            <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
                                 <div className="flex flex-col justify-center">
                                     <div className="flex items-center">
                                         <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
@@ -280,7 +279,7 @@ function AnswerPage() {
                                     </div>
                                 </div>
                             </div>
-                            {authState.data?._id === quesState.currentQuestion[0]?.userId && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
+                            {authState.data?._id === quest?.userId && <div className="relative inline-block text-left z-[0]" ref={dropdownRef}>
                                 <div>
                                     <button
                                     onClick={() => setIsOpen(!isOpen)}
@@ -312,20 +311,20 @@ function AnswerPage() {
                                 )}
                             </div>}
                         </div>
-                        {quesState.currentQuestion[0]?.topic && 
+                        {quest?.topic && 
                         <div className="mt-4">
-                            <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:cursor-pointer border-[#F2BEA0] font-inconsolata">{quesState.currentQuestion[0]?.topic}</p>
+                            <p className="text-[0.5rem] rounded-2xl border-[0.1px] w-max px-2 py-1 hover:cursor-pointer border-[#F2BEA0] font-inconsolata">{quest?.topic}</p>
                         </div>}
                     </div>
                     <div className="pb-2">
-                        {quesState.currentQuestion[0]?.title && <h2 className="ml-2 text-lg font-bold mb-2">{quesState.currentQuestion[0]?.title}</h2>}
+                        {quest?.title && <h2 className="ml-2 text-lg font-bold mb-2">{quest?.title}</h2>}
                         <p className="text-md ml-2"> 
-                                {quesState.currentQuestion[0]?.question}
+                                {quest?.question}
                             </p>
-                        {quesState.currentQuestion[0]?.image && <div className="flex justify-center px-2"><img src={quesState.currentQuestion[0]?.image} className="py-2"/></div>}
+                        {quest?.image && <div className="flex justify-center px-2"><img src={quest?.image} className="py-2"/></div>}
                     </div>
-                    {quesState.currentQuestion[0]?.repost !== 'none' && !isPoll && <RepostCard questionId={quesState.currentQuestion[0]?.repost}/>}
-                    {quesState.currentQuestion[0]?.repost !== 'none' && isPoll && <RepostPollCard questionId={quesState.currentQuestion[0]?.repost}/>}
+                    {quest?.repost !== 'none' && !isPoll && <RepostCard questionId={quest?.repost}/>}
+                    {quest?.repost !== 'none' && isPoll && <RepostPollCard questionId={quest?.repost}/>}
                     <div className="bg-gray-700 h-[0.1px]"/>
                     <div className="w-full flex gap-4 items-center my-2 ml-2">
                     <div className="flex gap-2 items-center">
@@ -345,9 +344,7 @@ function AnswerPage() {
                     {checkSaved ? <FaBookmark className="w-3 hover:cursor-pointer" onClick={save} title="Save"/> : <FaRegBookmark className="w-3 hover:cursor-pointer" onClick={save}/>}
                 </div>
                     {authState.isLoggedIn && <div className="flex mt-2 items-center">
-                        <a className="inline-block mr-4" href={authState.data?.image}>
-                            <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                        </a>
+                        <img src={authState.data?.image} alt={authState.data?.name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(authState.data?.name, authState.data?.image)}/>
                         <textarea 
                             name="comment"
                             onChange={handleChange}
@@ -363,10 +360,14 @@ function AnswerPage() {
                         <FiSend className="w-14 text-white hover:cursor-pointer" onClick={submitComment}/>
                     </div>}
                     {showModal && <DeleteModal type='question' id={selectedQues}/>}
+                    {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
                 </article>
                 {showComments && <div className="w-full ml-2 my-3">
                     {comments.length ? comments.map((comment, index) => {
-                        return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt} creator={quesState.currentQuestion[0]?.userId} likes={comment.likes}/>)
+                        return (<Comment key={index} commentId={comment._id} userId={comment.userId} description={comment.description} createdAt={comment.createdAt} creator={quest?.userId} likes={comment.likes}/>)
                     }) : <h2 className="text-white font-thin italic">No comments yet</h2>}
                 </div>}
             </div>

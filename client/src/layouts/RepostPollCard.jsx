@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getQuestion, voteQuestion } from "../redux/Slices/ques.slice";
 import { getVoted } from "../redux/Slices/auth.slice";
+import PicModal from "./PicModal";
 
 // eslint-disable-next-line react/prop-types
 function RepostPollCard({questionId}) {
@@ -30,6 +31,8 @@ function RepostPollCard({questionId}) {
     const [orgQues, setOrgQues] = useState("");
     const [quest, setQuest] = useState("");
     const [check, setCheck] = useState(false);
+    const [showPicModal, setShowPicModal] = useState(false);
+    const [modalData, setModalData] = useState({ image: '', name: '' });
 
     async function onVoted(index, id) {
         if(!authState.isLoggedIn){
@@ -83,6 +86,19 @@ function RepostPollCard({questionId}) {
         setTitle(ques.title);
         setQuest(ques.question);
         setOrgQues(ques.question);
+    }
+
+    const closeModal = () => {
+        setShowPicModal(false);
+    };
+
+    const imageClick = (name, image) => {
+        console.log('haha' ,name, image)
+        setModalData({
+            name: name,
+            image: image
+        });
+        setShowPicModal(true);
     }
 
     useEffect(() => {
@@ -146,9 +162,7 @@ function RepostPollCard({questionId}) {
             <div className="flex flex-col pb-3">
                 <div className="flex justify-between items-center">
                     <div className="flex">
-                        <a className="inline-block mr-4" href={image}>
-                            <img src={image} alt={name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                        </a>
+                        <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
                         <div className="flex flex-col justify-center">
                             <div className="flex items-center">
                                 <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
@@ -206,6 +220,10 @@ function RepostPollCard({questionId}) {
                     </div>
                 </div>
             </div>
+            {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
         </article>
     </>
   );

@@ -1,15 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import UserLayout from "../../layouts/UserLayout";
-import { getUsers } from "../../redux/Slices/auth.slice";
+import { getFollowing, getUsers } from "../../redux/Slices/auth.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
+import { useNavigate } from "react-router-dom";
 
 function Following() {
 
     const authState = useSelector((state) => state.auth);
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
@@ -19,8 +21,8 @@ function Following() {
         setLoading(true);
         try {
             await dispatch(getUsers());
-            let newUsers;
-            if(location.pathname === '/following') newUsers = authState.userList?.filter((user) => authState.data?.following?.includes(user._id));
+            let newUsers; setUsers([]);
+            if(location.pathname === '/following') newUsers = authState.userList?.filter((user) => authState.following?.includes(user._id));
             else newUsers = authState.userList?.filter((user) => user.following?.includes(authState.data?._id));
             setUsers(users => [...users, ...newUsers]);
         } catch (error) {
@@ -30,14 +32,25 @@ function Following() {
         }
     }
 
+    async function loadFollowing(){
+        await dispatch(getFollowing(authState.data?._id))
+    }
+
     let filteredUsers = users;
     if(searchQuery) filteredUsers = users?.filter((user) =>
         user.name?.toLowerCase().includes(searchQuery?.toLowerCase())
     );
 
     useEffect(() => {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+        loadFollowing();
+    }, [])
+
+    useEffect(() => {
         loadUsers();
-    }, [authState.userList?.length])
+    }, [authState.userList?.length, authState.following?.length])
 
     return (
         <div className="flex flex-col bg-gray-950 items-center text-white w-full min-h-screen pt-[4rem]">

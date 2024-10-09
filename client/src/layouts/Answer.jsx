@@ -14,6 +14,7 @@ import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { like, unLike } from "../redux/Slices/ques.slice";
 import { MdModeComment, MdOutlineModeComment } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
+import PicModal from "./PicModal";
 
 // eslint-disable-next-line react/prop-types
 function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage, isVerified}) {
@@ -40,6 +41,8 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
     const [isOpen, setIsOpen] = useState(false);
     const [dateDiff, setDateDiff] = useState();
     const [verified, setVerified] = useState(isVerified);
+    const [showPicModal, setShowPicModal] = useState(false);
+    const [modalData, setModalData] = useState({ image: '', name: '' });
     const [commentDetails, setCommentDetails] = useState({
         userId:authState.data?._id,
         solutionId: solId,
@@ -121,43 +124,28 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
         else navigate('/profile');
     }
 
-    function getTimeElapsed(date) {
-        const now = new Date(); 
-        const questionTime = new Date(date);
-        const elapsedTime = now - questionTime;
-
-        const seconds = Math.floor(elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const months = Math.floor(days / 30);
-        const years = Math.floor(months / 12);
-
-        if(years > 0){
-            setDateDiff(`${years} year(s) ago`)
-        }
-        else if(months > 0){
-            setDateDiff(`${months} month(s) ago`)
-        }
-        else if (days > 0) {
-            setDateDiff(`${days} day(s) ago`);
-        } else if (hours > 0) {
-            setDateDiff(`${hours} hour(s) ago`);
-        } else if (minutes > 0) {
-            setDateDiff(`${minutes} minute(s) ago`);
-        } else {
-            setDateDiff(`${seconds} second(s) ago`);
-        }
-    }
-
     async function onVerifyClick() {
         await dispatch(verifySol(solId));
         setVerified(verified => !verified);
         setIsOpen(false);
     }
 
+    const closeModal = () => {
+        setShowPicModal(false);
+    };
+
+    const imageClick = (name, image) => {
+        console.log('haha' ,name, image)
+        setModalData({
+            name: name,
+            image: image
+        });
+        setShowPicModal(true);
+    }
+
     useEffect(() => {
-        getTimeElapsed(createdAt);
+        let date = createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+        setDateDiff(date);
     }, [createdAt])
 
     useEffect(() => {
@@ -200,9 +188,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
                 <div className="w-full flex justify-between items-center">
                     <div className="flex items-start gap-10">
                         <div className="flex items-start">
-                            <a className="inline-block mr-4" href={image}>
-                                <img src={image} alt="user-avatar-image" className="rounded-full max-w-none w-10 h-10 object-cover" />
-                            </a>
+                            <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
                             <div className="flex flex-col justify-center">
                                 <div className="flex items-center">
                                     <a onClick={userView} className="inline-block text-sm font-bold mr-2 hover:underline hover:cursor-pointer">{name}</a>
@@ -282,9 +268,7 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
                 </div>
                 <div>
                     {authState.isLoggedIn && <div className="flex mt-2 items-center">
-                        <a className="inline-block mr-4" href={authState.data?.image}>
-                            <img src={authState.data?.image} alt={authState.data?.name} className="rounded-full max-w-none w-10 h-10 object-cover" />
-                        </a>
+                        <img src={authState.data?.image} alt={authState.data?.name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(authState.data?.name, authState.data?.image)}/>
                         <textarea 
                             name="comment"
                             onChange={handleChange}
@@ -302,6 +286,10 @@ function Answer({solId, solution, createdAt, creator, likes, isMyQues, solImage,
                 </div>
                 {showModal && <DeleteModal type="solution" id={selectedSol}/>}
                 <EditAnswerModal />
+                {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
             </article>
             {showComments && <div className="w-full ml-2 my-3">
                 {comments.length ? comments.map((comment, index) => {

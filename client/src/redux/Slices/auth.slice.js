@@ -16,6 +16,7 @@ const initialState = {
         likedSolution: [],
         likedComments: []
     },
+    savedQuestions: [],
     following: [],
     userList: [],
     voted: []
@@ -86,6 +87,20 @@ export const toggleFollowUser = createAsyncThunk('auth/toggleFollow', async(data
 export const getUsers = createAsyncThunk('users/getUsers', async () => {     
     try {
         const response = axiosInstance.get(`users`);
+        if(!response) toast.error('Something went wrong');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+export const getSaved = createAsyncThunk('users/getSaved', async (id) => {     
+    try {
+        const response = axiosInstance.get(`users/saved/${id}`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
         if(!response) toast.error('Something went wrong');
         return await response;
     } catch (error) {
@@ -234,10 +249,16 @@ const authSlice = createSlice({
             state.selectedUser.likedSolution = action.payload?.data?.likedSolution;
         })
         .addCase(getVoted.fulfilled, (state, action) => {
+            if(!action.payload) return;
             state.voted = action.payload?.data?.fetched;
         })
         .addCase(getFollowing.fulfilled, (state, action) => {
+            if(!action.payload) return;
             state.following = action.payload?.data?.following;
+        })
+        .addCase(getSaved.fulfilled, (state, action) => {
+            if(!action.payload) return;
+            state.savedQuestions = action.payload?.data?.saved;
         })
     }
 });

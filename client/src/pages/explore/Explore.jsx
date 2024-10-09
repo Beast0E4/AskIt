@@ -1,15 +1,16 @@
 import { IoMdAdd } from "react-icons/io";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Question from "../../layouts/Question";
 import TopicsBar from "../../layouts/TopicsBar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLikedQuestions, getLikedSolutions, getUsers } from "../../redux/Slices/auth.slice";
+import { getFollowing, getLikedQuestions, getLikedSolutions, getSaved, getUsers } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import useQuestions from "../../hooks/useQuestions";
 import useAnswers from "../../hooks/useAnswers";
 import PollCard from "../../layouts/PollCard";
+import { filterQuestionForExplore, filterQuestionForSaved } from "../../redux/Slices/ques.slice";
 
 function Explore() {
 
@@ -18,6 +19,7 @@ function Explore() {
     const [ansState] = useAnswers();
     
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
 
@@ -27,6 +29,8 @@ function Explore() {
     const [solLikes, setSolLikes] = useState(0);
     const [solLength, setSolLength] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
+    const [users, setUsers] = useState([]);
+    const [quests, setQuests] = useState();
 
     async function loadUsers(){
         setLoading(true);
@@ -56,26 +60,59 @@ function Explore() {
         const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
         setSolLength(lt);
     }
+    useEffect(() =>{
+        let filteredQuestions = quesState.questionList;
+        if(searchQuery) filteredQuestions = quesState.questionList?.filter((quest) =>
+            quest.title?.toLowerCase().includes(searchQuery?.toLowerCase())
+        );
+        setQuests(filteredQuestions);
+    }, [quesState.questionList?.length]);
 
-    let filteredQuestions = quesState.questionList;
-    if(searchQuery) filteredQuestions = quesState.questionList?.filter((quest) =>
-        quest.title?.toLowerCase().includes(searchQuery?.toLowerCase())
-    );
+    async function load(){
+        const newUsers = [];
+        authState.following?.forEach(id => newUsers.push(id));
+        setUsers(users => [...users, ...newUsers]); 
+    }
+
+    async function filterForYou() {
+        await dispatch(filterQuestionForExplore(users));
+    }
+
+    async function filterForSaved() {
+        await dispatch(filterQuestionForSaved(authState.savedQuestions))
+    }
+
+    useEffect(() => {
+        if(location.pathname === '/explore') load();
+    }, [authState.following?.length, searchParams.get('topic')])
+
+    useEffect(() => {
+        if(location.pathname === '/explore') filterForYou();
+    }, [users?.length]);
 
     useEffect(() => {
         calculateLength();
-    }, [searchParams.get('topic')])
+    }, [searchParams.get('topic'), quesState.questionList?.length])
 
     useEffect(() => {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
         loadUsers();
-    }, [])
+        dispatch(getSaved(authState.data?._id));
+        dispatch(getFollowing(authState.data?._id));
+    }, []);
+
+    useEffect(() => {
+        if(location.pathname === '/saved' && !searchParams.get('topic')) filterForSaved();
+    }, [authState.savedQuestions?.length, quesState.questionList?.length])
 
     return (
         <>
             <div className="flex gap-3 bg-gray-950 pt-[4rem] overflow-hidden min-h-screen px-2 justify-center">
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
-                    {loading ? <Loader /> : (filteredQuestions?.length ? filteredQuestions?.map((quest, key) => {
+                    {loading ? <Loader /> : (quests?.length ? quests?.map((quest, key) => {
                         if(!quest.poll?.length) return (<Question key={key} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
                         return (<PollCard key={key} questionId={quest._id}/>)
                     }) : 
@@ -100,7 +137,7 @@ function Explore() {
                     </div>
                     <div className="h-max w-[14.5rem] rounded-md mt-5 hidden lg:flex flex-col border-[2px] border-gray-800">
                         <h1 className=" p-2 font-bold bg-gray-900 font-sans border-b-[1px] border-gray-800">User details</h1>
-                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.data?.following?.length}</span></h2>
+                        <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Following</span><span>{authState.following?.length}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total questions asked</span><span>{quesLength}</span></h2>
                         <h2 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Total solutions provided</span><span>{solLength}</span></h2>
                         <h3 className="p-2 border-b-[1px] border-gray-800 text-sm flex justify-between px-2"><span>Likes recieved on questions</span><span>{quesLikes}</span></h3>
