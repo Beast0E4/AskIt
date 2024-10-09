@@ -4,7 +4,6 @@ const { getLikedComments } = require('../services/likes.service');
 
 exports.createComment = async (req, res, next) => {
     try {
-        console.log(req.body);
         const response = await commentService.createComment(req.body);
         res.status(StatusCodes.CREATED).send({
             data: response

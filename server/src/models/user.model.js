@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Name cannot be empty']
     },
+    username: {
+        type: String,
+        required: [true, 'Name cannot be empty']
+    },
     email: {
         type: String,
         required: [true, 'Email cannot be empty']

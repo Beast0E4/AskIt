@@ -11,4 +11,5 @@ module.exports = function(app) {
     app.patch('/askit/user/question', isUserAuthenticated, userController.saveQuestion)
     app.get('/askit/users/voted/:id', userController.getVoted);
     app.get('/askit/users/getFollowing/:id', isUserAuthenticated, userController.getFollowing);
+    app.get('/askit/users/saved/:id', isUserAuthenticated, userController.getSaved);
 }

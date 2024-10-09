@@ -65,7 +65,6 @@ exports.toggleFollow = async (req, res, next) => {
 
 exports.getFollowing = async(req, res, next) => {
     try {
-        console.log(req.params.id)
         const result = await userService.getFollowing(req.params.id);
         if(result) res.status(StatusCodes.CREATED).send({
             following: result
@@ -78,7 +77,7 @@ exports.getFollowing = async(req, res, next) => {
 exports.saveQuestion = async(req, res, next) => {
     try {
         const result = await userService.saveQuestion(req.body.userId, req.body.questionId);
-        res.status(StatusCodes.ACCEPTED).send({
+        if(result) res.status(StatusCodes.ACCEPTED).send({
             saved: result
         })
     } catch (error) {
@@ -91,6 +90,17 @@ exports.getVoted = async(req, res, next) => {
         const result = await userService.getVoted(req.params.id);
         res.status(StatusCodes.OK).send({
             fetched: result
+        })
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.getSaved = async(req, res, next) => {
+    try {
+        const result = await userService.getSaved(req.params.id);
+        if(result) res.status(StatusCodes.OK).send({
+            saved: result
         })
     } catch (error) {
         throw error;

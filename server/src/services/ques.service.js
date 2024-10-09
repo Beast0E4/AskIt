@@ -18,8 +18,7 @@ const createQuestion = async(data, file) => {
                 folder: 'question_images',
             });
         }
-        const pollArray = JSON.parse(data.options);
-        if(!pollArray?.length){
+        if(!data.options?.length){
             const quesObj = {
                 userId: data.userId,
                 title: data?.title,
@@ -35,7 +34,7 @@ const createQuestion = async(data, file) => {
                 userId: data.userId,
                 title: data.title,
                 question: data?.question,
-                poll: pollArray.filter((opt) => opt.option?.length > 0),
+                poll: JSON.parse(data.options).filter((opt) => opt.option?.length > 0),
                 topic: data.topic,
                 image: result?.secure_url,
                 repost: data.repost !== 'null' ? data.repost : 'none'
@@ -68,6 +67,7 @@ const getQuestion = async(data) => {
 
 const deleteQuestion = async(ques) => {
     try {
+        await User.updateMany({}, {$pull: {savedQuestions: ques.id}});
         const res = await Solutions.find({questionId: ques.id});
         res.forEach(async (sol) => {
             await Likes.deleteMany({solutionId: sol.id});

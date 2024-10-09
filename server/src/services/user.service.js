@@ -9,7 +9,9 @@ require('dotenv').config();
 const createUser = async(data, file) => {
     const response = {};
     try{
+        const symb = "@";
         const check = await User.find({email: data.email});
+        const recheck = await User.find({username: symb.concat(data.username)});
         if(check?.email){
             response.error = "User present"
             return response;
@@ -23,6 +25,7 @@ const createUser = async(data, file) => {
         const userObj = {
             image: result?.secure_url,
             name: data.name,
+            username: symb.concat(data.username),
             email: data.email,
             profession: data.profession,
             password: data.password,
@@ -49,10 +52,9 @@ const verifyUser = async(data) => {
                     _id: userData._id,
                     email: userData.email,
                     name: userData.name,
+                    username: userData.username,
                     profession: userData.profession,
                     image: userData.image,
-                    following: userData.following,
-                    savedQuestions: userData.savedQuestions,
                     createdAt:userData.createdAt,
                     updatedAt:userData.updatedAt,
                 };
@@ -209,6 +211,15 @@ const getFollowing = async(userId) => {
     }
 }
 
+const getSaved = async(id) => {
+    try {
+        const user = await User.findById(id);
+        return user.savedQuestions;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing, getSaved
 }
