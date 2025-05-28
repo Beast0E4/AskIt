@@ -11,8 +11,11 @@ const cors = require('cors');
 const likesRoutes = require('./src/routes/likes.routes');
 const configCloudinary = require('./src/config/cloudinary.config');
 const path = require('path');
+const http = require ('http');
+const setupSocket = require("../server/socket/socket");
 
 const app = express();
+const server = http.createServer(app);
 
 app.use(function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -22,7 +25,12 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173' // Your frontend's origin
+}));
+
+// Handle preflight requests
+app.options('*', cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -37,7 +45,9 @@ solutionsRoutes(app);
 likesRoutes(app);
 commentRoutes(app);
 
-app.listen(PORT, async () => {
+setupSocket(server);
+
+server.listen(PORT, async () => {
     console.log(`Server is up at port ${PORT}`);
     await connectToDb();
     console.log('Successfully connected to the db');

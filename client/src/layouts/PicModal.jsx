@@ -1,11 +1,10 @@
 // eslint-disable-next-line react/prop-types
 function PicModal( {picture, name, closeModal} ) {
-    console.log(picture, name, closeModal)
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" onClick={closeModal}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10" onClick={closeModal}>
             <div className="bg-gray-950 border-[2px] border-gray-800 p-6 rounded-lg shadow-lg relative" onClick={(e) => e.stopPropagation()}>
                 <button 
-                    className="absolute top-2 right-2 text-gray-600 text-2xl font-bold hover:text-white" 
+                    className="absolute top-2 right-2 text-gray-600 text-2xl font-bold hover:text-white hover:cursor-pointer z-40" 
                     onClick={closeModal}
                 >
                     &times;

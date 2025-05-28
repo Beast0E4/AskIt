@@ -272,7 +272,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="inline-flex justify-center w-full shadow-sm px-4 py-2 focus:outline-none"
                                 >
-                                <BsThreeDotsVertical className="h-8 w-8 p-2 rounded-full hover:bg-gray-950" />
+                                <BsThreeDotsVertical className="h-8 w-8 p-2 hover:bg-gray-950" />
                                 </button>
                             </div>
 

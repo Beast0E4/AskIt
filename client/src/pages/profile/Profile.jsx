@@ -213,12 +213,7 @@ function Profile() {
         await dispatch(getSaved(authState.data?._id));
     }
 
-    const closeModal = () => {
-        setShowPicModal(false);
-    };
-
     const imageClick = (name, image) => {
-        console.log('haha' ,name, image)
         setModalData({
             name: name,
             image: image
@@ -393,7 +388,7 @@ function Profile() {
             {showPicModal && (<PicModal
                             picture={modalData.image}
                             name={modalData.name}
-                            closeModal={closeModal} />)}
+                            closeModal={() => setShowPicModal (false)} />)}
         </section>   
     )
 }

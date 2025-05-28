@@ -6,6 +6,7 @@ import DeleteModal from "./DeleteModal";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { getLikedComments } from "../redux/Slices/auth.slice";
 import { like, unLike  } from "../redux/Slices/ques.slice";
+import PicModal from "./PicModal";
 
 // eslint-disable-next-line react/prop-types
 function Comment({commentId, userId, description, createdAt, creator, likes}) {
@@ -26,6 +27,8 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
     const [totLikes, setTotLikes] = useState(likes || 0)
     const [isLiked, setIsLiked] = useState(false);
     const [dateDiff, setDateDiff] = useState(0);
+    const [showPicModal, setShowPicModal] = useState(false);
+    const [modalData, setModalData] = useState({ image: '', name: '' });
 
     function findName(){
         const nm = authState.userList.findIndex((e) => e._id === userId);
@@ -77,29 +80,23 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
             await dispatch(getLikedComments(authState.data?._id));
         }
     }
-    function getTimeElapsed(date) {
-        const now = new Date(); 
-        const questionTime = new Date(date);
-        const elapsedTime = now - questionTime;
 
-        const seconds = Math.floor(elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-    
-        if (days > 0) {
-            setDateDiff(`${days} day(s) ago`);
-        } else if (hours > 0) {
-            setDateDiff(`${hours} hour(s) ago`);
-        } else if (minutes > 0) {
-            setDateDiff(`${minutes} minute(s) ago`);
-        } else {
-            setDateDiff(`${seconds} second(s) ago`);
-        }
+    const closeModal = () => {
+        setShowPicModal(false);
+    };
+
+    const imageClick = (name, image) => {
+        console.log('haha' ,name, image)
+        setModalData({
+            name: name,
+            image: image
+        });
+        setShowPicModal(true);
     }
 
     useEffect(() => {
-        getTimeElapsed(createdAt);
+        let date = createdAt?.toString()?.split('T')[0].split('-').reverse().join("-");
+        setDateDiff(date);
     }, [createdAt])
 
     useEffect(() => {
@@ -133,9 +130,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
 
     return (
         <div className="bg-transparent flex my-2">
-            <a className="inline-block mr-2" href={image}>
-                <img src={image} alt={name} className="rounded-full max-w-none w-8 h-8 object-cover" />
-            </a>
+            <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-8 h-8 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
             <div>
                 <div className="bg-gray-800 rounded-lg px-3 py-2 w-[50vw] md:w-[35vw] sm:w-[35vw]">
                     <div className="flex justify-between items-center">
@@ -181,6 +176,10 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                 </div>
             </div>
             {showModal && <DeleteModal type='comment' id={selectedComment}/>}
+            {showPicModal && (<PicModal
+                            picture={modalData.image}
+                            name={modalData.name}
+                            closeModal={closeModal} />)}
         </div>
     )
 }

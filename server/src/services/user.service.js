@@ -107,11 +107,9 @@ const updateUser =  async (data, file) =>{
         var result = {};      
         if(data.email){
             const user = await User.findOne({email : data.email});
-            console.log(data, file);
             if(file){
                 const publicId = user.image.split('/').slice(-2).join('/').split('.')[0];
                 const del = await cloudinary.uploader.destroy(publicId);
-                console.log(del);
                 const url = await cloudinary.uploader.upload(file.path, {
                     folder: 'profile_images',
                 });

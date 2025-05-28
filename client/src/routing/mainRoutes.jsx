@@ -11,7 +11,21 @@ import Explore from "../pages/explore/Explore";
 import Navbar from '../layouts/NavBar'
 import LikedQuestions from "../pages/likedQuestions/LikedQuestions";
 
+import { initSocket } from '../redux/Slices/socket.slice';
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+
 function MainRoutes() {
+    const authState = useSelector ((state) => state.auth);
+    const dispatch = useDispatch ();
+
+    useEffect (() => {
+        if (authState?.data?._id) {
+          dispatch (initSocket ({ userId: authState.data._id, dispatch }));
+        }
+    }, [authState.data?._id, dispatch]);
+
+
     return (
         <Routes>
             <Route path="/login" element={<SignIn/>} />
