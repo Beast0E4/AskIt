@@ -13,6 +13,7 @@ const configCloudinary = require('./src/config/cloudinary.config');
 const path = require('path');
 const http = require ('http');
 const setupSocket = require("../server/socket/socket");
+const notificationRoutes = require('./src/routes/notification.routes');
 
 const app = express();
 const server = http.createServer(app);
@@ -44,6 +45,7 @@ questionsRoutes(app);
 solutionsRoutes(app);
 likesRoutes(app);
 commentRoutes(app);
+notificationRoutes (app);
 
 setupSocket(server);
 

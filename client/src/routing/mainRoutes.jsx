@@ -14,6 +14,7 @@ import LikedQuestions from "../pages/likedQuestions/LikedQuestions";
 import { initSocket } from '../redux/Slices/socket.slice';
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { getNotifications } from "../redux/Slices/notification.slice";
 
 function MainRoutes() {
     const authState = useSelector ((state) => state.auth);
@@ -22,6 +23,7 @@ function MainRoutes() {
     useEffect (() => {
         if (authState?.data?._id) {
           dispatch (initSocket ({ userId: authState.data._id, dispatch }));
+          dispatch (getNotifications (authState.data._id));
         }
     }, [authState.data?._id, dispatch]);
 

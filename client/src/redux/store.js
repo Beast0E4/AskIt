@@ -4,6 +4,7 @@ import quesSliceReducer from './Slices/ques.slice'
 import ansSliceReducer from './Slices/ans.slice'
 import commentSliceReducer from "./Slices/comment.slice";
 import socketSliceReducer from './Slices/socket.slice'
+import notificationSliceReducer from './Slices/notification.slice'
 
 const Store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ const Store = configureStore({
         ans: ansSliceReducer,
         comment: commentSliceReducer,
         socket: socketSliceReducer,
+        notification: notificationSliceReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}),
     devTools: true

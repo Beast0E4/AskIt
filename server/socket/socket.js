@@ -1,6 +1,8 @@
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const { FRONT_URL } = require('../src/config/server.config');
+const Notification = require ('../src/models/notification.model')
+const { toggleFollow } = require ('../src/services/user.service');
 
 const { setIO, userSocketMap } = require("./socketInstance"); // To set io globally
 
@@ -23,9 +25,25 @@ const setupSocket = (server) => {
                 break;
             }
         }
-        onlineUsers.delete(socket.id);
-        io.emit("online-users", Array.from(onlineUsers.values()));
     };
+
+    const followUser = async (data) => {
+        const senderSocketId = userSocketMap.get (data.sender);
+        const recieverSocketId = userSocketMap.get (data.reciever);
+
+        const following = await toggleFollow (data.reciever, data.sender);
+
+        if (following.includes (data.reciever)) {
+            const res = await Notification.create (data);
+            io.to(senderSocketId).emit("recieve-notification", res);
+            io.to(recieverSocketId).emit("recieve-notification", res);
+        }
+        else {
+            data.type = "unfollow-user"
+            io.to(senderSocketId).emit("recieve-notification", data);
+            io.to(recieverSocketId).emit("recieve-notification", data);
+        }
+    }
 
     io.on("connection", (socket) => {
         console.log(`Socket ${socket.id} connected.`);
@@ -38,6 +56,8 @@ const setupSocket = (server) => {
             console.log("User ID not provided during connection.");
         }
         socket.on("disconnect", () => disconnect(socket));
+
+        socket.on ("follow-user", followUser);
     });
 }
 

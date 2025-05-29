@@ -74,6 +74,17 @@ exports.getFollowing = async(req, res, next) => {
     }
 }
 
+exports.getFollower = async(req, res, next) => {
+    try {
+        const result = await userService.getFollower(req.params.id);
+        if(result) res.status(StatusCodes.CREATED).send({
+            followers: result
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.saveQuestion = async(req, res, next) => {
     try {
         const result = await userService.saveQuestion(req.body.userId, req.body.questionId);

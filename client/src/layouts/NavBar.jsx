@@ -1,24 +1,99 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdExplore, MdOutlineTrendingUp } from "react-icons/md";
 import { FaHome } from "react-icons/fa";
+import { readNotifications } from "../redux/Slices/notification.slice";
 
-function Navbar(){
+function Navbar () {
 
     const authState = useSelector((state) => state.auth);
+    const notificationState = useSelector ((state) => state.notification);
 
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const dispatch = useDispatch ();
 
     const [open, setOpen] = useState(false);
     const [topic, setTopic] = useState();
+    const [notificationCount, setNotificationCount] = useState (0);
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    const userMapRef = useRef (new Map());
+    const notificationRef = useRef ();
+
     const topics = ["All", "Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory"];
 
-    function toggle() {
-        setOpen(!open);
+    function openNotifications () {
+        if (notificationState.notificationList?.length > 0) {
+            setShowNotifications (!showNotifications);
+        }
+        dispatch (readNotifications ());
     }
+
+    function getUsers () {
+        const map = new Map();
+        for (const user of authState.userList || []) {
+            if (user?._id) map.set(user._id, user);
+        }
+        userMapRef.current = map;
+    }
+
+    function getTimeDifference(dateString) {
+        const now = new Date();
+        const targetDate = new Date(dateString);
+
+        const nowUTC = Date.UTC(
+            now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+            now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()
+        );
+
+        const targetDateUTC = Date.UTC(
+            targetDate.getUTCFullYear(), targetDate.getUTCMonth(), targetDate.getUTCDate(),
+            targetDate.getUTCHours(), targetDate.getUTCMinutes(), targetDate.getUTCSeconds()
+        );
+
+        const diffInSeconds = Math.floor((nowUTC - targetDateUTC) / 1000);
+
+        if (diffInSeconds < 60) {
+            return `${diffInSeconds} s`;
+        }
+
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} m`;
+        }
+
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+            return `${diffInHours} h`;
+        }
+
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 30) {
+            return `${diffInDays} d`;
+        }
+
+        const diffInMonths = Math.floor(diffInDays / 30);
+        if (diffInMonths < 12) {
+            return `${diffInMonths} mo`;
+        }
+
+        const diffInYears = Math.floor(diffInMonths / 12);
+        return `${diffInYears} y`;
+    }
+
+    useEffect(() => {
+        if (authState.userList?.length) {
+            getUsers();
+        }
+    }, [authState.userList]);
+
+
+    useEffect (() => {
+        setNotificationCount (localStorage.getItem ('readNotifications') || 0);
+    }, [localStorage.getItem ('readNotifications')]);
 
     useEffect(() => {
         if(location.pathname === '/questions') {
@@ -28,14 +103,29 @@ function Navbar(){
         }
         if(topic === "All") navigate(`${location.pathname}`);
         else if(topic) navigate(`${location.pathname}?topic=${topic}`);
-        toggle();
-    }, [topic, location.pathname])
+    }, [topic, location.pathname]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+            setShowNotifications(false);
+          }
+        };
+        if (showNotifications) {
+          document.addEventListener('mousedown', handleClickOutside);
+        } else {
+          document.removeEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showNotifications]);
 
     return (
         <div className="navbar bg-gray-900 shadow-2xl border-b-[3px] border-black fixed top-0 z-[100]">
             <div className="navbar-start">
                 <div className="dropdown">
-                <div onClick={() => toggle()} tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+                <div onClick={() => setOpen(!open)} tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
                     <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
@@ -84,6 +174,35 @@ function Navbar(){
                 </ul>
             </div>
             <div className="navbar-end gap-5">
+                <div className="relative">
+                    <i className="fa-solid fa-bell text-gray-300 rounded-md p-2 hover:cursor-pointer hover:bg-gray-800" onClick={openNotifications}></i>
+                    {notificationCount > 0 && <div className="absolute top-0 right-0 bg-red-500 text-white text-[0.5rem] h-2 px-1 py-1.5 flex items-center justify-center rounded-full min-w-2">
+                        {notificationCount}
+                    </div>}
+
+                    {showNotifications && (
+                        <div className="absolute right-0 mt-2 w-72 bg-gray-800 shadow-lg rounded-lg z-50 text-sm" ref={notificationRef}>
+                        <div className="px-4 py-2 font-semibold border-b text-[#F2BEA0]">Notifications</div>
+                        <ul className="max-h-60 overflow-y-auto">
+                            {notificationState.notificationList.map ((notification, index) => {
+                                if (notification.type === 'follow-user') {
+                                    return (
+                                        <li className="px-4 py-2 hover:cursor-pointer text-white flex justify-between items-end" key={index}>
+                                            <div>
+                                                <Link to={`/profile?userid=${notification.sender}`} className="font-semibold font-inconsolata hover:underline">{userMapRef.current.get(notification.sender)?.name}</Link> stated following you
+                                            </div>
+                                            <div className="text-xs font-extralight">
+                                                {getTimeDifference (notification.createdAt)}
+                                            </div>
+                                        </li>
+                                    )
+                                }
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">{notification.type}</li>
+                            })}
+                        </ul>
+                        </div>
+                    )}
+                </div>
                 <Link className="mr-[2rem] bg-transparent hover:bg-transparent hover:cursor-pointer hover:border-b-2 hover:border-[#F2BEA0] hover:text-[#F2BEA0] font-bold" to={`/profile`} title="Profile">{authState.isLoggedIn ? authState.data?.name.substring(0, 10) : "Log In"}</Link>
             </div>
         </div>

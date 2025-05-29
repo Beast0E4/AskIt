@@ -18,6 +18,7 @@ const initialState = {
     },
     savedQuestions: [],
     following: [],
+    follower: [],
     userList: [],
     voted: []
 };
@@ -31,6 +32,20 @@ export const login = createAsyncThunk('/auth/login', async (data) => {
         console.log(error);
     }
 });
+
+export const getFollower = createAsyncThunk('/users/getFollower', async(id) => {
+    try {
+        const response = axiosInstance.get(`users/getFollower/${id}`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
+        if(!response) toast.error('Something went wrong, try again');
+        return await response;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 export const getFollowing = createAsyncThunk('/users/getFollowing', async(id) => {
     try {
@@ -211,6 +226,25 @@ const authSlice = createSlice({
             state.data = "";
             state.isLoggedIn = false;
             state.token = "";
+        },
+        updateFollowing: (state, action) => {
+            if (action.payload.type == "follow-user") {
+                if (action.payload.sender === state.data._id) state.following = [...state.following, action.payload.reciever[0]];
+                else {
+                    state.follower = [...state.follower, action.payload.reciever[0]];
+
+                    const readCount = localStorage.getItem("readNotifications") || 0;
+                    localStorage.setItem("readNotifications", readCount + 1);
+                }
+            }
+            else {
+                if (action.payload.sender === state.data._id) {
+                    state.following = state.following.filter((user) => user._id !== action.payload.reciever[0]._id);
+                } 
+                else {
+                    state.follower = state.follower.filter((user) => user._id !== action.payload.reciever[0]._id);
+                }
+            }
         }
     }, 
     extraReducers: (builder) => {
@@ -256,6 +290,11 @@ const authSlice = createSlice({
             if(!action.payload) return;
             state.following = action.payload?.data?.following;
         })
+        .addCase(getFollower.fulfilled, (state, action) => {
+            if(!action.payload) return;
+            console.log (action.payload.data)
+            state.follower = action.payload?.data?.followers;
+        })
         .addCase(getSaved.fulfilled, (state, action) => {
             if(!action.payload) return;
             state.savedQuestions = action.payload?.data?.saved;
@@ -263,5 +302,5 @@ const authSlice = createSlice({
     }
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, updateFollowing } = authSlice.actions;
 export default authSlice.reducer;

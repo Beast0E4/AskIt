@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
+import { updateFollowing } from "./auth.slice";
+import { insertNotification } from "./notification.slice";
 
 // Use environment variable at the top
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -38,6 +40,11 @@ const socketSlice = createSlice ({
           console.log("Socket disconnected");
           dispatch(setConnected(false));
         });
+
+        socketInstance.on("recieve-notification", (data) => {
+            dispatch (updateFollowing (data));
+            if (data.type !== 'unfollow-user') dispatch (insertNotification (data));
+        });
       }
 
       state.socket = socketInstance;
@@ -47,6 +54,7 @@ const socketSlice = createSlice ({
       if (socketInstance) {
         socketInstance.off("connect");
         socketInstance.off("disconnect");
+        socketInstance.off("recieve-notification");
 
         socketInstance.disconnect();
         socketInstance = null;

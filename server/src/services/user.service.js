@@ -209,6 +209,16 @@ const getFollowing = async(userId) => {
     }
 }
 
+const getFollower = async(userId) => {
+    try {
+        console.log (userId);
+        const followers = await User.find({ following: userId }).select('_id username');
+        return followers;
+    } catch (error) {
+        throw error;
+    }
+}
+
 const getSaved = async(id) => {
     try {
         const user = await User.findById(id);
@@ -219,5 +229,5 @@ const getSaved = async(id) => {
 }
 
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing, getSaved
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing, getSaved, getFollower
 }

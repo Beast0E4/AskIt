@@ -7,7 +7,7 @@ import useLikes from '../../hooks/useLikes'
 import { MdDelete, MdDone, MdLogout } from "react-icons/md";
 import useAnswers from "../../hooks/useAnswers";
 import LogoutModal from "../../layouts/LogoutModal";
-import { getFollowing, getSaved, getUsers, login, toggleFollowUser, updateUser } from "../../redux/Slices/auth.slice";
+import { getFollowing, getSaved, getUsers, login, toggleFollowUser, updateUser, getFollower } from "../../redux/Slices/auth.slice";
 import toast from "react-hot-toast";
 import Loader from "../../layouts/Loader";
 import Cropper from 'react-easy-crop';
@@ -28,6 +28,7 @@ function Profile() {
     useLikes();
 
     const authState = useSelector((state) => state.auth); 
+    const socket = useSelector((state) => state.socket.socket);
 
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
@@ -185,24 +186,19 @@ function Profile() {
         document.getElementById('fileInput').value = ""; 
     }
 
-    function followerCount(){
-        authState.userList?.map((user) => {
-            if(searchParams.get('userid')){
-                if(user.following?.includes(searchParams.get('userid')))
-                setFollowers(followers => followers + 1);
-            }
-            else if(user.following?.includes(authState.data?._id)){
-                setFollowers(followers => followers + 1);
-            }
-        })
+    function loadFollower(){
+        dispatch (getFollower (searchParams.get('userid') || authState.data?._id));
     }
 
     async function toggleFollow() {
-        const res = await dispatch(toggleFollowUser({
-            userId: searchParams.get('userid'),
-            myId: authState.data?._id
-        }));
-        if(res) getFollowings();
+        const data = {
+            reciever: searchParams.get('userid'),
+            sender: authState.data?._id,
+            type: "follow-user"
+        }
+        if (socket && socket.connected) {
+          socket.emit("follow-user", data);
+        }
     }
 
     async function getFollowings() {
@@ -221,6 +217,10 @@ function Profile() {
         setShowPicModal(true);
     }
 
+    useEffect (() => {
+        isFollowing ();
+    }, [authState.following])
+
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
@@ -229,8 +229,8 @@ function Profile() {
     }, [])
 
     useEffect(() => {
-        loadUser(); followerCount();
-    }, [authState.userList?.length]);
+        loadUser(); loadFollower();
+    }, [authState.following]);
 
     useEffect(() => {
         loadUsers();
@@ -263,7 +263,7 @@ function Profile() {
                         <p className="font-normal text-base leading-7 text-[#F2BEA0]">{user?.username}</p>
                         {!searchParams.get('userid') && <p className="font-normal text-base leading-7 text-gray-500">{user?.email}</p>}
                         <div className="flex items-center gap-4">
-                            <p className="mt-2 font-normal text-base leading-7 text-gray-400">{followers} Followers</p>
+                            <p className="mt-2 font-normal text-base leading-7 text-gray-400">{authState.follower.length} Followers</p>
                             <span className="font-bold text-gray-400">.</span>
                             <p className="mt-2 font-normal text-base leading-7 text-gray-400">{user?.following?.length} Following</p>
                         </div>
