@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const Questions = require("../models/ques.model");
 const Solutions = require("../models/solution.model");
 const cloudinary = require("../config/cloudinary.config");
+const mailerMiddleware = require ('../middlewares/mailer')
+const OTP = require ('../models/otp.model');
+const crypto = require ('crypto');
+
 require('dotenv').config();
 
 const createUser = async(data, file) => {
@@ -30,16 +34,21 @@ const createUser = async(data, file) => {
             profession: data.profession,
             password: data.password,
         }
-        response.user = await User.create(userObj);
-        return response.user;
+        const user = await User.create(userObj);
+        response.user = user;
+
+        await mailerMiddleware.sendWelcomeEmail(data.email);
+        return response;
     } catch(err){
-        throw err;
+        response.error = err.message;
+        return response;
     }
 }
 
 const verifyUser = async(data) => {
     const response = {};
     try {
+        console.log (data);
         const userData = await User.findOne({email: data.email});
         if(userData === null){
             response.error = "Invalid Email";
@@ -228,6 +237,58 @@ const getSaved = async(id) => {
     }
 }
 
+const sendOtp = async(email) => {
+    const response = {};
+    try {
+        const userdata = await User.findOne({
+            email
+        })
+        if(userdata){
+            response.error = "Email already in Use";
+            return response;
+        }
+        const otps = await OTP.deleteMany({
+            email : email
+        })
+        const otp = crypto.randomInt(100000, 999999).toString();
+        const sent = await mailerMiddleware.sendOtp(email, otp);
+        if(!sent){
+            response.error = sent;
+            msg = "Otp not sent";
+            return response;
+        }
+        const user = await OTP.create({
+            email, otp
+        });
+        response.user = user;
+        return response;
+    } catch (error) {
+        response.error = error.message;
+        return response;
+    }
+}
+
+const verifyOtp = async(email,otp) => {
+    const response = {};
+    try {
+        const userdata = await OTP.findOne({ email });
+        if(!email){
+            response.error = "email not found";
+            return response;
+        }
+        if(userdata.otp != otp){
+            response.error = "Otp not same";
+            return response;
+        }
+        await OTP.deleteMany ({ email })
+        response.user = userdata;
+        return response
+    } catch (error) {
+        response.error = error.message;
+        return response
+    }
+}
+
 module.exports = {
-    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing, getSaved, getFollower
+    createUser, verifyUser, getUserByEmail, updateUser, getUser, deleteUser, getUsers, toggleFollow, saveQuestion, getVoted, getFollowing, getSaved, getFollower, sendOtp, verifyOtp
 }

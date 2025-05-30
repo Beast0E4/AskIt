@@ -21,6 +21,8 @@ export const getAllSolutions = createAsyncThunk('solutions/getAllSolutions', asy
 
 export const getSolutionByUser = createAsyncThunk('solutions/getSolutionByUser', async (userId) => {
     try {
+        if (!localStorage.getItem('token')) return;
+
         const response = axiosInstance.get(`solutionByUser/${userId}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -35,6 +37,8 @@ export const getSolutionByUser = createAsyncThunk('solutions/getSolutionByUser',
 
 export const getSolutionByQuestion = createAsyncThunk('solutions/solutionByQuestion', async (quesId) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`solutionByQuestion/${quesId}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -49,6 +53,8 @@ export const getSolutionByQuestion = createAsyncThunk('solutions/solutionByQuest
 
 export const getSolution = createAsyncThunk('solution', async(solId) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`solution/${solId}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -63,6 +69,8 @@ export const getSolution = createAsyncThunk('solution', async(solId) => {
 
 export const createAnswer = createAsyncThunk('answer/createAnswer', async (answer) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.post(`solution/submit`, answer, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -77,6 +85,8 @@ export const createAnswer = createAsyncThunk('answer/createAnswer', async (answe
 
 export const updateAnswer = createAsyncThunk('answer/updateAnswer', async ({id, solution}) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.patch(`solution/updateSolution/${id}`, solution, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -91,6 +101,8 @@ export const updateAnswer = createAsyncThunk('answer/updateAnswer', async ({id, 
 
 export const deleteSol = createAsyncThunk('/sol/delete', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.delete(`solution/deleteSolution/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -105,6 +117,8 @@ export const deleteSol = createAsyncThunk('/sol/delete', async(id) => {
 
 export const verifySol = createAsyncThunk('sol/verify', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.patch(`solution/verifySolution/${id}`, {}, {
             headers: {
                 'x-access-token': localStorage.getItem('token')

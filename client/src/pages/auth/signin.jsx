@@ -36,6 +36,8 @@ function SignIn() {
         try {
             if(!loginDetails.email || !loginDetails.password) return;
             const response = await dispatch(login(loginDetails));
+
+            console.log (response.payload);
             if(!response.payload) resetLoginState();
             else navigate('/');
         } catch (error) {

@@ -19,7 +19,7 @@ function LogoutModal() {
         } catch (error) {
             setLoading(false);
         } finally {
-            setLoading(false); navigate('/');
+            setLoading(false); navigate('/'); return;
         }
     }
 

@@ -35,6 +35,8 @@ export const login = createAsyncThunk('/auth/login', async (data) => {
 
 export const getFollower = createAsyncThunk('/users/getFollower', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`users/getFollower/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -49,6 +51,8 @@ export const getFollower = createAsyncThunk('/users/getFollower', async(id) => {
 
 export const getFollowing = createAsyncThunk('/users/getFollowing', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`users/getFollowing/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -67,12 +71,15 @@ export const signup = createAsyncThunk('/auth/signup', async (data) => {
         if(!response) toast.error('Something went wrong, try again');
         return await response;
     } catch (error) {
-        console.log(error);
+        console.log (error.response.data.error);
+        toast.error(error.response.data.error || "An error occurred!");
     }
 });
 
 export const getUser = createAsyncThunk('auth/getUser', async (id) => {     
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`users/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -87,6 +94,8 @@ export const getUser = createAsyncThunk('auth/getUser', async (id) => {
 
 export const toggleFollowUser = createAsyncThunk('auth/toggleFollow', async(data) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.patch(`users/toggleFollow`, data, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -111,6 +120,8 @@ export const getUsers = createAsyncThunk('users/getUsers', async () => {
 
 export const getSaved = createAsyncThunk('users/getSaved', async (id) => {     
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`users/saved/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -125,6 +136,8 @@ export const getSaved = createAsyncThunk('users/getSaved', async (id) => {
 
 export const updateUser = createAsyncThunk('user/updateUser', async(data) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.patch('users/updateUser', data, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -139,6 +152,8 @@ export const updateUser = createAsyncThunk('user/updateUser', async(data) => {
 
 export const deleteUser = createAsyncThunk('user/deleteUser', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.delete(`users/deleteUser/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -153,6 +168,8 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async(id) => {
 
 export const getLikedQuestions = createAsyncThunk('user/quesLiked', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`likedQuestions/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -167,6 +184,8 @@ export const getLikedQuestions = createAsyncThunk('user/quesLiked', async(id) =>
 
 export const getLikedComments = createAsyncThunk('user/commentLiked', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`likedComment/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -181,6 +200,8 @@ export const getLikedComments = createAsyncThunk('user/commentLiked', async(id) 
 
 export const getLikedSolutions = createAsyncThunk('user/solLiked', async(id) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.get(`likedSolutions/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -195,6 +216,8 @@ export const getLikedSolutions = createAsyncThunk('user/solLiked', async(id) => 
 
 export const saveQuestion = createAsyncThunk('user/question', async(data) => {
     try {
+        if (!localStorage.getItem('token')) return;
+        
         const response = axiosInstance.patch(`user/question/`, data, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -215,7 +238,28 @@ export const getVoted = createAsyncThunk('user/getVoted', async(id) => {
     } catch (error) {
         console.log(error);
     }
-})
+});
+
+export const sendOtp = createAsyncThunk('/auth/sendotp',async(data) => {
+    try {
+        const response = await axiosInstance.post("sendOtp",data);
+        if(!response) toast.error('Something went wrong, try again');
+        localStorage.setItem("email", data.email);
+        return  response;
+    } catch (error) {
+        toast.error(error.response.data.error || "An error occurred!");
+    }
+});
+
+export const verifyOtp = createAsyncThunk('/auth/verifyotp',async(data) => {
+    try {
+        const response = await axiosInstance.post("verifyOtp",data);
+        if(!response) toast.error('Something went wrong, try again');
+        return  response;
+    } catch (error) {
+        toast.error(error.response.data.error || "An error occurred!");
+    }
+});
 
 const authSlice = createSlice({
     name: 'auth',

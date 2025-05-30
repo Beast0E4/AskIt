@@ -26,6 +26,8 @@ function Navbar () {
     const topics = ["All", "Miscellaneous", "Technology", "Science and Mathematics", "Health and Medicine", "Education and Learning", "Business and Finance", "Arts and Culture", "History and Geography", "Entertainment and Media", "Current Affairs and Politics", "Philosophy and Ethics", "Lifestyle", "Psychology", "Legal and Regulatory"];
 
     function openNotifications () {
+        if (!authState.isLoggedIn) return;
+        
         if (notificationState.notificationList?.length > 0) {
             setShowNotifications (!showNotifications);
         }

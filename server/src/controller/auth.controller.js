@@ -4,16 +4,20 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 exports.signup = async (req, res) => {
-    try {
-        const response = await createUser(req.body, req.file);
-        if(response.error) return res.status(StatusCodes.FORBIDDEN).send({
-            error: "User present"
+    const response = await createUser(req.body, req.file);
+
+    if(response.error){
+        console.log (response);
+        return res.status(StatusCodes.BAD_REQUEST).send({
+            message : "Signup failed",
+            error : response.error
         })
-        return res.status(StatusCodes.CREATED).send(response);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send(error)
     }
+
+    return res.status(StatusCodes.CREATED).send({
+        message : "Successfully created the account",
+        userdata: response
+    })
 }
 
 exports.signin = async (req, res) => {
@@ -35,7 +39,6 @@ exports.signin = async (req, res) => {
         }
         res.status(statusCode).send(response);
     } catch (error) {
-        console.log(error);
         res.status(500).send(error)
     }
 }

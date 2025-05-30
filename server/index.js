@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const connectToDb = require('./src/config/db.config');
 const authRoutes = require('./src/routes/auth.routes');
-const { PORT } = require('./src/config/server.config');
+const { PORT, FRONT_URL } = require('./src/config/server.config');
 const userRoutes = require('./src/routes/user.routes');
 const questionsRoutes = require('./src/routes/questions.routes');
 const solutionsRoutes = require('./src/routes/solutions.routes');
@@ -27,7 +27,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(cors({
-    origin: 'http://localhost:5173' // Your frontend's origin
+    origin: FRONT_URL // Your frontend's origin
 }));
 
 // Handle preflight requests

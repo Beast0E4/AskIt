@@ -10,7 +10,7 @@ const initialState = {
 };
 
 export const like = createAsyncThunk('like', async(data) => {
-    try {
+    try {        
         const response = axiosInstance.post('like', data, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -24,7 +24,7 @@ export const like = createAsyncThunk('like', async(data) => {
 })
 
 export const unLike = createAsyncThunk('unlike', async(data) => {
-    try {
+    try {        
         const response = axiosInstance.post('unLike', data, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -38,7 +38,7 @@ export const unLike = createAsyncThunk('unlike', async(data) => {
 })
 
 export const getAllQuestions = createAsyncThunk('questions/getAllQuestions', async () => {
-    try {
+    try {        
         const response = axiosInstance.get('question', {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -51,7 +51,7 @@ export const getAllQuestions = createAsyncThunk('questions/getAllQuestions', asy
 });
 
 export const deleteQues = createAsyncThunk('/ques/delete', async(id) => {
-    try {
+    try {        
         const response = axiosInstance.delete(`question/deleteQuestion/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -65,7 +65,7 @@ export const deleteQues = createAsyncThunk('/ques/delete', async(id) => {
 })
 
 export const createQuestion = createAsyncThunk('question/createQuestion', async (question) => {
-    try {
+    try {        
         const response = axiosInstance.post(`question`, question, {
             headers: {
                 'x-access-token': localStorage.getItem('token')
@@ -79,7 +79,7 @@ export const createQuestion = createAsyncThunk('question/createQuestion', async 
 });
 
 export const voteQuestion = createAsyncThunk('question/vote', async({quesId, req}) => {
-    try {
+    try {        
         const response = axiosInstance.patch(`question/votes/${quesId}`, req, {
             headers: {
                 'x-access-token': localStorage.getItem('token')

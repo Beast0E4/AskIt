@@ -117,3 +117,31 @@ exports.getSaved = async(req, res, next) => {
         throw error;
     }
 }
+
+exports.sendOtp = async(req,res) => {
+    const response = await userService.sendOtp(req.body.email);
+    if(response.error){
+            return res.status(StatusCodes.BAD_REQUEST).send({
+                msg : "Otp not sent",
+                error : response.error
+            })
+        }
+    return res.status(StatusCodes.CREATED).send({
+        msg : "Otp sent succesfully",
+        user: response.user
+    })
+}
+
+exports.verifyOtp = async(req,res) => {
+    const response = await userService.verifyOtp(req.body.email,req.body.otp);
+    if(response.error){
+        return res.status(StatusCodes.BAD_REQUEST).send({
+            msg : "Otp not verified",
+            error : response.error
+        })
+    }
+    return res.status(StatusCodes.CREATED).send({
+        msg : "Otp verified succesfully",
+        user: response.user
+    })
+}

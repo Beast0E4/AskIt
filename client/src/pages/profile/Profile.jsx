@@ -49,7 +49,6 @@ function Profile() {
     const [file, setFile] = useState();
     const [name, setName] = useState(authState.data?.name);
     const [profession, setProfession] = useState(authState.data?.profession);
-    const [followers, setFollowers] = useState(0);
     const [imageName, setImageName] = useState();
     const [showPicModal, setShowPicModal] = useState(false);
     const [modalData, setModalData] = useState({ image: '', name: '' });
