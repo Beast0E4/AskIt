@@ -162,7 +162,7 @@ function Navbar () {
                     </li>
                 </ul>}
                 </div>
-                <Link to={'/'} className="ml-[2rem] flex items-end gap-4 text-2xl bg-transparent hover:bg-transparent hover:cursor-pointer font-bold text-[#F2BEA0] font-inconsolata">
+                <Link to={'/'} className="ml-[1rem] md:ml-[2rem] flex items-end gap-4 text-2xl bg-transparent hover:bg-transparent hover:cursor-pointer font-bold text-[#F2BEA0] font-inconsolata">
                                 <img src="https://res.cloudinary.com/dnaznkzoy/image/upload/v1724169395/Untitled_design-removebg-preview_osnjam.png" className="h-10"></img>
                                 AskIt
                 </Link>
@@ -176,7 +176,7 @@ function Navbar () {
                     <li className={`${location.pathname === `/followers` ? 'block border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : 'hidden'}`}><h2 title="Followers">Followers</h2></li>
                 </ul>
             </div>
-            <div className="navbar-end gap-5">
+            <div className="navbar-end gap-5 flex items-end">
                 <div className="relative">
                     <i className="fa-solid fa-bell text-gray-300 rounded-md p-2 hover:cursor-pointer hover:bg-gray-800" onClick={openNotifications}></i>
                     {notificationCount > 0 && <div className="absolute top-0 right-0 bg-red-500 text-white text-[0.5rem] h-2 px-1 py-1.5 flex items-center justify-center rounded-full min-w-2">
@@ -184,9 +184,9 @@ function Navbar () {
                     </div>}
 
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-72 bg-gray-800 shadow-lg rounded-lg z-50 text-sm" ref={notificationRef}>
+                        <div className="absolute right-0 mt-2 w-56 md:w-72 bg-gray-800 shadow-lg rounded-lg z-50 text-sm" ref={notificationRef}>
                         <div className="px-4 py-2 font-semibold border-b text-[#F2BEA0]">Notifications</div>
-                        <ul className="max-h-60 overflow-y-auto">
+                        <ul className="max-h-60 overflow-y-auto text-xs">
                             {notificationState.notificationList.map ((notification, index) => {
                                 if (notification.type === 'follow-user') {
                                     return (

@@ -354,7 +354,7 @@ function PollCard({questionId}) {
             <div className="pb-2">
                 {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
                 <div className="ml-2 mb-2">
-                    <p className="text-md">
+                    <p className="text-sm md:text-md">
                         {quest}
                     </p>
                     {check && <button className="text-xs text-[#F2BEA0]" onClick={() => {
@@ -369,14 +369,14 @@ function PollCard({questionId}) {
                     {arr?.map((option, index) => (
                         <div key={index} className="w-full">
                             <div className="flex justify-between">
-                                <div className="flex">
+                                <div className="flex items-end">
                                     <input
                                         type="checkbox"
                                         checked={selectedId === option._id}
                                         onChange={() => onVoted(index, option._id)}
                                         className="mr-2"
                                     />
-                                    <h2 className="text-white text-lg">{option.option}</h2>
+                                    <h2 className="text-white text-sm md:text-lg">{option.option}</h2>
                                 </div>
                                 <h2 className="text-sm text-gray-400 mt-2">{selectedId && option.votes}</h2>
                             </div>

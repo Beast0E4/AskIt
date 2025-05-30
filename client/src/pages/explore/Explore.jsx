@@ -48,16 +48,16 @@ function Explore() {
     }
 
     function calculateLength(){
-        const ques = quesState.questionList?.filter((ques) => ques.userId === authState?.data?._id);
+        const ques = quesState.questionList?.filter((ques) => ques?.userId === authState?.data?._id);
         let quesLikes = 0;
-        ques.map((ques) => quesLikes += ques.likes);
+        ques.map((ques) => quesLikes += ques?.likes);
         setQuesLikes(quesLikes);
         if(ques.length) setQuesLength(ques.length);
         const newArr = ansState.solutionList.flat();
-        const arr = newArr.filter((ans) => ans.userId === authState.data?._id);
+        const arr = newArr.filter((ans) => ans?.userId === authState.data?._id);
         let ansLikes = 0;
-        arr.map((ans) => ansLikes += ans.likes); setSolLikes(ansLikes);
-        const lt = newArr.filter(sol => sol.userId === authState.data?._id).length;
+        arr.map((ans) => ansLikes += ans?.likes); setSolLikes(ansLikes);
+        const lt = newArr.filter(sol => sol?.userId === authState.data?._id).length;
         setSolLength(lt);
     }
     useEffect(() =>{
@@ -90,14 +90,17 @@ function Explore() {
         if(location.pathname === '/explore') filterForYou();
     }, [users?.length]);
 
+    useEffect (() => {
+        if(!authState.isLoggedIn){
+            navigate('/login'); return;
+        }
+    }, [authState])
+
     useEffect(() => {
         calculateLength();
     }, [searchParams.get('topic'), quesState.questionList?.length])
 
     useEffect(() => {
-        if(!authState.isLoggedIn){
-            navigate('/login'); return;
-        }
         loadUsers();
         dispatch(getSaved(authState.data?._id));
         dispatch(getFollowing(authState.data?._id));
@@ -113,7 +116,7 @@ function Explore() {
                 {location.pathname !== '/answers' && <TopicsBar />}
                 <div className="w-[75vw] md:w-[50vw] sm:w-[50vw] flex flex-col items-center my-3">
                     {loading ? <Loader /> : (quests?.length ? quests?.map((quest, key) => {
-                        if(!quest.poll?.length) return (<Question key={key} questionId={quest._id} title={quest.title} creator={quest.userId} question={quest.question} createdAt={quest.createdAt} likes={quest.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
+                        if(!quest.poll?.length) return (<Question key={key} questionId={quest._id} title={quest.title} creator={quest?.userId} question={quest?.question} createdAt={quest?.createdAt} likes={quest?.likes} topic={quest.topic} quesImage={quest.image} repost={quest.repost}/>)
                         return (<PollCard key={key} questionId={quest._id}/>)
                     }) : 
                         location.pathname === '/explore' ? (<h2 className="text-white font-thin italic">Follow users to see questions here</h2>) : (<h2 className="text-white font-thin italic">No saved questions yet</h2>)

@@ -141,7 +141,7 @@ function Home() {
                 
             </div>
             <Link to={'/create-question'}>
-                <button className="btn bg-gray-800 text-white font-bold fixed bottom-10 right-10 hover:bg-gray-700">
+                <button className="btn bg-gray-950 text-white font-bold fixed bottom-10 right-8 hover:bg-gray-700">
                     <IoMdAdd/>
                     ADD QUESTION
                 </button>

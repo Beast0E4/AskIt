@@ -320,7 +320,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                     </div>}
                 </div>
                 <div className="pb-2">
-                    {title && <h2 className="ml-2 text-lg font-bold mb-2">{title}</h2>}
+                    {title && <h2 className="ml-2 text-sm md:text-lg font-bold mb-2">{title}</h2>}
                     <div className="ml-2">
                         <p className="text-md">
                             {quest}

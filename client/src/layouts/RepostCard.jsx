@@ -125,7 +125,7 @@ function RepostCard({ questionId }) {
         <div className="flex flex-col pb-3">
           <div className="flex justify-between items-center">
             <div className="flex">
-              <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
+              <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-8 h-8 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
               <div className="flex flex-col justify-center">
                 <div className="flex items-center">
                   <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">
@@ -173,7 +173,7 @@ function RepostCard({ questionId }) {
           )}
         </div>
         <div className="pb-2">
-          {quest?.title && <h2 className="ml-2 text-lg font-bold mb-2">{quest.title}</h2>}
+          {quest?.title && <h2 className="ml-2 text-sm md:text-lg font-bold mb-2">{quest.title}</h2>}
           <div className="ml-2">
             <p className="text-md">{quest?.question || ""}</p>
             {check && (

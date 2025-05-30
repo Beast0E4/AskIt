@@ -162,7 +162,7 @@ function RepostPollCard({questionId}) {
             <div className="flex flex-col pb-3">
                 <div className="flex justify-between items-center">
                     <div className="flex">
-                        <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-10 h-10 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
+                        <img src={image} alt={name} className="mr-4 rounded-full max-w-none w-8 h-8 object-cover hover:cursor-pointer" onClick={() => imageClick(name, image)} />
                         <div className="flex flex-col justify-center">
                             <div className="flex items-center">
                                 <a onClick={userView} className="inline-block font-bold mr-2 text-sm hover:cursor-pointer hover:underline">{name}</a>
@@ -203,7 +203,7 @@ function RepostPollCard({questionId}) {
                                         onChange={() => onVoted(index, option._id)}
                                         className="mr-2"
                                     />
-                                    <h2 className="text-white text-lg">{option.option}</h2>
+                                    <h2 className="text-white text-sm md:text-lg">{option.option}</h2>
                                 </div>
                                 <h2 className="text-sm text-gray-400 mt-2">{option.votes}</h2>
                             </div>
