@@ -253,11 +253,13 @@ export const sendOtp = createAsyncThunk('/auth/sendotp',async(data) => {
 
 export const verifyOtp = createAsyncThunk('/auth/verifyotp',async(data) => {
     try {
-        const response = await axiosInstance.post("verifyOtp",data);
+        const response = await axiosInstance.post("verifyOtp", data);
+        console.log (response);
         if(!response) toast.error('Something went wrong, try again');
         return  response;
     } catch (error) {
         toast.error(error.response.data.error || "An error occurred!");
+        return error.response;
     }
 });
 

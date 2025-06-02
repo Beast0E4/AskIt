@@ -27,6 +27,15 @@ function SignUp() {
     const [otp, setOtp] = useState ();
     const [clicked, setClicked] = useState (false);
     const [isVerified, setVerified] = useState (false);
+    const [isOtpSending, setOtpSending] = useState (false);
+    const [isVerifying, setVerifying] = useState (false);
+    const [isOtpSent, setOtpSent] = useState (false);
+    const [timer, setTimer] = useState (() => {
+        // Load timer from localStorage or default to 20 seconds
+        const savedTime = localStorage.getItem("otpTimer");
+        return savedTime ? Math.max(0, Number(savedTime) - (Date.now() - Number(localStorage.getItem("otpStartTime"))) / 1000) : 20;
+    });
+    const [canResend, setCanResend] = useState (false);
 
     function handleChange(e) {
         if (e.target.name === 'image') {
@@ -55,20 +64,14 @@ function SignUp() {
 
     function resetDetails() {
         setUserDetails({
+            ...userDetails,
             name: "",
             username: "",
-            email: "",
             password: "",
         });
         setPassword("");
         setCroppedFile(null);
         setFile(null);
-        setOtp("");
-        setVerified (false);
-        setClicked (false);
-
-        document.getElementById ('verifyButton').disabled = false;
-        document.getElementById ('otpInput').disabled = false;
     }
 
     const handleKeyPress = useCallback((e) => {
@@ -78,16 +81,17 @@ function SignUp() {
     async function onSubmit() {
         setLoading(true);
         try {
-            if (!userDetails.email.toString().trim() || !userDetails.username.toString().trim() || !userDetails.password.toString().trim() || !userDetails.name.toString().trim()) return;
-
             if (!isVerified) {
                 toast.error ('OTP not verified'); return;
             }
+
+            if (!userDetails.username.toString().trim() || !userDetails.password.toString().trim() || !userDetails.name.toString().trim()) return;
 
             if (userDetails.password !== password) {
                 toast.error('The passwords do not match');
                 return;
             }
+
             const formData = new FormData();
             for (var key in userDetails) {
                 formData.append(key, userDetails[key]);
@@ -119,18 +123,90 @@ function SignUp() {
     }
 
     async function submitEmail () {
-        const res = await dispatch (sendOtp ({ email: userDetails.email }));
-        if (res.payload) setClicked (true);
+        if (isOtpSent) {
+            resendOtp (); return;
+        }
+
+        setOtpSending (true);
+        try {
+            await dispatch (sendOtp ({ email: userDetails.email }));
+        } catch (error) {
+            toast.error (error.message);
+            setOtpSending (false);
+        } finally {
+            setClicked (true);
+            setOtpSending (false);
+            setOtpSent (true);
+
+            setTimer (20);
+            localStorage.setItem("otpTimer", 20);
+            localStorage.setItem("otpStartTime", Date.now());
+        }
     }
 
     async function verify () {
-        const res = await dispatch (verifyOtp ({ email: userDetails.email, otp }));
-        if (res.payload) {
-            setVerified (true);
-            document.getElementById ('verifyButton').disabled = true;
-            document.getElementById ('otpInput').disabled = true;
+        let response;
+        setVerifying (true);
+        try {
+            response = await dispatch (verifyOtp ({ email: userDetails.email, otp }));
+        } catch (error) {
+            setVerifying (false);
+            toast.error (error.message);
+        } finally {
+            if (!response.payload.data.error) {
+                setVerified (true);
+                document.getElementById ('verifyButton').disabled = true;
+                document.getElementById ('otpInput').disabled = true;
+                document.getElementById ('emailInput').disabled = true;
+            }
+            setVerifying (false);
         }
     }
+
+    const resendOtp = async () => {
+        setOtpSending (true); // Start loader
+        try {
+            await dispatch(sendOtp ({ email: userDetails.email }));
+        } catch (error) {
+            toast.error("Failed to resend OTP");
+        } finally {
+            setOtp ("");
+            setOtpSending (false); // Stop loader
+            toast.success("New OTP sent to your email!"); 
+
+            setCanResend(false);
+            setTimer(20); // Reset timer
+            localStorage.setItem("otpTimer", 20);
+            localStorage.setItem("otpStartTime", Date.now());
+        }
+    };
+
+    useEffect(() => {
+        if (!isOtpSent) return;
+
+        if (timer > 0) {
+            localStorage.setItem("otpTimer", timer);
+            localStorage.setItem("otpStartTime", Date.now());
+
+            document.getElementById ('sendOtp').disabled = true;
+
+            const interval = setInterval(() => {
+                setTimer((prev) => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    setCanResend(true);
+                    return 0;
+                }
+                return prev - 1;
+                });
+            }, 1000);
+
+            return () => clearInterval(interval);
+        } else {
+            setCanResend(true);
+            document.getElementById ('sendOtp').disabled = false;
+        }
+    }, [timer, dispatch, isOtpSent]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
@@ -142,7 +218,7 @@ function SignUp() {
     return (
         <section className="flex h-[100vh] bg-gray-950 flex-col items-center pt-6 justify-center">
             {loading && <Loader />}
-            <div className=" bg-gray-900 rounded-lg shadow md:mt-0 xl:p-0 w-[35%]">
+            <div className=" bg-gray-900 rounded-lg shadow md:mt-0 xl:p-0 w-full sm:w-[50%] lg:w-[35%]">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Create an account</h1>
                     <div className="flex flex-col gap-4">
@@ -218,18 +294,32 @@ function SignUp() {
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email Id</label>
                                 <div className="flex bg-gray-700 border border-gray-600 rounded-lg">
-                                    <input onChange={handleChange} type="email" name="email" value={userDetails.email} className="text-gray-900 sm:text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none" placeholder="johndoe@enter.com" required />
-                                    {userDetails.email.includes ('@') && <button onClick={submitEmail} className="w-[25%] bg-transparent">
-                                        Send OTP
+                                    <input onChange={handleChange} type="email" id="emailInput" name="email" value={userDetails.email} className="text-gray-900 sm:text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none" placeholder="johndoe@enter.com" required />
+                                    {userDetails.email?.includes ('@') && !isVerified && <button onClick={submitEmail}  id="sendOtp" className={`w-[25%] bg-transparent font-semibold border-l-2 flex items-center justify-center ${isOtpSent && timer ? `bg-gray-950 text-xs text-red-400` : ``}`}>
+                                         {isOtpSending ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-solid"></div>
+                                            ) : !isOtpSent ? (
+                                                "Send OTP"
+                                            ) : timer ? (
+                                                `Resend OTP in ${Math.floor(timer)}s`
+                                            ) : (
+                                                "Send OTP"
+                                            )}
                                     </button>}
                                 </div>
                             </div>
                             {clicked && <div>
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter OTP</label>
+                                <label className="block mb-2 text-sm font-medium text-[#F2BEA0]">Enter OTP</label>
                                 <div className="flex bg-gray-700 border border-gray-600 rounded-lg">
                                     <input onChange={handleOtpChange} maxLength={6} id="otpInput" type="text" name="otp" value={otp} placeholder="••••••" className="text-gray-900 sm:text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none" required />
-                                    {otp?.toString().length == 6 && <button onClick={verify} className="w-[25%] text-sm font-bold text-green-600 text-center" id="verifyButton">
-                                        {!isVerified ? "Verify OTP" : "Verified"}
+                                    {otp?.toString().length == 6 && <button onClick={verify} className="w-[25%] text-sm font-bold text-green-600 flex justify-center items-center" id="verifyButton">
+                                        {isVerifying ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-solid"></div>
+                                            ) : isVerified ? (
+                                                "Verified"
+                                            ) : (
+                                                "Verify OTP"
+                                            )}
                                     </button>}
                                 </div>
                             </div>}

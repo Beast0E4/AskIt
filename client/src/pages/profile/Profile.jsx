@@ -216,10 +216,6 @@ function Profile() {
         setShowPicModal(true);
     }
 
-    useEffect (() => {
-        isFollowing ();
-    }, [authState.following])
-
     useEffect(() => {
         if(!authState.isLoggedIn){
             navigate('/login'); return;
@@ -228,7 +224,8 @@ function Profile() {
     }, [])
 
     useEffect(() => {
-        loadUser(); loadFollower();
+        isFollowing ();
+        loadUser(); loadFollower(); 
     }, [authState.following]);
 
     useEffect(() => {

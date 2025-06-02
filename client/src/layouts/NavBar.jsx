@@ -176,7 +176,7 @@ function Navbar () {
                     <li className={`${location.pathname === `/followers` ? 'block border-b-2 border-[#F2BEA0] text-[#F2BEA0]' : 'hidden'}`}><h2 title="Followers">Followers</h2></li>
                 </ul>
             </div>
-            <div className="navbar-end gap-5 flex items-end">
+            <div className="navbar-end gap-5 flex items-center">
                 <div className="relative">
                     <i className="fa-solid fa-bell text-gray-300 rounded-md p-2 hover:cursor-pointer hover:bg-gray-800" onClick={openNotifications}></i>
                     {notificationCount > 0 && <div className="absolute top-0 right-0 bg-red-500 text-white text-[0.5rem] h-2 px-1 py-1.5 flex items-center justify-center rounded-full min-w-2">
