@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../config/axiosInstance";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+
 
 const initialState = {
     notificationList: [],
@@ -32,15 +32,13 @@ const notificationSlice = createSlice ({
             localStorage.setItem("readNotifications", 0);
         },
         insertNotification: (state, action) => {
-            const authState = useSelector ((state) => state.auth);
-            console.log (action.payload);
-            if (authState.data?._id !== action.payload.sender) state.notificationList = [action.payload, ...state.notificationList];
+            state.notificationList = [action.payload, ...state.notificationList];
         }
     }, 
     extraReducers: (builder) => {
         builder
         .addCase(getNotifications.fulfilled, (state, action) => {
-            state.notificationList = action.payload?.data?.data;
+            state.notificationList = action.payload?.data?.data.reverse ();
         })
     }
 });

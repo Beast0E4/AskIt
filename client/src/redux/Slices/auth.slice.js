@@ -280,7 +280,7 @@ const authSlice = createSlice({
                     state.follower = [...state.follower, action.payload.reciever[0]];
 
                     const readCount = localStorage.getItem("readNotifications") || 0;
-                    localStorage.setItem("readNotifications", readCount + 1);
+                    localStorage.setItem("readNotifications", Number (readCount) + 1);
                 }
             }
             else {

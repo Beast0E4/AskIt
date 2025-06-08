@@ -45,6 +45,14 @@ const setupSocket = (server) => {
         }
     }
 
+    const likeQuestion = async (data) => {
+        const recieverSocketId = userSocketMap.get (data.reciever);
+
+        const res = await Notification.create (data);
+
+        io.to (recieverSocketId).emit ("recieve-notification", res);
+    }
+
     io.on("connection", (socket) => {
         console.log(`Socket ${socket.id} connected.`);
         const userId = socket.handshake.query.userId;
@@ -58,6 +66,7 @@ const setupSocket = (server) => {
         socket.on("disconnect", () => disconnect(socket));
 
         socket.on ("follow-user", followUser);
+        socket.on ("like-question", likeQuestion);
     });
 }
 

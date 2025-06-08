@@ -158,6 +158,8 @@ function SignUp() {
                 document.getElementById ('verifyButton').disabled = true;
                 document.getElementById ('otpInput').disabled = true;
                 document.getElementById ('emailInput').disabled = true;
+
+                setTimer (0);
             }
             setVerifying (false);
         }

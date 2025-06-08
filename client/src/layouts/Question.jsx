@@ -12,7 +12,7 @@ import Comment from "./Comment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillLike, AiOutlineLike, AiOutlineRetweet } from "react-icons/ai";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { MdEditNote, MdModeComment, MdOutlineModeComment } from "react-icons/md";
+import { MdModeComment, MdOutlineModeComment } from "react-icons/md";
 import RepostCard from "./RepostCard";
 import RepostPollCard from "./RepostPollCard";
 import PicModal from "./PicModal";
@@ -23,6 +23,7 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
     const [ansState] = useAnswers();
     const quesState = useSelector((state) => state.ques);
     const authState = useSelector((state) => state.auth);
+    const socket = useSelector ((state) => state.socket.socket);
     const [commentState] = useComments();
 
     const navigate = useNavigate();
@@ -125,6 +126,17 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
             setIsLiked(true);
             setTotLikes(totLikes + 1);
             await dispatch(getLikedQuestions(authState.data?._id));
+
+            if (creator != authState.data?._id) {
+                const data = {
+                    reciever: creator,
+                    sender: authState.data?._id,
+                    type: "like-question"
+                }
+                if (socket && socket.connected) {
+                    socket.emit("like-question", data);
+                }
+            }
         }
     }
 
@@ -338,8 +350,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                         <RepostPollCard questionId={repost} /> </div>}
                 <div className="bg-gray-700 h-[0.1px]"/>
                 <div className="w-full flex gap-4 items-center my-2 ml-2">
-                    <div className="flex gap-2 items-center">
-                        <MdEditNote onClick={answer} className="w-7 h-7 hover:cursor-pointer text-white" title="Create answer"/>
+                    <div className="flex gap-3 items-center">
+                        <i onClick={answer} title="Create answer" className="fa-solid fa-pen-to-square text-md hover:cursor-pointer text-white text-center"></i>
                         <span>{answers}</span>
                     </div>
                     <button className="flex gap-3 justify-center items-center text-sm">

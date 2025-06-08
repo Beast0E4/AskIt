@@ -189,10 +189,23 @@ function Navbar () {
                         <ul className="max-h-60 overflow-y-auto text-xs">
                             {notificationState.notificationList.map ((notification, index) => {
                                 if (notification.type === 'follow-user') {
+                                    if (notification.sender === authState.data?._id) return null
                                     return (
                                         <li className="px-4 py-2 hover:cursor-pointer text-white flex justify-between items-end" key={index}>
                                             <div>
                                                 <Link to={`/profile?userid=${notification.sender}`} className="font-semibold font-inconsolata hover:underline">{userMapRef.current.get(notification.sender)?.name}</Link> stated following you
+                                            </div>
+                                            <div className="text-xs font-extralight">
+                                                {getTimeDifference (notification.createdAt)}
+                                            </div>
+                                        </li>
+                                    )
+                                }
+                                if (notification.type === 'like-question') {
+                                    return (
+                                        <li className="px-4 py-2 hover:cursor-pointer text-white flex justify-between items-end" key={index}>
+                                            <div>
+                                                <Link to={`/profile?userid=${notification.sender}`} className="font-semibold font-inconsolata hover:underline">{userMapRef.current.get(notification.sender)?.name}</Link> liked your question
                                             </div>
                                             <div className="text-xs font-extralight">
                                                 {getTimeDifference (notification.createdAt)}

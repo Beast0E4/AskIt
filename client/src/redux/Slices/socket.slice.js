@@ -5,7 +5,6 @@ import { insertNotification } from "./notification.slice";
 
 // Use environment variable at the top
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-console.log (BASE_URL)
 
 let socketInstance = null;
 
@@ -31,19 +30,24 @@ const socketSlice = createSlice ({
         socketInstance.connect();
 
         // Global listeners
-        socketInstance.on("connect", () => {
+        socketInstance.on ("connect", () => {
           console.log("Socket connected");
           dispatch(setConnected(true));
         });
 
-        socketInstance.on("disconnect", () => {
+        socketInstance.on ("disconnect", () => {
           console.log("Socket disconnected");
           dispatch(setConnected(false));
         });
 
-        socketInstance.on("recieve-notification", (data) => {
-            dispatch (updateFollowing (data));
-            if (data.type !== 'unfollow-user') dispatch (insertNotification (data));
+        socketInstance.on ("recieve-notification", (data) => {
+            if (data.type !== 'unfollow-user' && data.sender !== userId) dispatch (insertNotification (data));
+
+            if (data.type == "follow-user" || data.type == "unfollow-user") dispatch (updateFollowing (data));
+            if (data.type === "like-question") {
+                const readCount = localStorage.getItem("readNotifications") || 0;
+                localStorage.setItem("readNotifications", Number(readCount) + 1);
+            }
         });
       }
 
