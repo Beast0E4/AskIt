@@ -128,6 +128,18 @@ function PollCard({questionId}) {
             setIsLiked(true);
             setTotLikes(totLikes + 1);
             await dispatch(getLikedQuestions(authState.data?._id));
+
+            if (authState.userList[userIdx]?._id != authState.data?._id) {
+                const data = {
+                    reciever: authState.userList[userIdx]?._id,
+                    sender: authState.data?._id,
+                    type: "like-question",
+                    questionId
+                }
+                if (socket && socket.connected) {
+                    socket.emit("like-question", data);
+                }
+            }
         }
     }
 
@@ -367,7 +379,7 @@ function PollCard({questionId}) {
                 <div>
                 <div className="space-y-4 px-5">
                     {arr?.map((option, index) => (
-                        <div key={index} className="w-full">
+                        <div key={index} className="w-full hover:cursor-pointer">
                             <div className="flex justify-between">
                                 <div className="flex items-end">
                                     <input
@@ -376,7 +388,7 @@ function PollCard({questionId}) {
                                         onChange={() => onVoted(index, option._id)}
                                         className="mr-2"
                                     />
-                                    <h2 className="text-white text-sm md:text-lg">{option.option}</h2>
+                                    <h2 className="text-white text-sm md:text-lg" onClick={() => onVoted(index, option._id)}>{option.option}</h2>
                                 </div>
                                 <h2 className="text-sm text-gray-400 mt-2">{selectedId && option.votes}</h2>
                             </div>

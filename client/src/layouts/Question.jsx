@@ -131,7 +131,8 @@ function Question({questionId,  question, createdAt, creator, likes, topic, titl
                 const data = {
                     reciever: creator,
                     sender: authState.data?._id,
-                    type: "like-question"
+                    type: "like-question",
+                    questionId
                 }
                 if (socket && socket.connected) {
                     socket.emit("like-question", data);

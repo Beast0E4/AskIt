@@ -11,6 +11,9 @@ const notificationSchema = new mongoose.Schema({
             required: true
         }
     ],
+    questionId: {
+        type: String
+    },
     type: {
         type: String,
         required: true

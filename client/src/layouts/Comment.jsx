@@ -135,37 +135,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                 <div className="bg-gray-800 rounded-lg px-3 py-2 w-[50vw] md:w-[35vw] sm:w-[35vw]">
                     <div className="flex justify-between items-center">
                         <a onClick={userView} className="inline-block font-bold text-sm hover:cursor-pointer hover:underline">{name}</a>
-                        {(creator === authState.data?._id || userId === authState.data?._id) && <div className="relative z-[0] h-5" ref={dropdownRef}>
-                            <div>
-                                <button
-                                onClick={() => setIsOpen(!isOpen)}
-                                className="inline-flex justify-center w-5 h-5 object-cover shadow-sm"
-                                >
-                                <BsThreeDotsVertical className="h-full w-full p-[4px] rounded-full hover:bg-gray-900" />
-                                </button>
-                            </div>
-
-                            {isOpen && (
-                                <div
-                                className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none z-10"
-                                role="menu"
-                                aria-orientation="vertical"
-                                aria-labelledby="menu-button"
-                                tabIndex="-1"
-                                >
-                                    <div className="py-1" role="none">
-                                        <h2
-                                            className="block px-4 py-2 text-sm text-white hover:bg-gray-600 font-semibold"
-                                            role="menuitem"
-                                            tabIndex="-1"
-                                            onClick={onDelete}
-                                        >
-                                        Delete
-                                        </h2>
-                                    </div>
-                                </div>
-                            )}
-                        </div>}
+                        {(creator === authState.data?._id || userId === authState.data?._id) && <i onClick={onDelete} className="fa-solid fa-trash text-xs hover:cursor-pointer"></i>}
                     </div>
                     <div className="text-normal md:leading-normal">{description}</div>
                 </div>
@@ -175,7 +145,7 @@ function Comment({commentId, userId, description, createdAt, creator, likes}) {
                     <span className="ml-1">{totLikes}</span>
                 </div>
             </div>
-            {showModal && <DeleteModal type='comment' id={selectedComment}/>}
+            {showModal && <DeleteModal type='comment' typeId={selectedComment}/>}
             {showPicModal && (<PicModal
                             picture={modalData.image}
                             name={modalData.name}

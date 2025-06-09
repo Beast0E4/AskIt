@@ -184,7 +184,7 @@ function Navbar () {
                     </div>}
 
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-56 md:w-72 bg-gray-800 shadow-lg rounded-lg z-50 text-sm" ref={notificationRef}>
+                        <div className="absolute right-0 mt-2 w-64 md:w-80 bg-gray-800 shadow-lg rounded-lg z-50 text-sm" ref={notificationRef}>
                         <div className="px-4 py-2 font-semibold border-b text-[#F2BEA0]">Notifications</div>
                         <ul className="max-h-60 overflow-y-auto text-xs">
                             {notificationState.notificationList.map ((notification, index) => {
@@ -204,8 +204,10 @@ function Navbar () {
                                 if (notification.type === 'like-question') {
                                     return (
                                         <li className="px-4 py-2 hover:cursor-pointer text-white flex justify-between items-end" key={index}>
-                                            <div>
-                                                <Link to={`/profile?userid=${notification.sender}`} className="font-semibold font-inconsolata hover:underline">{userMapRef.current.get(notification.sender)?.name}</Link> liked your question
+                                            <div className="flex">
+                                                <Link to={`/profile?userid=${notification.sender}`} className="font-semibold font-inconsolata hover:underline mr-1">{userMapRef.current.get(notification.sender)?.name}</Link> liked your question
+                                                <div className="mx-1">•</div>
+                                                <Link to={`/answer?question=${notification.questionId}`} className="text-xs font-extralight hover:underline text-[#F2BEA0]">View</Link>
                                             </div>
                                             <div className="text-xs font-extralight">
                                                 {getTimeDifference (notification.createdAt)}

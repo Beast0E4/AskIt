@@ -48,7 +48,7 @@ function Question() {
 
     const handleOptionChange = (index, e) => {
         const updatedOptions = [...options];
-        updatedOptions[index].option = e.target.value.toString().trim();
+        updatedOptions[index].option = e.target.value.toString();
         setOptions(updatedOptions);
         if(options?.length <= index + 1) setOptions([...options, { option: '', votes: 0 }])
     };
@@ -87,9 +87,15 @@ function Question() {
             if(file) formData.append('image', croppedFile);
             formData.append('topic', selectedTopic); 
             if(searchParams.get('repost')) formData.append('repost', searchParams.get('repost'));
-            if(isPoll){
-                formData.append('options', JSON.stringify(options));
+            if (isPoll) {
+                const trimmedOptions = options.map(o => ({
+                    option: o.option.toString().trim(),
+                    votes: o.votes
+                }));
+                formData.append('options', JSON.stringify(trimmedOptions));
             }
+
+
             await dispatch(createQuestion(formData));
         } catch (error) {
             toast.error('Could not create your question'); setLoading(false);
@@ -111,14 +117,14 @@ function Question() {
     }, []);
 
     return (
-        <section className="h-max  bg-gray-950 flex flex-col items-center min-h-screen py-6 justify-center">
-            <div className="w-[25rem] sm:w-[50rem] bg-gray-900 rounded-lg shadow md:mt-0 xl:p-0">
+        <section className="h-max bg-gray-950 flex flex-col items-center min-h-screen py-6 justify-center">
+            <div className="w-[80%] lg:w-[60%] bg-gray-900 rounded-lg shadow">
                 {loading && <Loader />}
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-3xl uppercase font-bold">Create your question</h1>
                     <div className="my-4 bg-gray-800 py-5 px-2">
-                        <label>Tips on getting good answers quickly</label>
-                        <ul className="list-disc ml-4 text-sm">
+                        <label className="text-sm">Tips on getting good answers quickly</label>
+                        <ul className="list-disc ml-4 text-xs sm:text-sm">
                             <li>Make sure your question has not been asked already</li>
                             <li>Keep your question short and to the point</li>
                             <li>Double-check grammar and spelling</li>

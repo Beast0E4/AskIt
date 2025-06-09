@@ -34,6 +34,7 @@ export const getComments = createAsyncThunk('getComments', async () => {
 
 export const deleteComment = createAsyncThunk('deleteComment', async (id) => {
     try {
+        console.log ("Check ------------------------>", id);
         const response = axiosInstance.delete(`comment/delete/${id}`, {
             headers: {
                 'x-access-token': localStorage.getItem('token')

@@ -29,7 +29,7 @@ function DeleteModal({ type, typeId, setShowModal }) {
     }
 
     return (
-        <dialog open id='deleteModal' className="modal modal-bottom sm:modal-middle">
+        <dialog open id='deleteModal' className="modal sm:modal-middle">
             {loading && <Loader />}
             <div className="modal-box flex items-start gap-4">
                 <IoWarningSharp className="h-10 w-10 text-[#F2BEA0]"/>

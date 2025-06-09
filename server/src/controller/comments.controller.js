@@ -37,6 +37,7 @@ exports.getLikedComments = async (req, res, next) => {
 
 exports.deleteComments = async(req, res, next) => {
     try {
+        
         const response = await commentService.deleteComment(req.params.id);
         res.status(StatusCodes.OK).send({
             data: response
